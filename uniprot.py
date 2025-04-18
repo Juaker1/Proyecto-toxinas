@@ -9,6 +9,11 @@ import xml.dom.minidom as minidom
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import requests
+<<<<<<< HEAD
+=======
+import ssl
+import certifi
+>>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
 
 DB_PATH = "database/toxins.db"
 
@@ -150,6 +155,7 @@ class UniProtPipeline:
         # Usa `asyncio` y `aiohttp` para paralelizar la descarga.
         # Después del procesamiento, guarda los resultados en XML y los inserta en la base de datos.
 
+<<<<<<< HEAD
         sem = asyncio.Semaphore(20)
 
         async def fetch_one(session, acc):
@@ -169,14 +175,78 @@ class UniProtPipeline:
                 return None
 
         async with aiohttp.ClientSession() as session:
+=======
+        sem = asyncio.Semaphore(20)  # Adjusted semaphore limit
+
+        async def fetch_one(session, acc):
+            url = f"https://rest.uniprot.org/uniprotkb/{acc}.xml"
+            last_status = None
+            last_exception = None
+            async with sem:
+                for attempt in range(3):  # Keep 3 attempts
+                    try:
+                        # Increased timeout for the request
+                        async with session.get(url, timeout=aiohttp.ClientTimeout(total=60)) as resp:
+                            last_status = resp.status
+                            if resp.status == 200:
+                                xml_data = await resp.read()
+                                if not xml_data or not xml_data.strip():
+                                    # Keep this specific error message
+                                    print(f"[!] Contenido XML vacío o inválido para {acc}")
+                                    return None
+                                try:
+                                    return self.parse_protein(xml_data, acc)
+                                except ET.ParseError as parse_error:
+                                    # Keep this specific error message
+                                    print(f"[!] Error al parsear XML para {acc}: {parse_error}")
+                                    return None
+                            elif resp.status == 404:
+                                # Keep this specific error message
+                                print(f"[!] Accession {acc} no encontrado (404).")
+                                return None  # No need to retry 404
+                            elif resp.status in {429, 500, 502, 503, 504}:
+                                # Removed verbose retry message
+                                await asyncio.sleep(2 * (attempt + 1))
+                            else:
+                                # Removed verbose retry message for unexpected status
+                                await asyncio.sleep(2 * (attempt + 1))
+                    # Keep exception handling but remove verbose logging
+                    except aiohttp.ClientError as client_error:
+                        last_exception = client_error
+                        await asyncio.sleep(2 * (attempt + 1))
+                    except asyncio.TimeoutError as timeout_error:
+                        last_exception = timeout_error
+                        await asyncio.sleep(2 * (attempt + 1))
+                    except Exception as e:
+                        last_exception = e
+                        await asyncio.sleep(2 * (attempt + 1))
+
+                # Simplified final failure message
+                print(f"[!] Fallo final al recuperar {acc}.")
+                return None
+
+        # Create an SSL context using certifi's CA bundle
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+        # Pass the context to the session
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
+>>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
             tasks = [fetch_one(session, acc) for acc in accessions]
             results = await asyncio.gather(*tasks)
 
         proteins = [r for r in results if r is not None]
         print(f"[✓] Proteínas recuperadas exitosamente: {len(proteins)}")
 
+<<<<<<< HEAD
         self.save_to_xml(proteins, output_xml_path)
         self.insert_into_database(proteins)
+=======
+        if proteins:  # Only save/insert if proteins were actually fetched
+            self.save_to_xml(proteins, output_xml_path)
+            self.insert_into_database(proteins)
+        else:
+            print("[!] No se recuperaron proteínas válidas para guardar.")
+>>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
 
     def save_to_xml(self, proteins, path):
         # Guarda toda la información de las proteínas en un archivo XML legible.
