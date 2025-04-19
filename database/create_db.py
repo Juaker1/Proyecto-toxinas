@@ -50,12 +50,8 @@ def create_database():
         model_source TEXT,       -- 'PDB', 'AlphaFold', o NULL
         model_id TEXT,           -- ID del modelo PDB o AlphaFold
         model_link TEXT,
-<<<<<<< HEAD
-        pdb_file BLOB,           -- No se usará por ahora, pero se deja por compatibilidad
-=======
         pdb_file BLOB,           -- Contenido del archivo PDB
         is_full_structure INTEGER DEFAULT 0,  -- 1 si es estructura completa, 0 si es péptido cortado
->>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
         FOREIGN KEY (accession_number) REFERENCES Proteins(accession_number)
     );
     """)

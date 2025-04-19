@@ -9,11 +9,8 @@ import xml.dom.minidom as minidom
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import requests
-<<<<<<< HEAD
-=======
 import ssl
 import certifi
->>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
 
 DB_PATH = "database/toxins.db"
 
@@ -155,27 +152,6 @@ class UniProtPipeline:
         # Usa `asyncio` y `aiohttp` para paralelizar la descarga.
         # Después del procesamiento, guarda los resultados en XML y los inserta en la base de datos.
 
-<<<<<<< HEAD
-        sem = asyncio.Semaphore(20)
-
-        async def fetch_one(session, acc):
-            url = f"https://rest.uniprot.org/uniprotkb/{acc}.xml"
-            async with sem:
-                for attempt in range(3):
-                    try:
-                        async with session.get(url) as resp:
-                            if resp.status == 200:
-                                xml_data = await resp.read()
-                                return self.parse_protein(xml_data, acc)
-                            elif resp.status in {429, 500, 502, 503, 504}:
-                                await asyncio.sleep(2 * (attempt + 1))
-                    except Exception:
-                        await asyncio.sleep(2 * (attempt + 1))
-                print(f"[!] Fallo al recuperar {acc}")
-                return None
-
-        async with aiohttp.ClientSession() as session:
-=======
         sem = asyncio.Semaphore(20)  # Adjusted semaphore limit
 
         async def fetch_one(session, acc):
@@ -230,23 +206,17 @@ class UniProtPipeline:
 
         # Pass the context to the session
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
->>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
             tasks = [fetch_one(session, acc) for acc in accessions]
             results = await asyncio.gather(*tasks)
 
         proteins = [r for r in results if r is not None]
         print(f"[✓] Proteínas recuperadas exitosamente: {len(proteins)}")
 
-<<<<<<< HEAD
-        self.save_to_xml(proteins, output_xml_path)
-        self.insert_into_database(proteins)
-=======
         if proteins:  # Only save/insert if proteins were actually fetched
             self.save_to_xml(proteins, output_xml_path)
             self.insert_into_database(proteins)
         else:
             print("[!] No se recuperaron proteínas válidas para guardar.")
->>>>>>> 952f9f0 (Recuperacion de datos completo junto con corte respectivo de cada toxina, pequeños cambios respecto a la DB)
 
     def save_to_xml(self, proteins, path):
         # Guarda toda la información de las proteínas en un archivo XML legible.
@@ -273,8 +243,13 @@ class UniProtPipeline:
             for alt in p["alternative_names"]:
                 ET.SubElement(alt_elem, "alternativeName").text = alt
 
+            # Features: guardar peptidos si hay, si no, cadenas
             peptides_elem = ET.SubElement(prot, "peptides")
-            for f in p.get("features", []):
+            peptide_feats = [f for f in p.get("features", []) if f.attrib.get("type") == "peptide"]
+            chain_feats = [f for f in p.get("features", []) if f.attrib.get("type") == "chain"]
+            selected_features = peptide_feats if peptide_feats else chain_feats
+
+            for f in selected_features:
                 f_elem = ET.SubElement(peptides_elem, "feature", type=f.attrib.get("type"))
                 if "description" in f.attrib:
                     f_elem.set("description", f.attrib["description"])
@@ -301,13 +276,12 @@ class UniProtPipeline:
                         prop_value = prop.attrib.get("value")
                         if prop_type and prop_value:
                             s_elem.set(prop_type, prop_value)
-                            
+
         for elem in root.iter():
             for k in list(elem.attrib):
                 if elem.attrib[k] is None:
                     elem.attrib[k] = "algo none" 
-                    
-        # Eliminar proteínas que contienen el marcador 'algo none' en texto o atributos
+
         for protein in list(root.findall("protein")):
             if any("algo none" in (child.text or "") or any("algo none" in (v or "") for v in child.attrib.values()) for child in protein.iter()):
                 root.remove(protein)

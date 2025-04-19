@@ -118,6 +118,9 @@ class PeptideExtractor:
     def extract_peptides_from_xml(self, xml_path: str) -> List[Dict]:
         """
         Extrae información de péptidos de un archivo XML de UniProt.
+        Aplica lógicas diferentes según el tipo de estructura:
+        - Para PDB: utiliza los rangos de residuos específicos de las cadenas PDB
+        - Para AlphaFold: utiliza la lógica de péptidos superpuestos/separados
         
         Args:
             xml_path (str): Ruta al archivo XML.
@@ -128,68 +131,196 @@ class PeptideExtractor:
         peptides = []
         tree = ET.parse(xml_path)
         root = tree.getroot()
+        protein_count = 0
+        multicut_count = 0
+        pdb_count = 0
         
         for protein in root.findall("protein"):
+            protein_count += 1
             accession = protein.get("accession")
             sequence = protein.find("sequence").text if protein.find("sequence") is not None else ""
             
             if not accession or not sequence:
                 continue
                 
-            # Buscar todos los peptides en el XML
-            for peptide_elem in protein.findall(".//peptides/feature"):
-                peptide_type = peptide_elem.get("type")
-                if peptide_type not in ["peptide", "chain"]:
+            # Buscar estructuras asociadas a esta proteína
+            pdb_structures = []
+            alphafold_structures = []
+            
+            for struct in protein.findall(".//structures/structure"):
+                struct_type = struct.get("type")
+                struct_id = struct.get("id")
+                
+                if not struct_type or not struct_id:
                     continue
                     
-                description = peptide_elem.get("description", "")
-                begin = int(peptide_elem.get("begin", 0))
-                end = int(peptide_elem.get("end", 0))
-                
-                if begin == 0 or end == 0 or begin > end:
-                    continue
-                    
-                # Extraer la secuencia del péptido
-                peptide_seq = sequence[begin-1:end] if begin-1 < len(sequence) and end <= len(sequence) else ""
-                
-                # Buscar estructuras asociadas
-                structures = []
-                for struct in protein.findall(".//structures/structure"):
-                    struct_type = struct.get("type")
-                    struct_id = struct.get("id")
+                if struct_type == "PDB":
+                    # Extraer información de cadenas y rangos de residuos para PDB
+                    method = struct.get("method", "")
                     resolution = struct.get("resolution", "")
+                    chains_info = struct.get("chains", "")
                     
-                    if struct_type and struct_id:
-                        # Verificar que el struct_id sea válido
-                        if struct_type == "PDB" and len(struct_id) != 4:
-                            print(f"Advertencia: ID PDB inválido '{struct_id}' para {accession}")
-                            continue
-                            
-                        if struct_type == "AlphaFoldDB" and not struct_id.startswith(tuple(['A', 'P', 'Q', 'O'])):
-                            # Los IDs de AlphaFold suelen comenzar con estas letras
-                            print(f"Advertencia: ID AlphaFold inválido '{struct_id}' para {accession}")
-                            
-                        structures.append({
-                            "type": struct_type,
-                            "id": struct_id,
-                            "resolution": resolution
-                        })
+                    # Procesar información de chains (ejemplo: "A=46-72")
+                    chain_ranges = []
+                    if chains_info:
+                        for chain_part in chains_info.split("/"):
+                            parts = chain_part.split("=")
+                            if len(parts) == 2:
+                                chain_id = parts[0]
+                                try:
+                                    start, end = map(int, parts[1].split("-"))
+                                    chain_ranges.append((chain_id, start, end))
+                                except (ValueError, IndexError):
+                                    continue
+                    
+                    pdb_structures.append({
+                        "type": struct_type,
+                        "id": struct_id,
+                        "method": method,
+                        "resolution": resolution,
+                        "chain_ranges": chain_ranges
+                    })
+                elif struct_type == "AlphaFoldDB":
+                    alphafold_structures.append({
+                        "type": struct_type,
+                        "id": struct_id
+                    })
+            
+            # Determinar qué estructuras usar (priorizar PDB sobre AlphaFold)
+            if pdb_structures:
+                # Si hay estructuras PDB, usar los rangos de residuos específicos
+                pdb_count += 1
+                print(f"Proteína {accession} tiene {len(pdb_structures)} estructuras PDB")
                 
-                if not structures:
-                    print(f"Sin estructuras disponibles para {description} de {accession}")
-                    continue
+                # Extraer todos los rangos de residuos disponibles en las estructuras PDB
+                all_pdb_ranges = []
+                for pdb_struct in pdb_structures:
+                    for chain_id, start, end in pdb_struct.get("chain_ranges", []):
+                        all_pdb_ranges.append((start, end, chain_id))
+                
+                if all_pdb_ranges:
+                    # Ordenar por longitud del rango (de mayor a menor)
+                    all_pdb_ranges.sort(key=lambda x: x[1] - x[0], reverse=True)
                     
-                peptides.append({
-                    "accession_number": accession,
-                    "peptide_name": description,
-                    "start_position": begin,
-                    "end_position": end,
-                    "sequence": peptide_seq,
-                    "structures": structures
-                })
+                    # Usar el rango más largo de las estructuras PDB
+                    start, end, chain_id = all_pdb_ranges[0]
                     
-        print(f"Extraídos {len(peptides)} péptidos con estructuras asociadas")
+                    # Extraer la secuencia del péptido basada en este rango
+                    peptide_seq = ""
+                    if 1 <= start <= len(sequence) and start <= end <= len(sequence):
+                        peptide_seq = sequence[start-1:end]
+                    
+                    peptide_info = {
+                        "accession_number": accession,
+                        "peptide_name": f"PDB-derived peptide ({pdb_structures[0]['id']} chain {chain_id})",
+                        "start_position": start,
+                        "end_position": end,
+                        "sequence": peptide_seq,
+                        "structures": pdb_structures + alphafold_structures  # Incluir todas las estructuras
+                    }
+                    
+                    peptides.append(peptide_info)
+                    print(f"  - Usando rango de PDB: {start}-{end} (chain {chain_id})")
+                else:
+                    # Si no hay información de rango en las estructuras PDB, usar rango de péptidos
+                    print(f"  - No hay información de rangos en PDB, buscando péptidos definidos")
+                    # Proceder con la lógica de péptidos (similar al caso de AlphaFold)
+                    self._process_peptide_features(protein, accession, sequence, pdb_structures + alphafold_structures, peptides)
+                    
+            elif alphafold_structures:
+                # Si solo hay estructuras AlphaFold, aplicar la lógica de péptidos
+                self._process_peptide_features(protein, accession, sequence, alphafold_structures, peptides)
+        
+        print(f"Extraídos {len(peptides)} péptidos de {protein_count} proteínas "
+              f"({pdb_count} con estructura PDB, {multicut_count} con múltiples regiones de péptidos)")
         return peptides
+
+    def _process_peptide_features(self, protein, accession, sequence, structures, peptides_list):
+        """
+        Procesa las características de péptidos para una proteína.
+        
+        Args:
+            protein: Elemento XML de la proteína
+            accession: Número de acceso
+            sequence: Secuencia completa
+            structures: Lista de estructuras
+            peptides_list: Lista donde agregar los péptidos procesados
+        """
+        # Recolectar todos los péptidos válidos para esta proteína
+        protein_peptides = []
+        for peptide_elem in protein.findall(".//peptides/feature"):
+            peptide_type = peptide_elem.get("type")
+            if peptide_type not in ["peptide", "chain"]:
+                continue
+                
+            description = peptide_elem.get("description", "")
+            begin = int(peptide_elem.get("begin", 0))
+            end = int(peptide_elem.get("end", 0))
+            
+            if begin == 0 or end == 0 or begin > end:
+                continue
+                
+            # Calcular longitud del péptido y extraer secuencia
+            peptide_length = end - begin + 1
+            peptide_seq = sequence[begin-1:end] if begin-1 < len(sequence) and end <= len(sequence) else ""
+            
+            protein_peptides.append({
+                "accession_number": accession,
+                "peptide_name": description,
+                "start_position": begin,
+                "end_position": end,
+                "sequence": peptide_seq,
+                "length": peptide_length,
+                "structures": structures,
+                "region": (begin, end)
+            })
+        
+        # Si no hay péptidos válidos, terminar
+        if not protein_peptides:
+            return
+            
+        # Determinar si los péptidos están superpuestos o separados
+        if len(protein_peptides) > 1:
+            # Ordenar péptidos por posición de inicio
+            protein_peptides.sort(key=lambda p: p["start_position"])
+            
+            # Verificar si hay superposición
+            peptides_overlap = False
+            for i in range(1, len(protein_peptides)):
+                prev_end = protein_peptides[i-1]["end_position"]
+                curr_start = protein_peptides[i]["start_position"]
+                if curr_start <= prev_end:
+                    peptides_overlap = True
+                    break
+            
+            # Estrategia basada en superposición
+            if peptides_overlap:
+                # CASO 1: Péptidos superpuestos - seleccionar el más largo
+                protein_peptides.sort(key=lambda p: p["length"], reverse=True)
+                selected_peptide = protein_peptides[0]
+                print(f"Proteína {accession} tiene {len(protein_peptides)} péptidos superpuestos. "
+                      f"Seleccionando el más largo: {selected_peptide['peptide_name']} ({selected_peptide['length']} aa)")
+                # Eliminar campos auxiliares
+                del selected_peptide["length"]
+                del selected_peptide["region"]
+                peptides_list.append(selected_peptide)
+            else:
+                # CASO 2: Péptidos separados - procesar todos como cortes independientes
+                print(f"Proteína {accession} tiene {len(protein_peptides)} péptidos en regiones distintas - procesando todos:")
+                for i, pep in enumerate(protein_peptides):
+                    # Modificar el nombre para indicar que es un corte específico
+                    original_name = pep["peptide_name"]
+                    pep["peptide_name"] = f"{original_name} (CUT {i+1}/{len(protein_peptides)})"
+                    # Eliminar campos auxiliares
+                    del pep["length"]
+                    del pep["region"]
+                    print(f"  - {pep['peptide_name']}: pos {pep['start_position']}-{pep['end_position']} ({pep['end_position']-pep['start_position']+1} aa)")
+                    peptides_list.append(pep)
+        else:
+            # Solo hay un péptido
+            del protein_peptides[0]["length"]
+            del protein_peptides[0]["region"]
+            peptides_list.append(protein_peptides[0])
     
     async def process_peptide(self, peptide: Dict) -> Optional[Dict]:
         """
