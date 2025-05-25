@@ -11,6 +11,9 @@ import plotly.graph_objects as go
 from graphein.protein.config import ProteinGraphConfig
 from graphein.protein.graphs import construct_graph
 from graphein.protein.edges.distance import add_distance_threshold
+from graphein.protein.visualisation import plotly_protein_structure_graph
+from plotly.utils import PlotlyJSONEncoder
+import json
 
 viewer_bp = Blueprint('viewer', __name__)
 
@@ -246,15 +249,89 @@ def get_protein_graph(source, pid):
             # Calculate graph properties
             props = compute_graph_properties(G)
             
-            # Create plot data for Plotly
-            plot_data = create_plotly_graph_data(G)
+           # Crear gráfico estilo Graphein
+            fig = plotly_protein_structure_graph(
+                G,
+                colour_nodes_by="seq_position",
+                colour_edges_by="kind",
+                label_node_ids=False,
+                node_size_multiplier=1,
+                plot_title=f"Grafo de proteína (ID: {pid})"
+            )
             
-            # Return data
-            return jsonify({
-                "plotData": [trace.to_plotly_json() for trace in plot_data],
+            fig.update_layout(
+                scene=dict(
+                    xaxis=dict(
+                        title='X',
+                        showgrid=True,
+                        zeroline=True,
+                        backgroundcolor='rgba(240,240,240,0.9)',  # plano visible
+                        showbackground=True,
+                        gridcolor='lightgray',
+                        showticklabels=True,
+                        tickfont=dict(size=10)
+                    ),
+                    yaxis=dict(
+                        title='Y',
+                        showgrid=True,
+                        zeroline=True,
+                        backgroundcolor='rgba(240,240,240,0.9)',
+                        showbackground=True,
+                        gridcolor='lightgray',
+                        showticklabels=True,
+                        tickfont=dict(size=10)
+                    ),
+                    zaxis=dict(
+                        title='Z',
+                        showgrid=True,
+                        zeroline=True,
+                        backgroundcolor='rgba(240,240,240,0.9)',
+                        showbackground=True,
+                        gridcolor='lightgray',
+                        showticklabels=True,
+                        tickfont=dict(size=10)
+                    ),
+                    aspectmode='data',
+                    bgcolor='white'
+                ),
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                showlegend=True,
+                legend=dict(
+                    x=0.85,
+                    y=0.9,
+                    bgcolor='rgba(255,255,255,0.5)',
+                    bordercolor='black',
+                    borderwidth=1
+                )
+            )
+            
+            fig.update_traces(marker=dict(opacity=0.9), selector=dict(mode='markers'), )
+            fig.update_traces(line=dict(width=2), selector=dict(mode='lines'))
+            
+            for trace in fig.data:
+                if trace.mode == 'markers':
+                    trace.name = "Residuos"
+                elif trace.mode == 'lines':
+                    trace.name = "Conexiones"
+
+            # Extraer datos Plotly
+            fig_json = fig.to_plotly_json()
+
+            # Enviar al frontend
+            from flask import Response
+
+            payload = {
+                "plotData": fig_json["data"],
+                "layout": fig_json["layout"],
                 "properties": props
-            })
-            
+            }
+
+            return Response(
+                json.dumps(payload, cls=PlotlyJSONEncoder),
+                mimetype='application/json'
+            )
+
         finally:
             # Clean up temporary file
             try:

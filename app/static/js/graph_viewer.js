@@ -86,15 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             
             // Update graph visualization
-            Plotly.react(graphPlotElement, data.plotData, {
-                title: `Grafo de proteína (Umbral: ${distValue}Å, Sep: ${longValue})`,
-                height: 500,
-                scene: {
-                    xaxis: { title: 'x' },
-                    yaxis: { title: 'y' },
-                    zaxis: { title: 'z' }
-                }
-            });
+            Plotly.react(graphPlotElement, data.plotData, data.layout);
+
             
             // Update properties table
             updatePropertiesTable(data.properties);

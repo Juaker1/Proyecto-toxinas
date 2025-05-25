@@ -95,9 +95,14 @@ select {
 
 /* Graph plot specific sizing */
 #graph-plot {
-    width: 100%;
-    height: calc(100% - 160px);
+    width: 80%;
+    max-width: 1000px;
+    height: 600px;
+    margin: 0 auto; /* centra horizontalmente */
+    display: block;
+    padding-bottom: 30px; /* separación del texto de abajo */
 }
+
 
 /* Graph properties section */
 .graph-properties {
@@ -125,3 +130,11 @@ select {
     background-color: #f9f9f9;
 }
 
+.graph-properties {
+    margin-top: 40px; /* más separación del gráfico */
+    padding: 20px;
+    width: 80%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
