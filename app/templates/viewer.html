@@ -53,7 +53,7 @@
                         <input id="dist-input" type="number" value="10.0" min="0" step="0.1">
                     </div>
                     
-                    <!-- NEW: Granularity toggle switch -->
+                
                     <div class="control-group">
                         <label for="granularity-toggle">Representación:</label>
                         <div class="toggle-switch">
@@ -72,23 +72,136 @@
         </div>
     </div>
 
-    <!-- Separate container for the properties table outside the visualization container -->
+   
     <div class="graph-properties-container">
-        <div class="graph-properties">
-            <h4>Propiedades del Grafo</h4>
-            <div class="table-wrapper">
-                <table class="properties-table" id="properties-table">
-                    <thead>
-                        <tr id="properties-header">
-                            <th>Seleccione una proteína para ver las propiedades</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="properties-values">
-                            <td>-</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="analysis-panel">
+            <h4>Análisis Detallado del Grafo Molecular</h4>
+            
+            
+            <div class="analysis-section">
+                <h5>Información Estructural Básica</h5>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Toxina analizada:</span>
+                        <span class="value" id="toxin-name">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Número de residuos (nodos):</span>
+                        <span class="value" id="num-nodes">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Número de interacciones (aristas):</span>
+                        <span class="value" id="num-edges">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Puentes disulfuro:</span>
+                        <span class="value" id="disulfide-bridges">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Densidad del grafo:</span>
+                        <span class="value" id="graph-density">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Coeficiente de agrupamiento promedio:</span>
+                        <span class="value" id="avg-clustering">-</span>
+                    </div>
+                </div>
+
+                >
+                <div class="info-grid">
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <span class="label">Tipo de grafo:</span>
+                        <span class="value" id="graph-info">-</span>
+                    </div>
+                </div>
+            </div>
+
+          
+            <div class="analysis-section">
+                <h5>Métricas de Centralidad - Resumen</h5>
+                <div class="centrality-summary">
+                    <div class="metric-card">
+                        <h6>Centralidad de Grado</h6>
+                        <div class="metric-details">
+                            <span class="metric-range">Min: <span id="degree-min">-</span> | Max: <span id="degree-max">-</span></span>
+                            <span class="metric-mean">Promedio: <span id="degree-mean">-</span></span>
+                            <span class="top-residues">Top: <span id="degree-top">-</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6>Centralidad de Intermediación</h6>
+                        <div class="metric-details">
+                            <span class="metric-range">Min: <span id="between-min">-</span> | Max: <span id="between-max">-</span></span>
+                            <span class="metric-mean">Promedio: <span id="between-mean">-</span></span>
+                            <span class="top-residues">Top: <span id="between-top">-</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6>Centralidad de Cercanía</h6>
+                        <div class="metric-details">
+                            <span class="metric-range">Min: <span id="closeness-min">-</span> | Max: <span id="closeness-max">-</span></span>
+                            <span class="metric-mean">Promedio: <span id="closeness-mean">-</span></span>
+                            <span class="top-residues">Top: <span id="closeness-top">-</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6>Coeficiente de Agrupamiento</h6>
+                        <div class="metric-details">
+                            <span class="metric-range">Min: <span id="clustering-min">-</span> | Max: <span id="clustering-max">-</span></span>
+                            <span class="metric-mean">Promedio: <span id="clustering-mean">-</span></span>
+                            <span class="top-residues">Top: <span id="clustering-top">-</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="analysis-section">
+                <h5>Top 5 Residuos por Métrica</h5>
+                <div class="top-residues-grid">
+                    <div class="top-metric-column">
+                        <h6>Centralidad de Grado</h6>
+                        <ul id="top-degree-list" class="residue-list"></ul>
+                    </div>
+                    <div class="top-metric-column">
+                        <h6>Centralidad de Intermediación</h6>
+                        <ul id="top-between-list" class="residue-list"></ul>
+                    </div>
+                    <div class="top-metric-column">
+                        <h6>Centralidad de Cercanía</h6>
+                        <ul id="top-closeness-list" class="residue-list"></ul>
+                    </div>
+                    <div class="top-metric-column">
+                        <h6>Coeficiente de Agrupamiento</h6>
+                        <ul id="top-clustering-list" class="residue-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="analysis-section">
+                <h5>Residuos Clave por Métrica</h5>
+                <div class="key-residues">
+                    <div class="key-residue-item">
+                        <span class="metric-name">Mayor centralidad de grado:</span>
+                        <span class="residue-value" id="key-degree">-</span>
+                    </div>
+                    <div class="key-residue-item">
+                        <span class="metric-name">Mayor centralidad de intermediación:</span>
+                        <span class="residue-value" id="key-between">-</span>
+                    </div>
+                    <div class="key-residue-item">
+                        <span class="metric-name">Mayor centralidad de cercanía:</span>
+                        <span class="residue-value" id="key-closeness">-</span>
+                    </div>
+                    <div class="key-residue-item">
+                        <span class="metric-name">Mayor coeficiente de agrupamiento:</span>
+                        <span class="residue-value" id="key-clustering">-</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -101,9 +214,11 @@
         }
     </script>
 
-    <!-- Scripts: primero Mol*, luego tu lógica -->
+   
     <script src="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.js"></script>
+    <script src="{{ url_for('static', filename='js/molstar_analyzer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/graph_viewer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
 </body>
 </html>

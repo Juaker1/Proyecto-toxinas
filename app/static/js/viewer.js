@@ -1,11 +1,14 @@
+
 document.addEventListener("DOMContentLoaded", async () => {
+    //Extremos los datos de la proteina 
     const proteinData = JSON.parse(document.getElementById("protein-data").textContent);
+    
     const toxinasData = proteinData.toxinas;
     const navsData = proteinData.nav1_7;
 
     const viewerElement = document.getElementById("viewer");
 
-    // Inicialización con opciones explícitas para controlar el tamaño
+    
     const plugin = await molstar.Viewer.create(viewerElement, {
         layoutIsExpanded: false,
         layoutShowControls: false,
@@ -17,6 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         viewportShowSelectionMode: false,
         viewportShowAnimation: false
     });
+
+    // Creamos un analizador de proteínas mediante Molstar
+    window.molstarAnalyzer = new MolstarProteinAnalyzer(plugin);
 
     const groupSelect = document.getElementById("groupSelect");
     const proteinSelect = document.getElementById("proteinSelect");
@@ -33,20 +39,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             opt.textContent = name;
             proteinSelect.appendChild(opt);
         });
+        
+        // Selecciona automáticamente la primera opción
+        if (proteinSelect.options.length > 0) {
+            proteinSelect.selectedIndex = 0;
+        }
     }
 
     async function loadPDB(group, id) {
-        console.log(`📦 Solicitando estructura de ${group} con ID ${id}`);
         try {
-            // Intento más agresivo de limpiar el visor
+            // Limpiar el plugin antes de cargar una nueva estructura
             try {
-                
                 await plugin.plugin?.clear?.();
                 await plugin.resetCamera?.();
                 await plugin.resetStructure?.();
-                
             } catch (clearError) {
-                console.warn("No se pudo limpiar el visor:", clearError);
+                // Ignorar errores al limpiar
             }
 
             // Obtener los datos PDB del servidor
@@ -60,35 +68,40 @@ document.addEventListener("DOMContentLoaded", async () => {
                 throw new Error("PDB inválido o vacío");
             }
 
-            // Crear un blob y URL para el archivo PDB
+            // Crear un blob tempoal para que Molstar pueda cargarlo en lugar de usar un URL directo
             const blob = new Blob([pdbText], { type: 'chemical/x-pdb' });
             const blobUrl = URL.createObjectURL(blob);
             
             try {
-                // Cargar la estructura usando el método correcto con parámetros ajustados
-                await plugin.loadStructureFromUrl(blobUrl, 'pdb');  // Usa 'pdb' como segundo parámetro directo, no como objeto
+                // Cargar la estructura usando el método correcto 
+                await plugin.loadStructureFromUrl(blobUrl, 'pdb');
                 
-                // Aplicar la representación después de cargar
-                //await plugin.applyPreset('cartoon');  // Usa un preset estándar
                 
-                console.log("✅ Estructura cargada correctamente");
+                const graphTab = document.querySelector('[data-tab="graph-view"]');
+                if (graphTab && graphTab.classList.contains('active')) {
+                    setTimeout(() => {
+                        if (window.analyzeMolstarStructure) {
+                            window.analyzeMolstarStructure();
+                        }
+                    }, 1000); // Dar tiempo a que la estructura se cargue completamente
+                }
+                
             } finally {
-                // Liberar el URL del blob
+                // Liberar el URL del blob esto para evitar fugas de memoria
                 URL.revokeObjectURL(blobUrl);
             }
         } catch (error) {
-            console.error("❌ Error cargando PDB:", error);
             alert("Error al cargar la estructura: " + error.message);
         }
     }
-
+    // Cuando cambiemos el grupo de proteínas, cargamos las proteínas correspondientes
     groupSelect.addEventListener("change", () => {
         const group = groupSelect.value;
         loadProteins(group);
-        setTimeout(() => {
-            const selectedId = proteinSelect.value;
-            if (selectedId) loadPDB(group, selectedId);
-        }, 300);
+        
+        
+        const selectedId = proteinSelect.value;
+        if (selectedId) loadPDB(group, selectedId);
     });
 
     proteinSelect.addEventListener("change", () => {
@@ -97,10 +110,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadPDB(group, id);
     });
 
-    // Inicial: toxinas
+
+    groupSelect.value = "toxinas";
+  
     loadProteins("toxinas");
+
     setTimeout(() => {
-        const selectedId = proteinSelect.value;
-        if (selectedId) loadPDB("toxinas", selectedId);
-    }, 300);
+        if (proteinSelect.options.length > 0) {
+            const firstId = proteinSelect.value;
+            loadPDB("toxinas", firstId);
+        }
+    }, 100);
 });

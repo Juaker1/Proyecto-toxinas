@@ -1,5 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Tab switching functionality
+document.addEventListener("DOMContentLoaded", async () => {
+    
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
     const propertiesContainer = document.querySelector('.graph-properties-container');
@@ -8,44 +8,45 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener('click', () => {
             const tabId = button.getAttribute('data-tab');
             
-            // Update active button
+            
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             
-            // Update active content
+           
             tabContents.forEach(content => content.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            // Show/hide properties table based on active tab
+
             if (tabId === 'graph-view') {
                 propertiesContainer.style.display = 'block';
-                // Add class to body for CSS targeting if needed
                 document.body.classList.add('graph-tab-active');
+
+                if (window.molstarAnalyzer) {
+                    analyzeMolstarStructure();
+                }
             } else {
                 propertiesContainer.style.display = 'none';
                 document.body.classList.remove('graph-tab-active');
             }
         });
     });
-    
-    // Initialize - hide table on page load since structure tab is default
+
+    // Inicializar la primera pestaña como activa
     if (propertiesContainer) {
         propertiesContainer.style.display = 'none';
     }
     
-    // Graph visualization functionality
+   
     const graphPlotElement = document.getElementById('graph-plot');
     const longInput = document.getElementById('long-input');
     const distInput = document.getElementById('dist-input');
-    const granularityToggle = document.getElementById('granularity-toggle'); // NEW
-    const propertiesHeader = document.getElementById('properties-header');
-    const propertiesValues = document.getElementById('properties-values');
+    const granularityToggle = document.getElementById('granularity-toggle');
     
-    // Current protein info
+  
     let currentProteinGroup = null;
     let currentProteinId = null;
     
-    // Initialize empty graph
+     // Inicializamos el grafico vacio con plotly
     Plotly.newPlot(graphPlotElement, [], {
         title: 'Seleccione una proteína para ver su grafo',
         height: 500,
@@ -56,12 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // Event listeners for inputs
+    // Eventos para actualizar automaticamente el grafo
     longInput.addEventListener('change', updateGraphVisualization);
     distInput.addEventListener('change', updateGraphVisualization);
-    granularityToggle.addEventListener('change', updateGraphVisualization); // NEW
+    granularityToggle.addEventListener('change', updateGraphVisualization);
     
-    // Listen for protein selection changes
+   
     const groupSelect = document.getElementById('groupSelect');
     const proteinSelect = document.getElementById('proteinSelect');
     
@@ -79,87 +80,168 @@ document.addEventListener("DOMContentLoaded", () => {
         updateGraphVisualization();
     });
     
-    // Initial values
+   
     currentProteinGroup = groupSelect.value;
-    setTimeout(() => {
-        currentProteinId = proteinSelect.value;
-    }, 300);
     
+    // Esperamos a que los selectores estén llenos
+    setTimeout(async () => {
+        currentProteinId = proteinSelect.value;
+        
+        // Inicializar grafo automáticamente si tenemos una proteína seleccionada
+        if (currentProteinGroup && currentProteinId) {
+            await updateGraphVisualization();
+        }
+    }, 800);
+    
+    // FUncion para actualizar la visualización del grafo
     async function updateGraphVisualization() {
-        if (!currentProteinId) return;
-        
-        const longValue = longInput.value;
-        const distValue = distInput.value;
-        const granularity = granularityToggle.checked ? 'atom' : 'CA'; // NEW
-        
+        if (!currentProteinGroup || !currentProteinId) {
+            clearAnalysisPanel();
+            return;
+        }
+
         try {
+            const longValue = longInput.value;
+            const distValue = distInput.value;
+            const granularity = granularityToggle.checked ? 'atom' : 'CA';
+            
             showLoading(graphPlotElement);
             
-            // Request graph data from server with granularity parameter
             const response = await fetch(`/get_protein_graph/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`);
             
             if (!response.ok) {
-                throw new Error(`HTTP error: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
             
-            // Update graph visualization
-            Plotly.react(graphPlotElement, data.plotData, data.layout);
+            if (data.error) {
+                clearAnalysisPanel();
+                return;
+            }
 
+      
+            Plotly.react(graphPlotElement, data.plotData, data.layout);
             
-            // Update properties table
-            updatePropertiesTable(data.properties);
             
+            updateBasicStructuralInfo(data.properties, granularity);
+            
+            
+            analyzeMolstarStructure();
+
         } catch (error) {
-            console.error("Error fetching graph data:", error);
+            clearAnalysisPanel();
             Plotly.react(graphPlotElement, [], {
                 title: 'Error al cargar el grafo: ' + error.message,
                 height: 500
             });
-            clearPropertiesTable();
         } finally {
             hideLoading(graphPlotElement);
         }
     }
     
-    function updatePropertiesTable(properties) {
-        // Clear existing headers and values
-        propertiesHeader.innerHTML = '';
-        propertiesValues.innerHTML = '';
+    function updateBasicStructuralInfo(properties, granularity) {
+        if (!properties) return;
         
-        // Add new headers and values
-        Object.keys(properties).forEach(key => {
-            const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            
-            const th = document.createElement('th');
-            th.textContent = formattedKey;
-            propertiesHeader.appendChild(th);
-            
-            const td = document.createElement('td');
-            
-            // Format number values
-            let value = properties[key];
-            if (typeof value === 'number') {
-                if (value < 0.01 && value !== 0) {
-                    value = value.toExponential(2);
-                } else {
-                    value = value.toFixed(2);
-                }
-            } else if (value === null) {
-                value = 'N/A';
+        // Actualizar nombre de la toxina según el grupo/id actual
+        const toxinName = `${currentProteinGroup.toUpperCase()}_${currentProteinId}`;
+        updateElementText('toxin-name', toxinName);
+        
+        // Actualizar datos básicos del grafo
+        updateElementText('num-nodes', properties.num_nodes || '-');
+        updateElementText('num-edges', properties.num_edges || '-');
+        
+
+        
+        // Densidad del grafo
+        updateElementText('graph-density', (properties.density || 0).toFixed(4));
+        
+        // Coeficiente de agrupamiento
+        updateElementText('avg-clustering', (properties.avg_clustering || 0).toFixed(4));
+        
+        // Mostrar tipo de grafo (átomo o CA)
+        const granularityText = granularity === 'atom' ? 'Nivel atómico' : 'Nivel de residuos (CA)';
+        
+
+        const infoElement = document.getElementById('graph-info');
+        if (infoElement) {
+            infoElement.textContent = `Grafo visualizado en: ${granularityText}`;
+        }
+    }
+
+
+    async function analyzeMolstarStructure() {
+        try {
+            if (!window.molstarAnalyzer) {
+                return;
             }
             
-            td.textContent = value;
-            propertiesValues.appendChild(td);
-        });
+            const analysis = await window.molstarAnalyzer.analyzeCurrentStructure();
+            
+            if (analysis) {
+                // Actualizar datos complementarios y métricas avanzadas
+                updateAdvancedMetrics(analysis);
+                
+                // Actualizar puentes disulfuro si no se actualizaron antes
+                const disulfideBridgesElement = document.getElementById('disulfide-bridges');
+                if (disulfideBridgesElement && disulfideBridgesElement.textContent === '-') {
+                    updateElementText('disulfide-bridges', analysis.graph_properties?.disulfide_bridges || '0');
+                }
+            }
+        } catch (error) {
+            // No mostramos el error para mantener la interfaz limpia
+        }
     }
+
     
-    function clearPropertiesTable() {
-        propertiesHeader.innerHTML = '<th>No hay datos disponibles</th>';
-        propertiesValues.innerHTML = '<td>-</td>';
+    function updateAdvancedMetrics(analysis) {
+        // Métricas de centralidad 
+        const metrics = analysis.summary_statistics;
+        if (metrics) {
+            // Degree Centrality
+            updateElementText('degree-min', metrics.degree_centrality?.min?.toFixed(4) || '-');
+            updateElementText('degree-max', metrics.degree_centrality?.max?.toFixed(4) || '-');
+            updateElementText('degree-mean', metrics.degree_centrality?.mean?.toFixed(4) || '-');
+            updateElementText('degree-top', metrics.degree_centrality?.top_residues || '-');
+
+            // Betweenness Centrality
+            updateElementText('between-min', metrics.betweenness_centrality?.min?.toFixed(4) || '-');
+            updateElementText('between-max', metrics.betweenness_centrality?.max?.toFixed(4) || '-');
+            updateElementText('between-mean', metrics.betweenness_centrality?.mean?.toFixed(4) || '-');
+            updateElementText('between-top', metrics.betweenness_centrality?.top_residues || '-');
+
+            // Closeness Centrality
+            updateElementText('closeness-min', metrics.closeness_centrality?.min?.toFixed(4) || '-');
+            updateElementText('closeness-max', metrics.closeness_centrality?.max?.toFixed(4) || '-');
+            updateElementText('closeness-mean', metrics.closeness_centrality?.mean?.toFixed(4) || '-');
+            updateElementText('closeness-top', metrics.closeness_centrality?.top_residues || '-');
+
+            // Clustering Coefficient
+            updateElementText('clustering-min', metrics.clustering_coefficient?.min?.toFixed(4) || '-');
+            updateElementText('clustering-max', metrics.clustering_coefficient?.max?.toFixed(4) || '-');
+            updateElementText('clustering-mean', metrics.clustering_coefficient?.mean?.toFixed(4) || '-');
+            updateElementText('clustering-top', metrics.clustering_coefficient?.top_residues || '-');
+        }
+
+        // Top 5 residuos
+        const top5 = analysis.top_5_residues;
+        if (top5) {
+            populateTop5List('top-degree-list', top5.degree_centrality);
+            populateTop5List('top-between-list', top5.betweenness_centrality);
+            populateTop5List('top-closeness-list', top5.closeness_centrality);
+            populateTop5List('top-clustering-list', top5.clustering_coefficient);
+        }
+
+        // Residuos clave
+        const keyResidues = analysis.key_residues;
+        if (keyResidues) {
+            updateElementText('key-degree', keyResidues.degree_centrality || '-');
+            updateElementText('key-between', keyResidues.betweenness_centrality || '-');
+            updateElementText('key-closeness', keyResidues.closeness_centrality || '-');
+            updateElementText('key-clustering', keyResidues.clustering_coefficient || '-');
+        }
     }
-    
+
     function showLoading(element) {
         Plotly.react(element, [], {
             title: 'Cargando grafo...',
@@ -168,6 +250,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     function hideLoading(element) {
-        // Nothing to do here, the graph update will overwrite the loading state
+        
     }
+
+    // Exponer funciones globalmente
+    window.updateGraphVisualization = updateGraphVisualization;
+    window.analyzeMolstarStructure = analyzeMolstarStructure;
+    window.currentProteinGroup = () => currentProteinGroup;
+    window.currentProteinId = () => currentProteinId;
+    window.setCurrentProtein = (group, id) => {
+        currentProteinGroup = group;
+        currentProteinId = id;
+    };
 });
+
+// Función para ser llamada desde la gestión de pestañas
+window.triggerGraphUpdate = function(group, id) {
+    if (group && id && window.setCurrentProtein) {
+        window.setCurrentProtein(group, id);
+        window.updateGraphVisualization();
+    }
+};
+
+// REEMPLAZAR la función updateAnalysisPanel con esta versión simplificada
+function updateAnalysisPanel(analysisData) {
+    if (!analysisData) {
+        return;
+    }
+    
+ 
+    
+ 
+    const nodesElement = document.getElementById('num-nodes');
+    if (nodesElement && nodesElement.textContent === '-') {
+        updateElementText('toxin-name', analysisData.toxin || '-');
+        updateElementText('num-nodes', analysisData.graph_properties?.nodes || '-');
+        updateElementText('num-edges', analysisData.graph_properties?.edges || '-');
+        updateElementText('disulfide-bridges', analysisData.graph_properties?.disulfide_bridges || '-');
+        updateElementText('graph-density', (analysisData.graph_properties?.density || 0).toFixed(4));
+        updateElementText('avg-clustering', (analysisData.graph_properties?.clustering_coefficient_avg || 0).toFixed(4));
+    }
+}
+
+function updateElementText(elementId, text) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = text;
+    }
+}
+
+

@@ -205,3 +205,221 @@ input:not(:checked) + .slider .slider-text:before {
     content: attr(data-off);
 }
 
+/* Análisis Panel Styles */
+.analysis-panel {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.analysis-panel h4 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.analysis-section {
+    margin-bottom: 25px;
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+}
+
+.analysis-section h5 {
+    color: #34495e;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+/* Basic Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.info-item .label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.info-item .value {
+    font-weight: 700;
+    color: #007bff;
+}
+
+/* Centrality Summary Cards */
+.centrality-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.metric-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metric-card h6 {
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 5px;
+}
+
+.metric-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.metric-range {
+    font-size: 0.85em;
+    color: #6c757d;
+}
+
+.metric-mean {
+    font-size: 0.9em;
+    color: #495057;
+    font-weight: 600;
+}
+
+.top-residues {
+    font-size: 0.9em;
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Top Residues Grid */
+.top-residues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.top-metric-column {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.top-metric-column h6 {
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.residue-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.residue-list li {
+    padding: 4px 8px;
+    margin-bottom: 3px;
+    background: #f8f9fa;
+    border-radius: 3px;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.residue-list li:nth-child(1) { background: #fff3cd; border-left: 3px solid #ffc107; }
+.residue-list li:nth-child(2) { background: #f8d7da; border-left: 3px solid #dc3545; }
+.residue-list li:nth-child(3) { background: #d1ecf1; border-left: 3px solid #17a2b8; }
+
+/* Key Residues Summary */
+.key-residues {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 10px;
+}
+
+.key-residue-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.key-residue-item .metric-name {
+    font-size: 0.9em;
+}
+
+.key-residue-item .residue-value {
+    font-size: 0.95em;
+    font-weight: 700;
+}
+
+/* Motifs Grid */
+.motifs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+}
+
+.motif-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f1f8ff;
+    border-radius: 4px;
+    border-left: 4px solid #0066cc;
+}
+
+.motif-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.motif-value {
+    font-weight: 700;
+    color: #0066cc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .centrality-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .top-residues-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .key-residues {
+        grid-template-columns: 1fr;
+    }
+}
+
