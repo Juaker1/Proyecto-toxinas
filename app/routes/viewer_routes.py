@@ -4,6 +4,7 @@ import sqlite3
 import tempfile
 import os
 import sys
+import numpy as np
 
 from graphein.protein.config import ProteinGraphConfig
 from graphein.protein.graphs import construct_graph
@@ -94,12 +95,59 @@ def compute_graph_properties(G):
     degrees = list(dict(G.degree()).values())
     props["avg_degree"] = sum(degrees) / len(degrees) if degrees else 0.0
     
-
     props["avg_clustering"] = nx.average_clustering(G)
     
     # Componentes conectados
     comps = list(nx.connected_components(G)) if not G.is_directed() else list(nx.weakly_connected_components(G))
     props["num_components"] = len(comps)
+    
+    # Calcular métricas de centralidad
+    props["centrality"] = {
+        "degree": nx.degree_centrality(G),
+        "betweenness": nx.betweenness_centrality(G),
+        "closeness": nx.closeness_centrality(G),
+        "clustering": nx.clustering(G)
+    }
+    
+    # Calcular estadísticas de centralidad (min, max, mean)
+    for metric_name, metric_values in props["centrality"].items():
+        values = list(metric_values.values())
+        if values:
+            props[f"{metric_name}_min"] = min(values)
+            props[f"{metric_name}_max"] = max(values)
+            props[f"{metric_name}_mean"] = sum(values) / len(values)
+            
+            # Encontrar residuos con valor máximo (top residues)
+            max_value = max(values)
+            top_residues = [node for node, value in metric_values.items() 
+                           if abs(value - max_value) < 0.0001]
+            props[f"{metric_name}_top"] = {
+                "residues": top_residues,
+                "value": max_value
+            }
+            
+            # Top 5 residuos para cada métrica - CORREGIR AQUÍ
+            top5 = sorted(metric_values.items(), key=lambda x: x[1], reverse=True)[:5]
+            formatted_top5 = []
+            for node_id, value in top5:
+                # Procesar el node_id que viene como "A:LYS:14:CE"
+                parts = str(node_id).split(':')
+                if len(parts) >= 3:
+                    formatted_top5.append({
+                        "residue": parts[2],        # número del residuo
+                        "value": value,
+                        "residueName": parts[1],    # nombre del aminoácido
+                        "chain": parts[0]           # cadena
+                    })
+                else:
+                    formatted_top5.append({
+                        "residue": str(node_id),
+                        "value": value,
+                        "residueName": "UNK",
+                        "chain": "A"
+                    })
+            
+            props[f"{metric_name}_top5"] = formatted_top5
     
     return props
 
@@ -167,8 +215,8 @@ def get_protein_graph(source, pid):
             G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
             
            
+            # Calcular las propiedades del grafo
             props = compute_graph_properties(G)
-            
             
             fig = plotly_protein_structure_graph(
                 G,
@@ -206,12 +254,49 @@ def get_protein_graph(source, pid):
             fig_json = fig.to_plotly_json()
 
             
+            # Crear payload
             payload = {
                 "plotData": fig_json["data"],
                 "layout": fig_json["layout"],
                 "properties": props,
-                "pdb_data": pdb_data.decode('utf-8') if isinstance(pdb_data, bytes) else str(pdb_data)  # Enviamos datos PDB para análisis en frontend
+                "pdb_data": pdb_data.decode('utf-8') if isinstance(pdb_data, bytes) else str(pdb_data),
+                # Añadir métricas en un formato amigable para el frontend
+                "summary_statistics": {
+                    "degree_centrality": {
+                        "min": props.get("degree_min", 0),
+                        "max": props.get("degree_max", 0),
+                        "mean": props.get("degree_mean", 0),
+                        "top_residues": f"{', '.join(map(str, props.get('degree_top', {}).get('residues', [])))} (valor: {props.get('degree_top', {}).get('value', 0):.4f})"
+                    },
+                    "betweenness_centrality": {
+                        "min": props.get("betweenness_min", 0),
+                        "max": props.get("betweenness_max", 0),
+                        "mean": props.get("betweenness_mean", 0),
+                        "top_residues": f"{', '.join(map(str, props.get('betweenness_top', {}).get('residues', [])))} (valor: {props.get('betweenness_top', {}).get('value', 0):.4f})"
+                    },
+                    "closeness_centrality": {
+                        "min": props.get("closeness_min", 0),
+                        "max": props.get("closeness_max", 0),
+                        "mean": props.get("closeness_mean", 0),
+                        "top_residues": f"{', '.join(map(str, props.get('closeness_top', {}).get('residues', [])))} (valor: {props.get('closeness_top', {}).get('value', 0):.4f})"
+                    },
+                    "clustering_coefficient": {
+                        "min": props.get("clustering_min", 0),
+                        "max": props.get("clustering_max", 0),
+                        "mean": props.get("clustering_mean", 0),
+                        "top_residues": f"{', '.join(map(str, props.get('clustering_top', {}).get('residues', [])))} (valor: {props.get('clustering_top', {}).get('value', 0):.4f})"
+                    }
+                },
+                "top_5_residues": {
+                    "degree_centrality": props.get("degree_top5", []),
+                    "betweenness_centrality": props.get("betweenness_top5", []),
+                    "closeness_centrality": props.get("closeness_top5", []),
+                    "clustering_coefficient": props.get("clustering_top5", [])
+                }
             }
+            
+            # Convertir arrays NumPy a listas
+            payload = convert_numpy_to_lists(payload)
             
             print(f"📤 Enviando payload para análisis en frontend")
             return jsonify(payload)
@@ -228,4 +313,15 @@ def get_protein_graph(source, pid):
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
+def convert_numpy_to_lists(obj):
+    """Convierte recursivamente arrays de NumPy a listas Python para serialización JSON."""
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {k: convert_numpy_to_lists(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_to_lists(i) for i in obj]
+    else:
+        return obj
 

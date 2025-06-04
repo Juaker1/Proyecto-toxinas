@@ -3,19 +3,16 @@ class MolstarProteinAnalyzer {
         this.plugin = plugin;
         this.currentStructure = null;
         this.currentData = null;
+        this.lastStructureData = null; // Guardar datos de la última estructura
     }
     // Metodo principal para analizar la estructura actual
     async analyzeCurrentStructure() {
         try {
-            if (!this.plugin || !this.plugin.managers) {
-                throw new Error("Plugin Mol* no inicializado correctamente");
-            }
-            // Extraemos los datos estructurales
             const structureData = await this.extractStructureData();
-            const analysis = await this.performAnalysis(structureData);
-            
-            return analysis;
+            this.lastStructureData = structureData; // Guardar para uso posterior
+            return await this.performAnalysis(structureData);
         } catch (error) {
+            console.error("Error analyzing structure:", error);
             return null;
         }
     }
@@ -371,15 +368,18 @@ class MolstarProteinAnalyzer {
     /**
      * Convierte array a objeto con IDs de residuo
      */
-    arrayToObject(array, residues) {
-        const obj = {};
-        array.forEach((value, index) => {
-            if (residues[index] && residues[index].id) {
-                obj[residues[index].id] = value;
-            }
-        });
-        return obj;
-    }
+   arrayToObject(array, residues) {
+    const obj = {};
+    array.forEach((value, index) => {
+        const r = residues[index];
+        if (r && r.id && r.name && r.chainId) {
+            const key = `${r.chainId}:${r.name}:${r.id}:CA`;
+            obj[key] = value;
+        }
+    });
+    return obj;
+}
+
 
     /**
      * Obtiene estadísticas de una métrica
@@ -407,14 +407,43 @@ class MolstarProteinAnalyzer {
         };
     }
 
-    /**
-     * Obtiene top 5 residuos para una métrica
-     */
+
+
+
+
     getTop5(metric) {
-        return Object.entries(metric)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([residue, value]) => ({ residue: parseInt(residue), value }));
+        const entries = Object.entries(metric);
+        if (entries.length === 0) return [];
+        
+        // Ordenar por valor de métrica (descendente)
+        entries.sort((a, b) => b[1] - a[1]);
+        
+        // Tomar los 5 primeros y formatear correctamente
+        return entries.slice(0, 5).map(([residueKey, value]) => {
+            const parts = residueKey.split(':');
+            if (parts.length >= 3) {
+                return {
+                    residue: parts[2],              // ID del residuo (número)
+                    value,
+                    residueName: parts[1],          // Nombre del aminoácido (VAL, LYS, etc.)
+                    chain: parts[0]                 // Cadena (A, B, etc.)
+                };
+            } else {
+                return {
+                    residue: residueKey,
+                    value,
+                    residueName: 'UNK',
+                    
+                };
+            }
+        });
+    }
+
+    /**
+     * Encuentra un residuo por su ID
+     */
+    findResidueById(id) {
+        return this.lastStructureData?.residues?.find(r => r.id === id);
     }
 
     /**

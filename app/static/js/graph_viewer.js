@@ -120,12 +120,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-      
             Plotly.react(graphPlotElement, data.plotData, data.layout);
-            
             
             updateBasicStructuralInfo(data.properties, granularity);
             
+            
+            updateAdvancedMetrics(data); 
             
             analyzeMolstarStructure();
 
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function updateBasicStructuralInfo(properties, granularity) {
         if (!properties) return;
         
-        // Actualizar nombre de la toxina según el grupo/id actual
+       
         const toxinName = `${currentProteinGroup.toUpperCase()}_${currentProteinId}`;
         updateElementText('toxin-name', toxinName);
         
@@ -231,15 +231,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             populateTop5List('top-closeness-list', top5.closeness_centrality);
             populateTop5List('top-clustering-list', top5.clustering_coefficient);
         }
-
-        // Residuos clave
-        const keyResidues = analysis.key_residues;
-        if (keyResidues) {
-            updateElementText('key-degree', keyResidues.degree_centrality || '-');
-            updateElementText('key-between', keyResidues.betweenness_centrality || '-');
-            updateElementText('key-closeness', keyResidues.closeness_centrality || '-');
-            updateElementText('key-clustering', keyResidues.clustering_coefficient || '-');
-        }
     }
 
     function showLoading(element) {
@@ -297,6 +288,28 @@ function updateElementText(elementId, text) {
     if (element) {
         element.textContent = text;
     }
+}
+
+
+function populateTop5List(listId, items) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    
+    list.innerHTML = '';
+    
+    if (!items || items.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No hay datos disponibles';
+        list.appendChild(li);
+        return;
+    }
+    
+    items.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.residueName}${item.residue} : ${item.value.toFixed(4)}`;
+
+        list.appendChild(li);
+    });
 }
 
 

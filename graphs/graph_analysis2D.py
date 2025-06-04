@@ -840,7 +840,7 @@ class Nav17ToxinGraphAnalyzer:
             return None
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     analyzer = Nav17ToxinGraphAnalyzer(pdb_folder="pdbs/")
     
     # Selecciona una toxina para analizar (debe ser un archivo PDB en la carpeta pdbs/)
@@ -879,4 +879,4 @@ print("\nRecuerda: Puedes analizar cualquier toxina cambiando el valor de toxin_
         
     # Visualizar métricas de centralidad en formato detallado
 if result:
-    analyzer.visualize_centrality_metrics(result)
+    analyzer.visualize_centrality_metrics(result)'''
