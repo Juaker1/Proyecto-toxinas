@@ -586,7 +586,8 @@ class MolstarProteinAnalyzer {
             
         } catch (error) {
             console.error("Error visualizing dipole:", error);
-            throw error;
+            // Try simple dipole points instead of Plotly
+            await this.createSimpleDipolePoints(dipoleData);
         }
     }
 
@@ -693,11 +694,11 @@ class MolstarProteinAnalyzer {
         const infoElement = document.getElementById('dipole-coordinates');
         if (infoElement) {
             infoElement.innerHTML = `
-                <strong>Dipole Vector Details:</strong><br>
-                Start (COM): [${dipoleData.center_of_mass.map(x => x.toFixed(2)).join(', ')}]<br>
-                End Point: [${dipoleData.end_point.map(x => x.toFixed(2)).join(', ')}]<br>
-                Direction: [${dipoleData.normalized.map(x => x.toFixed(3)).join(', ')}]<br>
-                Length: ${(dipoleData.magnitude * 20).toFixed(2)} Å (scaled for visualization)
+                <strong>Detalles del vector del dipolo:</strong><br>
+                Inicio (COM): [${dipoleData.center_of_mass.map(x => x.toFixed(2)).join(', ')}]<br>
+                Punto Final: [${dipoleData.end_point.map(x => x.toFixed(2)).join(', ')}]<br>
+                Dirección: [${dipoleData.normalized.map(x => x.toFixed(3)).join(', ')}]<br>
+                Longitud: ${(dipoleData.magnitude * 20).toFixed(2)} Å (scaled for visualization)
             `;
         }
     }
@@ -716,13 +717,10 @@ class MolstarProteinAnalyzer {
                         infoElement.innerHTML = '';
                     }
                 } else {
-                    // Remove actual 3D shape or switch back from Plotly
-                    const plotlyViewer = document.getElementById('plotly-dipole-viewer');
+                    // Check which viewer is active and handle accordingly
                     const py3dmolViewer = document.getElementById('py3dmol-dipole-viewer');
                     
-                    if (plotlyViewer && plotlyViewer.style.display !== 'none') {
-                        this.switchBackToMolstar();
-                    } else if (py3dmolViewer && py3dmolViewer.style.display !== 'none') {
+                    if (py3dmolViewer && py3dmolViewer.style.display !== 'none') {
                         this.switchBackToMolstar();
                     } else {
                         await this.plugin.managers.structure.hierarchy.remove([this.dipoleShape.ref]);
@@ -734,193 +732,9 @@ class MolstarProteinAnalyzer {
                 console.error("Error removing dipole vector:", error);
                 // Reset reference anyway and switch back
                 this.dipoleShape = null;
+                this.py3dmolViewer = null;
                 this.switchBackToMolstar();
             }
-        }
-    }
-
-    /**
-     * Alternative: Show dipole in Plotly 3D visualization
-     */
-    async showDipoleInPlotly(dipoleData) {
-        try {
-            console.log("Creating Plotly visualization with dipole vector");
-            
-            // Get structure data
-            const pdbText = await this.readFileAsText(this.loadedFiles.pdb);
-            const structureData = this.parsePDBForPlotly(pdbText);
-            
-            // Create Plotly 3D visualization
-            const traces = [
-                // Protein atoms
-                {
-                    x: structureData.x,
-                    y: structureData.y,
-                    z: structureData.z,
-                    mode: 'markers',
-                    marker: {
-                        size: 4,
-                        color: structureData.colors,
-                        opacity: 0.8
-                    },
-                    type: 'scatter3d',
-                    name: 'Protein',
-                    hovertemplate: 'Atom: %{text}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>Z: %{z:.2f}<extra></extra>',
-                    text: structureData.elements
-                },
-                // Dipole vector as arrow
-                {
-                    x: [dipoleData.center_of_mass[0], dipoleData.end_point[0]],
-                    y: [dipoleData.center_of_mass[1], dipoleData.end_point[1]],
-                    z: [dipoleData.center_of_mass[2], dipoleData.end_point[2]],
-                    mode: 'lines+markers',
-                    line: {
-                        color: 'red',
-                        width: 8
-                    },
-                    marker: {
-                        size: [8, 15],
-                        color: ['red', 'darkred'],
-                        symbol: ['circle', 'diamond']
-                    },
-                    type: 'scatter3d',
-                    name: `Dipole Vector (${dipoleData.magnitude.toFixed(2)} D)`,
-                    hovertemplate: 'Dipole Vector<br>Magnitude: ' + dipoleData.magnitude.toFixed(3) + ' D<extra></extra>'
-                }
-            ];
-            
-            const layout = {
-                title: {
-                    text: 'Protein Structure with Dipole Vector',
-                    font: { size: 18 }
-                },
-                scene: {
-                    xaxis: { 
-                        title: 'X (Å)',
-                        showgrid: true,
-                        zeroline: true
-                    },
-                    yaxis: { 
-                        title: 'Y (Å)',
-                        showgrid: true,
-                        zeroline: true
-                    },
-                    zaxis: { 
-                        title: 'Z (Å)',
-                        showgrid: true,
-                        zeroline: true
-                    },
-                    aspectmode: 'cube',
-                    bgcolor: 'white'
-                },
-                margin: { l: 0, r: 0, b: 0, t: 40 },
-                showlegend: true,
-                legend: {
-                    x: 0.02,
-                    y: 0.98,
-                    bgcolor: 'rgba(255,255,255,0.8)',
-                    bordercolor: 'black',
-                    borderwidth: 1
-                }
-            };
-            
-            // Get or create plot div
-            const plotDiv = this.getOrCreatePlotlyDiv();
-            
-            // Create the plot
-            Plotly.newPlot(plotDiv, traces, layout, {
-                responsive: true,
-                displayModeBar: true
-            });
-            
-            // Hide Mol* and show Plotly
-            this.switchToPlotlyView();
-            
-            console.log("Plotly visualization created successfully");
-            
-        } catch (error) {
-            console.error("Error creating Plotly visualization:", error);
-            throw error;
-        }
-    }
-
-    /**
-     * Create Plotly container if it doesn't exist
-     */
-    getOrCreatePlotlyDiv() {
-        let plotDiv = document.getElementById('plotly-dipole-viewer');
-        if (!plotDiv) {
-            // Find the structure view container
-            const structureView = document.getElementById('structure-view');
-            if (structureView) {
-                plotDiv = document.createElement('div');
-                plotDiv.id = 'plotly-dipole-viewer';
-                plotDiv.style.cssText = 'width: 100%; height: 600px; display: none; border: 1px solid #ccc; background: white;';
-                structureView.appendChild(plotDiv);
-            } else {
-                // Fallback: create in visualization container
-                const container = document.querySelector('.visualization-container');
-                plotDiv = document.createElement('div');
-                plotDiv.id = 'plotly-dipole-viewer';
-                plotDiv.style.cssText = 'width: 100%; height: 600px; display: none; border: 1px solid #ccc; background: white;';
-                container.appendChild(plotDiv);
-            }
-        }
-        return plotDiv;
-    }
-
-    /**
-     * Switch from Mol* to Plotly view
-     */
-    switchToPlotlyView() {
-        const molstarViewer = document.getElementById('viewer');
-        const plotlyViewer = document.getElementById('plotly-dipole-viewer');
-        
-        if (molstarViewer) {
-            molstarViewer.style.display = 'none';
-        }
-        
-        if (plotlyViewer) {
-            plotlyViewer.style.display = 'block';
-        }
-        
-        // Update button to show "Back to Mol*" option
-        const toggleBtn = document.getElementById('toggle-dipole');
-        if (toggleBtn) {
-            toggleBtn.innerHTML = '<i class="fas fa-undo"></i> Volver a Mol*';
-            toggleBtn.onclick = () => this.switchBackToMolstar();
-        }
-    }
-
-    /**
-     * Switch back to Mol* viewer
-     */
-    switchBackToMolstar() {
-        const molstarViewer = document.getElementById('viewer');
-        const plotlyViewer = document.getElementById('plotly-dipole-viewer');
-        
-        if (molstarViewer) {
-            molstarViewer.style.display = 'block';
-        }
-        
-        if (plotlyViewer) {
-            plotlyViewer.style.display = 'none';
-        }
-        
-        // Reset dipole shape reference
-        this.dipoleShape = null;
-        
-        // Hide dipole info
-        const dipoleInfo = document.getElementById('dipole-info');
-        if (dipoleInfo) {
-            dipoleInfo.style.display = 'none';
-        }
-        
-        // Reset button
-        const toggleBtn = document.getElementById('toggle-dipole');
-        if (toggleBtn) {
-            toggleBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Mostrar Dipolo';
-            toggleBtn.onclick = null; // Will be reassigned by the main event handler
         }
     }
 
@@ -1104,42 +918,6 @@ class MolstarProteinAnalyzer {
             toggleBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Mostrar Dipolo';
             toggleBtn.onclick = null; // Will be reassigned by the main event handler
         }
-    }
-
-    /**
-     * Parse PDB for Plotly visualization - Enhanced version
-     */
-    parsePDBForPlotly(pdbText) {
-        const lines = pdbText.split('\n');
-        const atoms = { x: [], y: [], z: [], colors: [], elements: [] };
-        
-        const colorMap = {
-            'C': '#909090', 'N': '#3050F8', 'O': '#FF0D0D', 
-            'S': '#FFFF30', 'P': '#FF8000', 'H': '#FFFFFF',
-            'CA': '#90EE90', 'FE': '#FFA500', 'ZN': '#808080'
-        };
-        
-        for (const line of lines) {
-            if (line.startsWith('ATOM') || line.startsWith('HETATM')) {
-                const x = parseFloat(line.substring(30, 38));
-                const y = parseFloat(line.substring(38, 46));
-                const z = parseFloat(line.substring(46, 54));
-                const element = line.substring(76, 78).trim() || line.substring(13, 14);
-                const atomName = line.substring(12, 16).trim();
-                const resName = line.substring(17, 20).trim();
-                const resNum = line.substring(22, 26).trim();
-                
-                if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
-                    atoms.x.push(x);
-                    atoms.y.push(y);
-                    atoms.z.push(z);
-                    atoms.colors.push(colorMap[element] || '#909090');
-                    atoms.elements.push(`${resName}${resNum}-${atomName}`);
-                }
-            }
-        }
-        
-        return atoms;
     }
 
     /**

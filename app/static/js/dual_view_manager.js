@@ -19,10 +19,6 @@ class DualViewManager {
             this.switchStructureView('py3dmol');
         });
         
-        document.getElementById('switch-to-plotly').addEventListener('click', () => {
-            this.switchStructureView('plotly');
-        });
-
         // Sync structure button
         document.getElementById('sync-structure-btn').addEventListener('click', () => {
             this.syncWithDatabaseProtein();
@@ -69,9 +65,6 @@ class DualViewManager {
                 break;
             case 'py3dmol':
                 targetViewer = document.getElementById('py3dmol-dipole-viewer');
-                break;
-            case 'plotly':
-                targetViewer = document.getElementById('plotly-dipole-viewer');
                 break;
         }
 
@@ -193,8 +186,6 @@ class DualViewManager {
             // Try py3Dmol first (best for molecular visualization)
             if (this.currentStructureView === 'py3dmol') {
                 await window.molstarAnalyzer.showDipoleInPy3Dmol(dipoleData);
-            } else if (this.currentStructureView === 'plotly') {
-                await window.molstarAnalyzer.showDipoleInPlotly(dipoleData);
             } else {
                 // Mol* view - try to visualize dipole
                 await window.molstarAnalyzer.visualizeDipoleVector(dipoleData);
