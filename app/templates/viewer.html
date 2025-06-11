@@ -291,10 +291,35 @@
                     </div>
                 </div>
             </div>
+
+            
+            <div class="wt-comparison-section">
+                <h6>Comparación de Toxinas Wild-Type (WT)</h6>
+                <p class="comparison-description">
+                    Compara la toxina WT representativa de cada familia contra la referencia estructural 
+                    <code>hwt4_Hh2a_WT.pdb</code> para identificar diferencias topológicas.
+                </p>
+                
+                <select id="wt-family-selector" class="family-selector">
+                    <option value="">Seleccionar familia WT...</option>
+                    <option value="μ-TRTX-Hh2a">μ-TRTX-Hh2a (Familia Mu-TRTX 2a) - WT</option>
+                    <option value="μ-TRTX-Hhn2b">μ-TRTX-Hhn2b (Familia Mu-TRTX 2b) - WT</option>
+                    <option value="β-TRTX-Cd1a">β-TRTX-Cd1a (Familia Beta-TRTX) - WT</option>
+                    <option value="ω-TRTX-Gr2a">ω-TRTX-Gr2a (Familia Omega-TRTX) - WT</option>
+                </select>
+                
+                <button id="export-wt-comparison-btn" class="export-button wt-comparison-btn" disabled>
+                    <span class="button-text">🔬 Comparar WT vs Referencia + Exportar CSV</span>
+                    <span class="loading-text" style="display: none;">⏳ Analizando diferencias estructurales...</span>
+                </button>
+                <p class="export-info">
+                    Genera análisis comparativo entre la toxina WT seleccionada y la referencia hwt4_Hh2a_WT.pdb
+                </p>
+            </div>
         </div>
     </div>
 
-    <!-- Datos JSON generados desde Flask -->
+    
     <script id="protein-data" type="application/json">
         {
             "toxinas": {{ toxinas | tojson | safe }},
@@ -307,6 +332,7 @@
     <script src="{{ url_for('static', filename='js/molstar_analyzer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/graph_viewer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/export_feedback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dual_view_manager.js') }}"></script>
 </body>
 </html>

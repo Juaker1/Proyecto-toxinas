@@ -225,10 +225,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     function hideLoading(element) {
-        // Función vacía por ahora
     }
 
-    // Configurar botón de exportación 
     function setupExportButton() {
         const exportBtn = document.getElementById('export-csv-btn');
         const familySelector = document.getElementById('family-selector');
@@ -239,13 +237,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const buttonText = exportBtn.querySelector('.button-text');
         const loadingText = exportBtn.querySelector('.loading-text');
         
-        // Exportación individual (código actualizado)
+        // EXPORTACIÓN INDIVIDUAL con feedback visual
         exportBtn.addEventListener('click', async () => {
             if (!currentProteinGroup || !currentProteinId) {
-                alert('Por favor seleccione una toxina primero');
+                exportFeedback.showWarning('Por favor seleccione una toxina primero');
                 return;
             }
             
+            // Deshabilitar botón y mostrar estado de carga
             exportBtn.disabled = true;
             buttonText.style.display = 'none';
             loadingText.style.display = 'inline';
@@ -255,9 +254,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const distValue = distInput.value;
                 const granularity = granularityToggle.checked ? 'atom' : 'CA';
                 
+                // Obtener nombre de la toxina
                 const nameResponse = await fetch(`/get_toxin_name/${currentProteinGroup}/${currentProteinId}`);
                 const nameData = await nameResponse.json();
                 const toxinName = nameData.toxin_name || `${currentProteinGroup}_${currentProteinId}`;
+                
+                // Mostrar modal de exportación
+                exportFeedback.startIndividualExport(toxinName);
                 
                 const cleanName = toxinName.replace(/[^\w\-_]/g, '');
                 
@@ -270,6 +273,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 const url = `/export_residues_csv/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
                 
+                // Simular delay para mostrar el progreso
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = filename;
@@ -277,28 +283,33 @@ document.addEventListener("DOMContentLoaded", async () => {
                 link.click();
                 document.body.removeChild(link);
                 
+                // Mostrar toast de éxito después de un delay
+                setTimeout(() => {
+                    exportFeedback.completeExport('individual', { toxinName });
+                }, 1000);
+                
             } catch (error) {
-                alert('Error al generar el archivo CSV: ' + error.message);
+                console.error('❌ Error en exportación individual:', error);
+                exportFeedback.showError(error.message, 'en exportación individual');
             } finally {
                 setTimeout(() => {
                     exportBtn.disabled = false;
                     buttonText.style.display = 'inline';
                     loadingText.style.display = 'none';
-                }, 2000);
+                }, 2500);
             }
         });
         
-        // Habilitar/deshabilitar botón de familia basado en selección
+        // EXPORTACIÓN POR FAMILIAS con feedback visual
         if (familySelector && exportFamilyBtn) {
             familySelector.addEventListener('change', () => {
                 exportFamilyBtn.disabled = !familySelector.value;
             });
             
-            // Exportación por familias 
             exportFamilyBtn.addEventListener('click', async () => {
                 const selectedFamily = familySelector.value;
                 if (!selectedFamily) {
-                    alert('Por favor seleccione una familia de toxinas');
+                    exportFeedback.showWarning('Por favor seleccione una familia de toxinas');
                     return;
                 }
                 
@@ -314,13 +325,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
-                    // Mapeo de familias mejorado
+                    // Mostrar modal de exportación de familia
+                    exportFeedback.startFamilyExport(selectedFamily, 'múltiples');
+                    
                     const familyNames = {
-                        'μ-TRTX-H': 'Mu_TRTX_H_terminacion_2a',
-                        'μ-TRTX-C': 'Mu_TRTX_C_terminacion_2b',
+                        'μ-TRTX-Hh2a': 'Mu_TRTX_Hh2a',
+                        'μ-TRTX-Hhn2b': 'Mu_TRTX_Hhn2b',
                         'β-TRTX': 'Beta_TRTX',
-                        'ω-TRTX': 'Omega_TRTX',
-                        'δ-TRTX': 'Delta_TRTX'
+                        'ω-TRTX': 'Omega_TRTX'
                     };
                     
                     const familyName = familyNames[selectedFamily] || selectedFamily.replace(/[^\w]/g, '_');
@@ -328,8 +340,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     
                     const url = `/export_family_csv/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
                     
-                    console.log('🚀 Descargando familia:', selectedFamily);
-                    console.log('📁 URL:', url);
+                    // Simular delay para procesamiento de familia (más tiempo)
+                    await new Promise(resolve => setTimeout(resolve, 2500));
                     
                     const link = document.createElement('a');
                     link.href = url;
@@ -338,20 +350,94 @@ document.addEventListener("DOMContentLoaded", async () => {
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Mostrar mensaje informativo
+                    // Mostrar toast de éxito
                     setTimeout(() => {
-                        alert(`¡Dataset de ${selectedFamily} generado exitosamente!\n\nEl archivo contiene:\n• Métricas topológicas completas\n• Valores IC₅₀ normalizados\n• Subfamilias correctamente diferenciadas\n• Datos ordenados por toxina y posición\n\nPerfecto para análisis estructura-actividad.`);
-                    }, 1000);
+                        exportFeedback.completeExport('family', { 
+                            familyName: selectedFamily,
+                            residueCount: 'múltiples'
+                        });
+                    }, 1200);
                     
                 } catch (error) {
-                    console.error('❌ Error:', error);
-                    alert('Error al generar el dataset familiar: ' + error.message);
+                    console.error('❌ Error en exportación familiar:', error);
+                    exportFeedback.showError(error.message, 'en exportación familiar');
                 } finally {
                     setTimeout(() => {
                         exportFamilyBtn.disabled = familySelector.value === '';
                         familyButtonText.style.display = 'inline';
                         familyLoadingText.style.display = 'none';
-                    }, 4000); // Más tiempo para procesamiento de familias
+                    }, 5000);
+                }
+            });
+        }
+        
+        // COMPARACIÓN WT con feedback visual
+        if (document.getElementById('wt-family-selector') && document.getElementById('export-wt-comparison-btn')) {
+            const wtFamilySelector = document.getElementById('wt-family-selector');
+            const exportWtComparisonBtn = document.getElementById('export-wt-comparison-btn');
+            
+            wtFamilySelector.addEventListener('change', () => {
+                exportWtComparisonBtn.disabled = !wtFamilySelector.value;
+            });
+            
+            exportWtComparisonBtn.addEventListener('click', async () => {
+                const selectedWtFamily = wtFamilySelector.value;
+                if (!selectedWtFamily) {
+                    exportFeedback.showWarning('Por favor seleccione una familia WT para comparar');
+                    return;
+                }
+                
+                const wtButtonText = exportWtComparisonBtn.querySelector('.button-text');
+                const wtLoadingText = exportWtComparisonBtn.querySelector('.loading-text');
+                
+                exportWtComparisonBtn.disabled = true;
+                wtButtonText.style.display = 'none';
+                wtLoadingText.style.display = 'inline';
+                
+                try {
+                    const longValue = longInput.value;
+                    const distValue = distInput.value;
+                    const granularity = granularityToggle.checked ? 'atom' : 'CA';
+                    
+                    // Mostrar modal de comparación WT
+                    exportFeedback.startWTComparison(selectedWtFamily);
+                    
+                    const familyClean = selectedWtFamily
+                        .replace('μ', 'mu')
+                        .replace('β', 'beta')
+                        .replace('ω', 'omega')
+                        .replace('δ', 'delta');
+                    
+                    const filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_${granularity}.csv`;
+                    
+                    const url = `/export_wt_comparison/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    
+                    // Simular delay para comparación WT
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Mostrar toast de éxito específico para WT
+                    setTimeout(() => {
+                        exportFeedback.completeExport('wt-comparison', { 
+                            wtFamily: selectedWtFamily 
+                        });
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('❌ Error en comparación WT:', error);
+                    exportFeedback.showError(error.message, 'en comparación WT');
+                } finally {
+                    setTimeout(() => {
+                        exportWtComparisonBtn.disabled = wtFamilySelector.value === '';
+                        wtButtonText.style.display = 'inline';
+                        wtLoadingText.style.display = 'none';
+                    }, 4500);
                 }
             });
         }

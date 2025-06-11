@@ -326,7 +326,7 @@ def get_toxin_name(source, pid):
         cursor = conn.cursor()
         
         if source == "toxinas":
-            cursor.execute("SELECT name FROM Peptides WHERE peptide_id = ?", (pid,))
+            cursor.execute("SELECT peptide_name FROM Peptides WHERE peptide_id = ?", (pid,))
         elif source == "nav1_7":
             cursor.execute("SELECT peptide_code FROM Nav1_7_InhibitorPeptides WHERE id = ?", (pid,))
         else:
@@ -342,6 +342,9 @@ def get_toxin_name(source, pid):
             return jsonify({"toxin_name": f"{source}_{pid}"})
             
     except Exception as e:
+        print(f"❌ Error en get_toxin_name: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @viewer_bp.route("/export_residues_csv/<string:source>/<int:pid>")
@@ -361,7 +364,7 @@ def export_residues_csv(source, pid):
         ic50_unit = None
         
         if source == "toxinas":
-            cursor.execute("SELECT pdb_file, name FROM Peptides WHERE peptide_id = ?", (pid,))
+            cursor.execute("SELECT pdb_file, peptide_name FROM Peptides WHERE peptide_id = ?", (pid,))
             result = cursor.fetchone()
             if result:
                 pdb_data, toxin_name = result
@@ -679,6 +682,7 @@ def export_family_csv(family_prefix):
                             # Propiedades del residuo individual
                             'Grado_Nodo': G.degree(node)
                         })
+                        
                         node_count += 1
                     
                     print(f"    ✅ Procesados {node_count} residuos de {peptide_code}")
@@ -814,4 +818,273 @@ def calculate_dipole():
             'success': False,
             'error': str(e)
         }), 500
+
+@viewer_bp.route("/export_wt_comparison/<string:wt_family>")
+def export_wt_comparison(wt_family):
+    try:
+        print(f"🧬 INICIANDO comparación WT: {wt_family} vs hwt4_Hh2a_WT")
+        
+        # Obtener parámetros
+        long_threshold = int(request.args.get('long', 5))
+        distance_threshold = float(request.args.get('threshold', 10.0))
+        granularity = request.args.get('granularity', 'CA')
+        
+        print(f"📋 Parámetros: long={long_threshold}, threshold={distance_threshold}, granularity={granularity}")
+        
+        # Mapeo de familias WT a códigos exactos en la BD
+        wt_mapping = {
+            'μ-TRTX-Hh2a': 'μ-TRTX-Hh2a',
+            'μ-TRTX-Hhn2b': 'μ-TRTX-Hhn2b', 
+            'β-TRTX-Cd1a': 'β-TRTX-Cd1a',
+            'ω-TRTX-Gr2a': 'ω-TRTX-Gr2a'
+        }
+        
+        if wt_family not in wt_mapping:
+            return jsonify({"error": f"Familia WT no reconocida: {wt_family}"}), 400
+        
+        wt_peptide_code = wt_mapping[wt_family]
+        
+        # Obtener datos de la toxina WT desde la base de datos
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, peptide_code, ic50_value, ic50_unit, pdb_blob 
+            FROM Nav1_7_InhibitorPeptides 
+            WHERE peptide_code = ?
+        """, (wt_peptide_code,))
+        
+        wt_result = cursor.fetchone()
+        conn.close()
+        
+        if not wt_result:
+            return jsonify({"error": f"No se encontró la toxina WT: {wt_peptide_code}"}), 404
+        
+        wt_id, wt_code, wt_ic50, wt_unit, wt_pdb_data = wt_result
+        print(f"✅ Toxina WT encontrada: {wt_code} (IC₅₀: {wt_ic50} {wt_unit})")
+        
+        # Cargar la toxina de referencia desde archivo
+        reference_path = os.path.join("pdbs", "WT", "hwt4_Hh2a_WT.pdb")
+        if not os.path.exists(reference_path):
+            return jsonify({"error": f"Archivo de referencia no encontrado: {reference_path}"}), 404
+        
+        print(f"✅ Archivo de referencia encontrado: {reference_path}")
+        
+        # Dataset comparativo
+        comparison_dataset = []
+        
+        # === PROCESAR TOXINA WT ===
+        print(f"📊 Procesando toxina WT: {wt_code}")
+        wt_data = process_single_toxin_for_comparison(
+            pdb_data=wt_pdb_data,
+            toxin_name=wt_code,
+            ic50_value=wt_ic50,
+            ic50_unit=wt_unit,
+            granularity=granularity,
+            long_threshold=long_threshold,
+            distance_threshold=distance_threshold,
+            toxin_type="WT_Target"
+        )
+        comparison_dataset.extend(wt_data)
+        
+        # === PROCESAR TOXINA DE REFERENCIA ===
+        print(f"📊 Procesando toxina de referencia: hwt4_Hh2a_WT")
+        with open(reference_path, 'r') as ref_file:
+            ref_pdb_content = ref_file.read()
+        
+        ref_data = process_single_toxin_for_comparison(
+            pdb_data=ref_pdb_content,
+            toxin_name="hwt4_Hh2a_WT",
+            ic50_value=None,  # Referencia sin datos IC50
+            ic50_unit=None,
+            granularity=granularity,
+            long_threshold=long_threshold,
+            distance_threshold=distance_threshold,
+            toxin_type="Reference"
+        )
+        comparison_dataset.extend(ref_data)
+        
+        if not comparison_dataset:
+            return jsonify({"error": "No se pudieron procesar las toxinas para comparación"}), 500
+        
+        # Ordenar dataset: primero WT, luego referencia
+        comparison_dataset.sort(key=lambda x: (x['Tipo_Toxina'], x['Toxina'], int(x['Residuo_Numero']) if x['Residuo_Numero'].isdigit() else 0))
+        
+        # Crear CSV comparativo
+        print(f"📝 Generando CSV comparativo...")
+        output = io.StringIO()
+        fieldnames = [
+            # Identificadores
+            'Tipo_Toxina', 'Familia_WT', 'Toxina', 'Cadena', 'Residuo_Nombre', 'Residuo_Numero',
+            # Actividad farmacológica
+            'IC50_Original', 'IC50_Unidad', 'IC50_nM',
+            # Métricas de centralidad
+            'Centralidad_Grado', 'Centralidad_Intermediacion', 'Centralidad_Cercania', 'Coeficiente_Agrupamiento',
+            # Propiedades estructurales
+            'Grado_Nodo', 'Densidad_Grafo', 'Num_Nodos_Grafo', 'Num_Aristas_Grafo'
+        ]
+        
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(comparison_dataset)
+        
+        csv_content = output.getvalue()
+        output.close()
+        
+        # Crear nombre descriptivo del archivo
+        family_clean = wt_family.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
+        filename = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}.csv"
+        safe_filename = re.sub(r'[^\w\-_.]', '_', filename)
+        
+        print(f"✅ Dataset comparativo generado: {len(comparison_dataset)} residuos")
+        print(f"📁 Nombre de archivo: {safe_filename}")
+        print(f"📤 Enviando archivo CSV al navegador...")
+        
+        from flask import Response
+        return Response(
+            csv_content,
+            mimetype="text/csv",
+            headers={"Content-disposition": f"attachment; filename={safe_filename}"}
+        )
+        
+    except Exception as e:
+        print(f"💥 Error en comparación WT: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_unit, granularity, long_threshold, distance_threshold, toxin_type):
+    """
+    Procesa una sola toxina para análisis comparativo
+    """
+    try:
+        # Crear archivo temporal
+        with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
+            if isinstance(pdb_data, bytes):
+                temp_file.write(pdb_data)
+            else:
+                temp_file.write(pdb_data.encode('utf-8'))
+            temp_path = temp_file.name
+        
+        try:
+            # Construir grafo
+            if granularity == 'atom':
+                cfg = ProteinGraphConfig(
+                    granularity="atom",
+                    edge_construction_functions=[
+                        partial(add_distance_threshold,
+                                long_interaction_threshold=long_threshold,
+                                threshold=distance_threshold)
+                    ]
+                )
+            else:
+                cfg = ProteinGraphConfig(
+                    granularity="CA",
+                    edge_construction_functions=[
+                        partial(add_distance_threshold,
+                                long_interaction_threshold=long_threshold,
+                                threshold=distance_threshold)
+                    ]
+                )
+            
+            print(f"    🔗 Construyendo grafo para {toxin_name}...")
+            G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
+            print(f"    ✅ Grafo construido: {G.number_of_nodes()} nodos, {G.number_of_edges()} aristas")
+            
+            # Calcular métricas de centralidad
+            print(f"    📊 Calculando métricas de centralidad...")
+            degree_centrality = nx.degree_centrality(G)
+            betweenness_centrality = nx.betweenness_centrality(G)
+            closeness_centrality = nx.closeness_centrality(G)
+            clustering_coefficient = nx.clustering(G)
+            
+            # Normalizar IC50 a unidades consistentes (nM)
+            ic50_nm = None
+            if ic50_value and ic50_unit:
+                if ic50_unit.lower() == "nm":
+                    ic50_nm = ic50_value
+                elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
+                    ic50_nm = ic50_value * 1000
+                elif ic50_unit.lower() == "mm":
+                    ic50_nm = ic50_value * 1000000
+                else:
+                    ic50_nm = ic50_value
+            
+            print(f"    💊 IC50 normalizado: {ic50_nm} nM")
+            
+            # Extraer familia WT
+            family_wt = None
+            if toxin_type == "WT_Target":
+                if "μ-TRTX-Hh2a" in toxin_name:
+                    family_wt = "Mu-TRTX-2a"
+                elif "μ-TRTX-Hhn2b" in toxin_name:
+                    family_wt = "Mu-TRTX-2b"
+                elif "β-TRTX" in toxin_name:
+                    family_wt = "Beta-TRTX"
+                elif "ω-TRTX" in toxin_name:
+                    family_wt = "Omega-TRTX"
+                else:
+                    family_wt = "Unknown"
+            else:
+                family_wt = "Reference"
+            
+            # Procesar cada nodo/residuo
+            toxin_data = []
+            node_count = 0
+            for node, data in G.nodes(data=True):
+                if granularity == 'CA':
+                    parts = str(node).split(':')
+                    if len(parts) >= 3:
+                        chain = parts[0]
+                        residue_name = parts[1]
+                        residue_number = parts[2]
+                    else:
+                        chain = data.get('chain_id', 'A')
+                        residue_name = data.get('residue_name', 'UNK')
+                        residue_number = str(node)
+                else:  # atom level
+                    chain = data.get('chain_id', 'A')
+                    residue_name = data.get('residue_name', 'UNK')
+                    residue_number = str(data.get('residue_number', node))
+                
+                toxin_data.append({
+                    # Identificadores
+                    'Tipo_Toxina': toxin_type,
+                    'Familia_WT': family_wt,
+                    'Toxina': toxin_name,
+                    'Cadena': chain,
+                    'Residuo_Nombre': residue_name,
+                    'Residuo_Numero': residue_number,
+                    
+                    # Actividad farmacológica
+                    'IC50_Original': ic50_value,
+                    'IC50_Unidad': ic50_unit,
+                    'IC50_nM': round(ic50_nm, 3) if ic50_nm else None,
+                    
+                    # Métricas de centralidad
+                    'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
+                    'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
+                    'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
+                    'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
+                    
+                    # Propiedades estructurales
+                    'Grado_Nodo': G.degree(node),
+                    'Densidad_Grafo': round(nx.density(G), 6),
+                    'Num_Nodos_Grafo': G.number_of_nodes(),
+                    'Num_Aristas_Grafo': G.number_of_edges()
+                })
+                node_count += 1
+            
+            print(f"    ✅ Procesados {node_count} residuos de {toxin_name}")
+            return toxin_data
+            
+        finally:
+            os.unlink(temp_path)
+            print(f"    🗑️ Archivo temporal eliminado")
+            
+    except Exception as e:
+        print(f"    ❌ Error procesando {toxin_name}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return []
 
