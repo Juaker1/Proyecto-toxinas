@@ -3,6 +3,8 @@ class ExportFeedbackManager {
         this.initializeHTML();
         this.currentModal = null;
         this.toastCounter = 0;
+        
+
     }
 
     initializeHTML() {

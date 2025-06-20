@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, jsonify, request, send_file
 from functools import partial
 import sqlite3
 import tempfile
@@ -20,6 +20,9 @@ from graphein.protein.edges.distance import add_k_nn_edges
 from plotly.utils import PlotlyJSONEncoder
 import networkx as nx
 from flask import Response
+import openpyxl
+import pandas as pd
+from app.utils.excel_export import generate_excel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'graphs'))
 from graphs.graph_analysis2D import Nav17ToxinGraphAnalyzer
@@ -46,19 +49,25 @@ def fetch_peptides(group):
     return cursor.fetchall()
 
 
-@viewer_bp.route("/")
+# Modificar la ruta raíz para que acepte también solicitudes POST
+@viewer_bp.route("/", methods=['GET', 'POST'])
 def viewer():
+    # Si es una solicitud POST, simplemente devuelve un estado 200 OK
+    if request.method == 'POST':
+        return jsonify({"status": "ok"}), 200
+        
+    # Si es GET, mostrar la página normal como antes
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    cursor.execute("SELECT peptide_id, peptide_name FROM Peptides")
+    
+    cursor.execute("SELECT peptide_id, peptide_name FROM Peptides ORDER BY peptide_name")
     toxinas = cursor.fetchall()
-
-    cursor.execute("SELECT id, peptide_code FROM Nav1_7_InhibitorPeptides")
+    
+    cursor.execute("SELECT id, peptide_code FROM Nav1_7_InhibitorPeptides ORDER BY peptide_code")
     nav1_7 = cursor.fetchall()
-
+    
     conn.close()
-
+    
     return render_template("viewer.html", toxinas=toxinas, nav1_7=nav1_7)
 
 
@@ -347,15 +356,16 @@ def get_toxin_name(source, pid):
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-@viewer_bp.route("/export_residues_csv/<string:source>/<int:pid>")
-def export_residues_csv(source, pid):
+
+@viewer_bp.route("/export_residues_xlsx/<string:source>/<int:pid>")
+def export_residues_xlsx(source, pid):
     try:
-        # Obtener parámetros
+        # Obtain parameters - same as in export_residues_csv
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         
-        # Obtener datos PDB, nombre de la toxina e IC50
+        # Get PDB data, toxin name, and IC50
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
@@ -382,36 +392,23 @@ def export_residues_csv(source, pid):
         if not result:
             return jsonify({"error": "PDB not found"}), 404
         
-        # Si no tenemos nombre, usar un fallback
+        # If we don't have a name, use a fallback
         if not toxin_name:
             toxin_name = f"{source}_{pid}"
         
-        # Limpiar el nombre para uso en archivo
-        import re
-        import unicodedata
-        
-        # Normalizar caracteres Unicode
+        # Clean the name for use in filename
         normalized_name = unicodedata.normalize('NFKD', toxin_name)
         
-        # Convertir caracteres especiales griegos a ASCII
-        char_replacements = {
-            'μ': 'u', 'β': 'b', 'ω': 'w', 'α': 'a', 'γ': 'g', 'δ': 'd',
-            'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 't', 'ι': 'i', 'κ': 'k',
-            'λ': 'l', 'ν': 'n', 'ξ': 'x', 'ο': 'o', 'π': 'p', 'ρ': 'r',
-            'σ': 's', 'τ': 't', 'υ': 'u', 'φ': 'f', 'χ': 'c', 'ψ': 'p', 'ω': 'w'
-        }
+        # Convert special Greek characters to ASCII
+        clean_name = normalized_name.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
         
-        clean_name = normalized_name
-        for greek, ascii_char in char_replacements.items():
-            clean_name = clean_name.replace(greek, ascii_char)
-        
-        # Remover cualquier carácter que no sea ASCII alfanumérico, guión o guión bajo
+        # Remove any non-ASCII alphanumeric, dash, or underscore characters
         clean_name = re.sub(r'[^\w\-_]', '', clean_name, flags=re.ASCII)
         
         if not clean_name:
             clean_name = f"{source}_{pid}"
         
-        # Crear archivo temporal
+        # Create temporary file
         with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
             if isinstance(pdb_data, bytes):
                 temp_file.write(pdb_data)
@@ -420,7 +417,7 @@ def export_residues_csv(source, pid):
             temp_path = temp_file.name
         
         try:
-            # Construir grafo
+            # Build graph - same logic as in export_residues_csv
             if granularity == 'atom':
                 cfg = ProteinGraphConfig(
                     granularity="atom",
@@ -440,18 +437,18 @@ def export_residues_csv(source, pid):
                     ]
                 )
             
+            print(f"Building graph for {toxin_name}...")
             G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
+            print(f"Graph built: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
             
-            # Calcular métricas de centralidad principales
+            # Calculate centrality metrics
+            print(f"Calculating centrality metrics...")
             degree_centrality = nx.degree_centrality(G)
             betweenness_centrality = nx.betweenness_centrality(G)
             closeness_centrality = nx.closeness_centrality(G)
             clustering_coefficient = nx.clustering(G)
             
-            # Preparar datos para CSV
-            csv_data = []
-            
-            # Normalizar IC50 a unidades consistentes (nM)
+            # Normalize IC50 to consistent units (nM)
             ic50_nm = None
             if ic50_value and ic50_unit:
                 if ic50_unit.lower() == "nm":
@@ -463,17 +460,23 @@ def export_residues_csv(source, pid):
                 else:
                     ic50_nm = ic50_value
             
+            # Process each node/residue
+            csv_data = []
             for node in G.nodes():
-                # Procesar ID del nodo
-                parts = str(node).split(':')
-                if len(parts) >= 3:
-                    chain = parts[0]
-                    residue_name = parts[1]
-                    residue_number = parts[2]
-                else:
-                    chain = "A"
-                    residue_name = "UNK"
-                    residue_number = str(node)
+                if granularity == 'CA':
+                    parts = str(node).split(':')
+                    if len(parts) >= 3:
+                        chain = parts[0]
+                        residue_name = parts[1]
+                        residue_number = parts[2]
+                    else:
+                        chain = G.nodes[node].get('chain_id', 'A')
+                        residue_name = G.nodes[node].get('residue_name', 'UNK')
+                        residue_number = str(node)
+                else:  # atom level
+                    chain = G.nodes[node].get('chain_id', 'A')
+                    residue_name = G.nodes[node].get('residue_name', 'UNK')
+                    residue_number = str(G.nodes[node].get('residue_number', node))
                 
                 csv_data.append({
                     'Toxina': toxin_name,
@@ -490,87 +493,76 @@ def export_residues_csv(source, pid):
                     'Grado_Nodo': G.degree(node)
                 })
             
-            # Ordenar por centralidad de grado (descendente)
-            csv_data.sort(key=lambda x: x['Centralidad_Grado'], reverse=True)
+            # Convert to DataFrame for Excel export
+            df = pd.DataFrame(csv_data)
             
-            
-            output = io.StringIO()
-            fieldnames = ['Toxina', 'Cadena', 'Residuo_Nombre', 'Residuo_Numero', 
-                         'IC50_Original', 'IC50_Unidad', 'IC50_nM',
-                         'Centralidad_Grado', 'Centralidad_Intermediacion', 
-                         'Centralidad_Cercania', 'Coeficiente_Agrupamiento',
-                         'Grado_Nodo']
-            
-            writer = csv.DictWriter(output, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(csv_data)
-            
-            csv_content = output.getvalue()
-            output.close()
-            
-            # Crear nombre de archivo descriptivo
+            # Generate Excel file
             if source == "nav1_7":
-                filename = f"Nav1.7-{clean_name}.csv"
+                filename_prefix = f"Nav1.7-{clean_name}"
             else:
-                filename = f"Toxinas-{clean_name}.csv"
+                filename_prefix = f"Toxinas-{clean_name}"
+                
+            # Create a sheet name based on toxin name
+            sheet_name = clean_name if clean_name else "Toxina"
+                
+            excel_data, excel_filename = generate_excel(df, filename_prefix, [sheet_name])
             
-            safe_filename = filename.encode('ascii', 'ignore').decode('ascii')
-            
-            from flask import Response
-            return Response(
-                csv_content,
-                mimetype="text/csv",
-                headers={"Content-disposition": f"attachment; filename={safe_filename}"}
+            # Return the Excel file
+            return send_file(
+                excel_data,
+                as_attachment=True,
+                download_name=excel_filename,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
             
         finally:
             os.unlink(temp_path)
-                
+            print(f"Temporary file removed")
+            
     except Exception as e:
+        print(f"Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-@viewer_bp.route("/export_family_csv/<string:family_prefix>")
-def export_family_csv(family_prefix):
+@viewer_bp.route("/export_family_xlsx/<string:family_prefix>")
+def export_family_xlsx(family_prefix):
     try:
-        print(f"🚀 INICIANDO exportación de familia {family_prefix}")
-        
-        # Obtener parámetros
+        # Get parameters
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         
-        print(f"📋 Parámetros: long={long_threshold}, threshold={distance_threshold}, granularity={granularity}")
+        print(f"Processing family {family_prefix} with parameters: long={long_threshold}, dist={distance_threshold}, granularity={granularity}")
         
-        # Obtener todas las toxinas de la familia seleccionada
+        # Get toxins for this family
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
-        # Buscar toxinas que empiecen con el prefijo de familia
         cursor.execute("""
             SELECT id, peptide_code, ic50_value, ic50_unit 
             FROM Nav1_7_InhibitorPeptides 
-            WHERE peptide_code LIKE ?
-            ORDER BY peptide_code
-        """, (f"{family_prefix}%",))
+            WHERE peptide_code LIKE ? OR peptide_code LIKE ?
+        """, (f"{family_prefix}%", f"{family_prefix.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega')}%"))
         
         family_toxins = cursor.fetchall()
         conn.close()
         
         if not family_toxins:
-            print(f"❌ No se encontraron toxinas para la familia {family_prefix}")
-            return jsonify({"error": f"No se encontraron toxinas para la familia {family_prefix}"}), 404
+            print(f"No toxins found for family {family_prefix}")
+            return jsonify({"error": f"No toxins found for family {family_prefix}"}), 404
         
-        print(f"🧬 Procesando familia {family_prefix}: {len(family_toxins)} toxinas encontradas")
+        print(f"Processing family {family_prefix}: {len(family_toxins)} toxins found")
         
-        # Dataset completo que contendrá todos los residuos de todas las toxinas
-        complete_dataset = []
+        # Dictionary to store dataframes for each toxin (one sheet per toxin)
+        toxin_dataframes = {}
         processed_count = 0
         
         for toxin_id, peptide_code, ic50_value, ic50_unit in family_toxins:
-            print(f"  📊 Procesando {peptide_code} (IC₅₀: {ic50_value} {ic50_unit})")
+            print(f"Processing {peptide_code} (IC₅₀: {ic50_value} {ic50_unit})")
             
             try:
-                # Obtener datos PDB
+                # Get PDB data
                 conn = sqlite3.connect(DB_PATH)
                 cursor = conn.cursor()
                 cursor.execute("SELECT pdb_blob FROM Nav1_7_InhibitorPeptides WHERE id = ?", (toxin_id,))
@@ -578,13 +570,13 @@ def export_family_csv(family_prefix):
                 conn.close()
                 
                 if not result or not result[0]:
-                    print(f"    ⚠️ Sin datos PDB para {peptide_code}")
+                    print(f"No PDB data for {peptide_code}")
                     continue
                 
                 pdb_data = result[0]
-                print(f"    ✅ PDB obtenido para {peptide_code} ({len(pdb_data)} bytes)")
+                print(f"PDB obtained for {peptide_code} ({len(pdb_data)} bytes)")
                 
-                # Crear archivo temporal
+                # Create temporary file
                 with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
                     if isinstance(pdb_data, bytes):
                         temp_file.write(pdb_data)
@@ -592,10 +584,10 @@ def export_family_csv(family_prefix):
                         temp_file.write(pdb_data.encode('utf-8'))
                     temp_path = temp_file.name
                 
-                print(f"    📄 Archivo temporal creado: {temp_path}")
+                print(f"Temporary file created: {temp_path}")
                 
                 try:
-                    # Construir grafo
+                    # Build graph with appropriate configuration
                     if granularity == 'atom':
                         cfg = ProteinGraphConfig(
                             granularity="atom",
@@ -615,20 +607,18 @@ def export_family_csv(family_prefix):
                             ]
                         )
                     
-                    print(f"    🔗 Construyendo grafo para {peptide_code}...")
+                    print(f"Building graph for {peptide_code}...")
                     G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
-                    print(f"    ✅ Grafo construido: {G.number_of_nodes()} nodos, {G.number_of_edges()} aristas")
+                    print(f"Graph built: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
                     
-                    # Calcular métricas de centralidad principales
-                    print(f"    📊 Calculando métricas de centralidad...")
+                    # Calculate centrality metrics
+                    print(f"Calculating centrality metrics...")
                     degree_centrality = nx.degree_centrality(G)
                     betweenness_centrality = nx.betweenness_centrality(G)
                     closeness_centrality = nx.closeness_centrality(G)
                     clustering_coefficient = nx.clustering(G)
                     
-                    print(f"    ✅ Métricas calculadas para {peptide_code}")
-                    
-                    # Normalizar IC50 a unidades consistentes (nM)
+                    # Normalize IC50 to consistent units (nM)
                     ic50_nm = None
                     if ic50_value and ic50_unit:
                         if ic50_unit.lower() == "nm":
@@ -640,11 +630,11 @@ def export_family_csv(family_prefix):
                         else:
                             ic50_nm = ic50_value
                     
-                    print(f"    💊 IC50 normalizado: {ic50_nm} nM")
+                    print(f"IC50 normalized: {ic50_nm} nM")
                     
-                    # Procesar cada nodo/residuo
-                    node_count = 0
-                    for node, data in G.nodes(data=True):
+                    # Process each node/residue
+                    toxin_data = []
+                    for node in G.nodes():
                         if granularity == 'CA':
                             parts = str(node).split(':')
                             if len(parts) >= 3:
@@ -652,113 +642,83 @@ def export_family_csv(family_prefix):
                                 residue_name = parts[1]
                                 residue_number = parts[2]
                             else:
-                                chain = data.get('chain_id', 'A')
-                                residue_name = data.get('residue_name', 'UNK')
+                                chain = G.nodes[node].get('chain_id', 'A')
+                                residue_name = G.nodes[node].get('residue_name', 'UNK')
                                 residue_number = str(node)
                         else:  # atom level
-                            chain = data.get('chain_id', 'A')
-                            residue_name = data.get('residue_name', 'UNK')
-                            residue_number = str(data.get('residue_number', node))
+                            chain = G.nodes[node].get('chain_id', 'A')
+                            residue_name = G.nodes[node].get('residue_name', 'UNK')
+                            residue_number = str(G.nodes[node].get('residue_number', node))
                         
-                        complete_dataset.append({
-                            # Identificadores básicos
+                        toxin_data.append({
                             'Familia': family_prefix,
                             'Toxina': peptide_code,
                             'Cadena': chain,
                             'Residuo_Nombre': residue_name,
                             'Residuo_Numero': residue_number,
-                            
-                            # Actividad farmacológica
                             'IC50_Original': ic50_value,
                             'IC50_Unidad': ic50_unit,
                             'IC50_nM': round(ic50_nm, 3) if ic50_nm else None,
-                            
-                            # Métricas de centralidad principales
                             'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
                             'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
                             'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
                             'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
-                            
-                            # Propiedades del residuo individual
-                            'Grado_Nodo': G.degree(node)
+                            'Grado_Nodo': G.degree(node),
+                            'Densidad_Grafo': round(nx.density(G), 6)
+
                         })
-                        
-                        node_count += 1
                     
-                    print(f"    ✅ Procesados {node_count} residuos de {peptide_code}")
+                    # Create DataFrame and sort by residue number
+                    df = pd.DataFrame(toxin_data)
+                    df = df.sort_values(by=['Residuo_Numero'], key=lambda x: x.astype(str).str.extract('(\d+)', expand=False).astype(float))
+                    
+                    # Add to dictionary of dataframes, using peptide_code as sheet name
+                    clean_peptide_code = peptide_code.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
+                    toxin_dataframes[clean_peptide_code] = df
+                    
                     processed_count += 1
-                        
+                    print(f"Processed {len(toxin_data)} residues from {peptide_code}")
+                    
                 finally:
                     os.unlink(temp_path)
-                    print(f"    🗑️ Archivo temporal eliminado")
-                    
+                    print(f"Temporary file removed")
+                
             except Exception as e:
-                print(f"    ❌ Error procesando {peptide_code}: {str(e)}")
+                print(f"Error processing toxin {peptide_code}: {str(e)}")
                 import traceback
                 traceback.print_exc()
-                continue
         
-        if not complete_dataset:
-            print(f"❌ No se pudieron procesar toxinas de la familia")
-            return jsonify({"error": "No se pudieron procesar toxinas de la familia"}), 500
+        if not toxin_dataframes:
+            return jsonify({"error": "No valid toxins to process"}), 500
         
-        print(f"📊 RESUMEN: Procesadas {processed_count}/{len(family_toxins)} toxinas")
-        print(f"📊 Total de residuos en dataset: {len(complete_dataset)}")
-        
-        # Ordenar dataset por toxina y número de residuo
-        print(f"🔄 Ordenando dataset...")
-        complete_dataset.sort(key=lambda x: (x['Toxina'], int(x['Residuo_Numero']) if x['Residuo_Numero'].isdigit() else 0))
-        
-        # Crear CSV con dataset simplificado 
-        print(f"📝 Generando CSV...")
-        output = io.StringIO()
-        fieldnames = [
-            # Identificadores
-            'Familia', 'Toxina', 'Cadena', 'Residuo_Nombre', 'Residuo_Numero',
-            # Actividad farmacológica
-            'IC50_Original', 'IC50_Unidad', 'IC50_nM',
-            # Métricas de centralidad
-            'Centralidad_Grado', 'Centralidad_Intermediacion', 'Centralidad_Cercania', 'Coeficiente_Agrupamiento',
-            # Propiedades del residuo
-            'Grado_Nodo'
-        ]
-        
-        writer = csv.DictWriter(output, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(complete_dataset)
-        
-        csv_content = output.getvalue()
-        output.close()
-        
-        # Crear nombre descriptivo del archivo
+        # Create descriptive filename
         family_names = {
             'μ': 'Mu-TRTX',
             'β': 'Beta-TRTX', 
             'ω': 'Omega-TRTX',
-            
         }
         
         family_name = family_names.get(family_prefix, f"{family_prefix}-TRTX")
-        filename = f"Dataset_Familia_{family_name}_IC50_Topologia_{granularity}.csv"
-        safe_filename = filename.encode('ascii', 'ignore').decode('ascii')
+        filename_prefix = f"Dataset_Familia_{family_name}_IC50_Topologia_{granularity}"
         
-        print(f"✅ Dataset completo generado: {len(complete_dataset)} residuos de {len(set(row['Toxina'] for row in complete_dataset))} toxinas")
-        print(f"📁 Nombre de archivo: {safe_filename}")
-        print(f"📤 Enviando archivo CSV al navegador...")
+        # Generate Excel file with multiple sheets
+        excel_data, excel_filename = generate_excel(toxin_dataframes, filename_prefix)
         
-        from flask import Response
-        return Response(
-            csv_content,
-            mimetype="text/csv",
-            headers={"Content-disposition": f"attachment; filename={safe_filename}"}
+        print(f"Complete dataset generated: {processed_count} toxins")
+        
+        # Return the Excel file
+        return send_file(
+            excel_data,
+            as_attachment=True,
+            download_name=excel_filename,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
         
     except Exception as e:
-        print(f"💥 Error generando dataset familiar: {str(e)}")
+        print(f"Error: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-    
 def convert_numpy_to_lists(obj):
     """Convierte recursivamente arrays de NumPy a listas Python para serialización JSON."""
     if isinstance(obj, np.ndarray):
@@ -819,32 +779,30 @@ def calculate_dipole():
             'error': str(e)
         }), 500
 
-@viewer_bp.route("/export_wt_comparison/<string:wt_family>")
-def export_wt_comparison(wt_family):
+@viewer_bp.route("/export_wt_comparison_xlsx/<string:wt_family>")
+def export_wt_comparison_xlsx(wt_family):
     try:
-        print(f"🧬 INICIANDO comparación WT: {wt_family} vs hwt4_Hh2a_WT")
-        
-        # Obtener parámetros
+        # Get parameters
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         
-        print(f"📋 Parámetros: long={long_threshold}, threshold={distance_threshold}, granularity={granularity}")
+        print(f"Processing WT comparison for {wt_family} with parameters: long={long_threshold}, dist={distance_threshold}, granularity={granularity}")
         
-        # Mapeo de familias WT a códigos exactos en la BD
+        # Mapping of family identifiers to peptide codes
         wt_mapping = {
             'μ-TRTX-Hh2a': 'μ-TRTX-Hh2a',
-            'μ-TRTX-Hhn2b': 'μ-TRTX-Hhn2b', 
+            'μ-TRTX-Hhn2b': 'μ-TRTX-Hhn2b',
             'β-TRTX-Cd1a': 'β-TRTX-Cd1a',
             'ω-TRTX-Gr2a': 'ω-TRTX-Gr2a'
         }
         
         if wt_family not in wt_mapping:
-            return jsonify({"error": f"Familia WT no reconocida: {wt_family}"}), 400
+            return jsonify({"error": f"Unrecognized WT family: {wt_family}"}), 400
         
         wt_peptide_code = wt_mapping[wt_family]
         
-        # Obtener datos de la toxina WT desde la base de datos
+        # Get data for the WT toxin from database
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
@@ -858,23 +816,23 @@ def export_wt_comparison(wt_family):
         conn.close()
         
         if not wt_result:
-            return jsonify({"error": f"No se encontró la toxina WT: {wt_peptide_code}"}), 404
-        
+            return jsonify({"error": f"WT toxin not found: {wt_peptide_code}"}), 404
+            
         wt_id, wt_code, wt_ic50, wt_unit, wt_pdb_data = wt_result
-        print(f"✅ Toxina WT encontrada: {wt_code} (IC₅₀: {wt_ic50} {wt_unit})")
+        print(f"WT toxin found: {wt_code} (IC₅₀: {wt_ic50} {wt_unit})")
         
-        # Cargar la toxina de referencia desde archivo
+        # Load reference toxin from file
         reference_path = os.path.join("pdbs", "WT", "hwt4_Hh2a_WT.pdb")
         if not os.path.exists(reference_path):
-            return jsonify({"error": f"Archivo de referencia no encontrado: {reference_path}"}), 404
+            return jsonify({"error": f"Reference file not found: {reference_path}"}), 404
         
-        print(f"✅ Archivo de referencia encontrado: {reference_path}")
+        print(f"Reference file found: {reference_path}")
         
-        # Dataset comparativo
-        comparison_dataset = []
+        # Dictionary to store dataframes
+        comparison_dataframes = {}
         
-        # === PROCESAR TOXINA WT ===
-        print(f"📊 Procesando toxina WT: {wt_code}")
+        # === PROCESS WT TOXIN ===
+        print(f"Processing WT toxin: {wt_code}")
         wt_data = process_single_toxin_for_comparison(
             pdb_data=wt_pdb_data,
             toxin_name=wt_code,
@@ -885,73 +843,90 @@ def export_wt_comparison(wt_family):
             distance_threshold=distance_threshold,
             toxin_type="WT_Target"
         )
-        comparison_dataset.extend(wt_data)
         
-        # === PROCESAR TOXINA DE REFERENCIA ===
-        print(f"📊 Procesando toxina de referencia: hwt4_Hh2a_WT")
+        if wt_data:
+            comparison_dataframes['WT_Target'] = pd.DataFrame(wt_data)
+        
+        # === PROCESS REFERENCE TOXIN ===
+        print(f"Processing reference toxin: hwt4_Hh2a_WT")
         with open(reference_path, 'r') as ref_file:
             ref_pdb_content = ref_file.read()
         
         ref_data = process_single_toxin_for_comparison(
             pdb_data=ref_pdb_content,
             toxin_name="hwt4_Hh2a_WT",
-            ic50_value=None,  # Referencia sin datos IC50
+            ic50_value=None,  # Reference without IC50 data
             ic50_unit=None,
             granularity=granularity,
             long_threshold=long_threshold,
             distance_threshold=distance_threshold,
             toxin_type="Reference"
         )
-        comparison_dataset.extend(ref_data)
         
-        if not comparison_dataset:
-            return jsonify({"error": "No se pudieron procesar las toxinas para comparación"}), 500
+        if ref_data:
+            comparison_dataframes['Reference'] = pd.DataFrame(ref_data)
+            
+        if not comparison_dataframes:
+            return jsonify({"error": "Could not process toxins for comparison"}), 500
         
-        # Ordenar dataset: primero WT, luego referencia
-        comparison_dataset.sort(key=lambda x: (x['Tipo_Toxina'], x['Toxina'], int(x['Residuo_Numero']) if x['Residuo_Numero'].isdigit() else 0))
+        # Create summary sheet with comparison metrics if both toxins were processed
+        if 'WT_Target' in comparison_dataframes and 'Reference' in comparison_dataframes:
+            # Add summary sheet with key differences and similarities
+            wt_df = comparison_dataframes['WT_Target']
+            ref_df = comparison_dataframes['Reference']
+            
+            # Calculate overall graph properties for comparison
+            summary_data = {
+                'Property': [
+                    'Toxina WT', 'Toxina Referencia',
+                    'Número de Residuos', 'Aristas Totales',
+                    'Densidad Promedio', 'Centralidad Grado Promedio',
+                    'Centralidad Intermediación Promedio', 'Centralidad Cercanía Promedio',
+                    'Coeficiente Agrupamiento Promedio'
+                ],
+                'WT_Target': [
+                    wt_code, 'N/A',
+                    wt_df['Num_Nodos_Grafo'].iloc[0], wt_df['Num_Aristas_Grafo'].iloc[0],
+                    wt_df['Densidad_Grafo'].iloc[0], wt_df['Centralidad_Grado'].mean(),
+                    wt_df['Centralidad_Intermediacion'].mean(), wt_df['Centralidad_Cercania'].mean(),
+                    wt_df['Coeficiente_Agrupamiento'].mean()
+                ],
+                'Reference': [
+                    'N/A', 'hwt4_Hh2a_WT',
+                    ref_df['Num_Nodos_Grafo'].iloc[0], ref_df['Num_Aristas_Grafo'].iloc[0],
+                    ref_df['Densidad_Grafo'].iloc[0], ref_df['Centralidad_Grado'].mean(),
+                    ref_df['Centralidad_Intermediacion'].mean(), ref_df['Centralidad_Cercania'].mean(),
+                    ref_df['Coeficiente_Agrupamiento'].mean()
+                ]
+            }
+            
+            comparison_dataframes['Resumen_Comparativo'] = pd.DataFrame(summary_data)
+        else:
+            print(f"Warning: Not all toxins were processed for comparison: {comparison_dataframes.keys()}")
         
-        # Crear CSV comparativo
-        print(f"📝 Generando CSV comparativo...")
-        output = io.StringIO()
-        fieldnames = [
-            # Identificadores
-            'Tipo_Toxina', 'Familia_WT', 'Toxina', 'Cadena', 'Residuo_Nombre', 'Residuo_Numero',
-            # Actividad farmacológica
-            'IC50_Original', 'IC50_Unidad', 'IC50_nM',
-            # Métricas de centralidad
-            'Centralidad_Grado', 'Centralidad_Intermediacion', 'Centralidad_Cercania', 'Coeficiente_Agrupamiento',
-            # Propiedades estructurales
-            'Grado_Nodo', 'Densidad_Grafo', 'Num_Nodos_Grafo', 'Num_Aristas_Grafo'
-        ]
-        
-        writer = csv.DictWriter(output, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(comparison_dataset)
-        
-        csv_content = output.getvalue()
-        output.close()
-        
-        # Crear nombre descriptivo del archivo
+        # Create descriptive filename
         family_clean = wt_family.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
-        filename = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}.csv"
-        safe_filename = re.sub(r'[^\w\-_.]', '_', filename)
+        filename_prefix = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}"
         
-        print(f"✅ Dataset comparativo generado: {len(comparison_dataset)} residuos")
-        print(f"📁 Nombre de archivo: {safe_filename}")
-        print(f"📤 Enviando archivo CSV al navegador...")
+        # Generate Excel file with multiple sheets
+        excel_data, excel_filename = generate_excel(comparison_dataframes, filename_prefix)
         
-        from flask import Response
-        return Response(
-            csv_content,
-            mimetype="text/csv",
-            headers={"Content-disposition": f"attachment; filename={safe_filename}"}
+        print(f"Comparison dataset generated")
+        
+        # Return the Excel file
+        return send_file(
+            excel_data,
+            as_attachment=True,
+            download_name=excel_filename,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
         
     except Exception as e:
-        print(f"💥 Error en comparación WT: {str(e)}")
+        print(f"Error: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
 
 def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_unit, granularity, long_threshold, distance_threshold, toxin_type):
     """
@@ -1010,7 +985,7 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                 else:
                     ic50_nm = ic50_value
             
-            print(f"    💊 IC50 normalizado: {ic50_nm} nM")
+            print(f"     IC50 normalizado: {ic50_nm} nM")
             
             # Extraer familia WT
             family_wt = None
@@ -1069,21 +1044,20 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                     
                     # Propiedades estructurales
                     'Grado_Nodo': G.degree(node),
-                    'Densidad_Grafo': round(nx.density(G), 6),
-                    'Num_Nodos_Grafo': G.number_of_nodes(),
-                    'Num_Aristas_Grafo': G.number_of_edges()
+                    'Densidad_Grafo': round(nx.density(G), 6)
+
                 })
                 node_count += 1
             
-            print(f"    ✅ Procesados {node_count} residuos de {toxin_name}")
+            print(f"     Procesados {node_count} residuos de {toxin_name}")
             return toxin_data
             
         finally:
             os.unlink(temp_path)
-            print(f"    🗑️ Archivo temporal eliminado")
+            print(f"     Archivo temporal eliminado")
             
     except Exception as e:
-        print(f"    ❌ Error procesando {toxin_name}: {str(e)}")
+        print(f"     Error procesando {toxin_name}: {str(e)}")
         import traceback
         traceback.print_exc()
         return []

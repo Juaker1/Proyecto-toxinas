@@ -231,20 +231,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const exportBtn = document.getElementById('export-csv-btn');
         const familySelector = document.getElementById('family-selector');
         const exportFamilyBtn = document.getElementById('export-family-csv-btn');
+        const wtFamilySelector = document.getElementById('wt-family-selector');
+        const exportWtBtn = document.getElementById('export-wt-comparison-btn');
         
         if (!exportBtn) return;
         
         const buttonText = exportBtn.querySelector('.button-text');
         const loadingText = exportBtn.querySelector('.loading-text');
         
-        // EXPORTACIÓN INDIVIDUAL con feedback visual
+        // INDIVIDUAL EXPORT with visual feedback
         exportBtn.addEventListener('click', async () => {
             if (!currentProteinGroup || !currentProteinId) {
-                exportFeedback.showWarning('Por favor seleccione una toxina primero');
+                exportFeedback.showWarning('Please select a toxin first');
                 return;
             }
             
-            // Deshabilitar botón y mostrar estado de carga
+            // Disable button and show loading state
             exportBtn.disabled = true;
             buttonText.style.display = 'none';
             loadingText.style.display = 'inline';
@@ -254,28 +256,30 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const distValue = distInput.value;
                 const granularity = granularityToggle.checked ? 'atom' : 'CA';
                 
-                // Obtener nombre de la toxina
+                // Get toxin name
                 const nameResponse = await fetch(`/get_toxin_name/${currentProteinGroup}/${currentProteinId}`);
                 const nameData = await nameResponse.json();
                 const toxinName = nameData.toxin_name || `${currentProteinGroup}_${currentProteinId}`;
                 
-                // Mostrar modal de exportación
+                // Show export modal
                 exportFeedback.startIndividualExport(toxinName);
                 
                 const cleanName = toxinName.replace(/[^\w\-_]/g, '');
                 
                 let filename;
                 if (currentProteinGroup === "nav1_7") {
-                    filename = `Nav1.7-${cleanName}.csv`;
+                    filename = `Nav1.7-${cleanName}.xlsx`; // Changed from .csv to .xlsx
                 } else {
-                    filename = `Toxinas-${cleanName}.csv`;
+                    filename = `Toxinas-${cleanName}.xlsx`; // Changed from .csv to .xlsx
                 }
                 
-                const url = `/export_residues_csv/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                // Use the new Excel endpoint
+                const url = `/export_residues_xlsx/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
                 
-                // Simular delay para mostrar el progreso
+                // Simulate delay to show progress
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 
+                // Download the file
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = filename;
@@ -283,24 +287,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 link.click();
                 document.body.removeChild(link);
                 
-                // Mostrar toast de éxito después de un delay
-                setTimeout(() => {
-                    exportFeedback.completeExport('individual', { toxinName });
-                }, 1000);
-                
+                // Show success toast and reset button
+                exportFeedback.completeExport('individual', { toxinName });
             } catch (error) {
-                console.error('❌ Error en exportación individual:', error);
-                exportFeedback.showError(error.message, 'en exportación individual');
+                console.error('Export failed:', error);
+                exportFeedback.showError('Export failed. Please try again.');
             } finally {
-                setTimeout(() => {
-                    exportBtn.disabled = false;
-                    buttonText.style.display = 'inline';
-                    loadingText.style.display = 'none';
-                }, 2500);
+                exportBtn.disabled = false;
+                buttonText.style.display = 'inline';
+                loadingText.style.display = 'none';
             }
         });
         
-        // EXPORTACIÓN POR FAMILIAS con feedback visual
+        // FAMILY EXPORT
         if (familySelector && exportFamilyBtn) {
             familySelector.addEventListener('change', () => {
                 exportFamilyBtn.disabled = !familySelector.value;
@@ -309,7 +308,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             exportFamilyBtn.addEventListener('click', async () => {
                 const selectedFamily = familySelector.value;
                 if (!selectedFamily) {
-                    exportFeedback.showWarning('Por favor seleccione una familia de toxinas');
+                    exportFeedback.showWarning('Please select a toxin family');
                     return;
                 }
                 
@@ -325,8 +324,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
-                    // Mostrar modal de exportación de familia
-                    exportFeedback.startFamilyExport(selectedFamily, 'múltiples');
+                    // Show family export modal
+                    exportFeedback.startFamilyExport(selectedFamily, 'multiple');
                     
                     const familyNames = {
                         'μ-TRTX-Hh2a': 'Mu_TRTX_Hh2a',
@@ -336,11 +335,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     };
                     
                     const familyName = familyNames[selectedFamily] || selectedFamily.replace(/[^\w]/g, '_');
-                    const filename = `Dataset_${familyName}_IC50_Topologia_${granularity}.csv`;
+                    const filename = `Dataset_${familyName}_IC50_Topologia_${granularity}.xlsx`; // Changed from .csv to .xlsx
                     
-                    const url = `/export_family_csv/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    // Use the new Excel endpoint
+                    const url = `/export_family_xlsx/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
                     
-                    // Simular delay para procesamiento de familia (más tiempo)
+                    // Simulate delay for family processing (longer time)
                     await new Promise(resolve => setTimeout(resolve, 2500));
                     
                     const link = document.createElement('a');
@@ -350,47 +350,39 @@ document.addEventListener("DOMContentLoaded", async () => {
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Mostrar toast de éxito
-                    setTimeout(() => {
-                        exportFeedback.completeExport('family', { 
-                            familyName: selectedFamily,
-                            residueCount: 'múltiples'
-                        });
-                    }, 1200);
-                    
+                    // Show success toast
+                    exportFeedback.completeExport('family', { 
+                        familyName: selectedFamily,
+                        residueCount: 'multiple'
+                    });
                 } catch (error) {
-                    console.error('❌ Error en exportación familiar:', error);
-                    exportFeedback.showError(error.message, 'en exportación familiar');
+                    console.error('Family export failed:', error);
+                    exportFeedback.showError('Family export failed. Please try again.');
                 } finally {
-                    setTimeout(() => {
-                        exportFamilyBtn.disabled = familySelector.value === '';
-                        familyButtonText.style.display = 'inline';
-                        familyLoadingText.style.display = 'none';
-                    }, 5000);
+                    exportFamilyBtn.disabled = false;
+                    familyButtonText.style.display = 'inline';
+                    familyLoadingText.style.display = 'none';
                 }
             });
         }
         
-        // COMPARACIÓN WT con feedback visual
-        if (document.getElementById('wt-family-selector') && document.getElementById('export-wt-comparison-btn')) {
-            const wtFamilySelector = document.getElementById('wt-family-selector');
-            const exportWtComparisonBtn = document.getElementById('export-wt-comparison-btn');
-            
+        // WT COMPARISON
+        if (wtFamilySelector && exportWtBtn) {
             wtFamilySelector.addEventListener('change', () => {
-                exportWtComparisonBtn.disabled = !wtFamilySelector.value;
+                exportWtBtn.disabled = !wtFamilySelector.value;
             });
             
-            exportWtComparisonBtn.addEventListener('click', async () => {
+            exportWtBtn.addEventListener('click', async () => {
                 const selectedWtFamily = wtFamilySelector.value;
                 if (!selectedWtFamily) {
-                    exportFeedback.showWarning('Por favor seleccione una familia WT para comparar');
+                    exportFeedback.showWarning('Please select a WT family');
                     return;
                 }
                 
-                const wtButtonText = exportWtComparisonBtn.querySelector('.button-text');
-                const wtLoadingText = exportWtComparisonBtn.querySelector('.loading-text');
+                const wtButtonText = exportWtBtn.querySelector('.button-text');
+                const wtLoadingText = exportWtBtn.querySelector('.loading-text');
                 
-                exportWtComparisonBtn.disabled = true;
+                exportWtBtn.disabled = true;
                 wtButtonText.style.display = 'none';
                 wtLoadingText.style.display = 'inline';
                 
@@ -399,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
-                    // Mostrar modal de comparación WT
+                    // Show WT comparison modal
                     exportFeedback.startWTComparison(selectedWtFamily);
                     
                     const familyClean = selectedWtFamily
@@ -408,11 +400,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                         .replace('ω', 'omega')
                         .replace('δ', 'delta');
                     
-                    const filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_${granularity}.csv`;
+                    const filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_${granularity}.xlsx`; // Changed from .csv to .xlsx
                     
-                    const url = `/export_wt_comparison/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    // Use the new Excel endpoint
+                    const url = `/export_wt_comparison_xlsx/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
                     
-                    // Simular delay para comparación WT
+                    // Simulate delay for WT comparison
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     
                     const link = document.createElement('a');
@@ -422,22 +415,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Mostrar toast de éxito específico para WT
-                    setTimeout(() => {
-                        exportFeedback.completeExport('wt-comparison', { 
-                            wtFamily: selectedWtFamily 
-                        });
-                    }, 1000);
-                    
+                    // Show WT-specific success toast
+                    exportFeedback.completeExport('wt-comparison', { 
+                        wtFamily: selectedWtFamily
+                    });
                 } catch (error) {
-                    console.error('❌ Error en comparación WT:', error);
-                    exportFeedback.showError(error.message, 'en comparación WT');
+                    console.error('WT comparison export failed:', error);
+                    exportFeedback.showError('WT comparison export failed. Please try again.');
                 } finally {
-                    setTimeout(() => {
-                        exportWtComparisonBtn.disabled = wtFamilySelector.value === '';
-                        wtButtonText.style.display = 'inline';
-                        wtLoadingText.style.display = 'none';
-                    }, 4500);
+                    exportWtBtn.disabled = false;
+                    wtButtonText.style.display = 'inline';
+                    wtLoadingText.style.display = 'none';
                 }
             });
         }
