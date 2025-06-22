@@ -165,17 +165,62 @@ def compute_graph_properties(G):
     return props
 
 
+# Agregar esta función después de las importaciones y antes de las rutas
+def preprocess_pdb_for_graphein(pdb_content):
+    """
+    Preprocesa el contenido PDB para convertir residuos no estándar a códigos reconocidos por Graphein
+    """
+    # Diccionario de conversiones de residuos no estándar
+    residue_conversions = {
+        'HSD': 'HIS',  # Histidina delta-protonada
+        'HSE': 'HIS',  # Histidina epsilon-protonada  
+        'HSP': 'HIS',  # Histidina positivamente cargada
+        'CYX': 'CYS',  # Cisteína en puente disulfuro
+        'HIE': 'HIS',  # Otra variante de histidina
+        'HID': 'HIS',  # Otra variante de histidina
+        'HIP': 'HIS',  # Otra variante de histidina
+        'CYM': 'CYS',  # Cisteína desprotonada
+        'ASH': 'ASP',  # Ácido aspártico protonado
+        'GLH': 'GLU',  # Ácido glutámico protonado
+        'LYN': 'LYS',  # Lisina desprotonada
+        'ARN': 'ARG',  # Arginina desprotonada
+        'TYM': 'TYR',  # Tirosina desprotonada
+        'MSE': 'MET',  # Selenometionina
+        'PCA': 'GLU',  # Piroglutamato
+        'TPO': 'THR',  # Treonina fosforilada
+        'SEP': 'SER',  # Serina fosforilada
+        'PTR': 'TYR',  # Tirosina fosforilada
+    }
+    
+    lines = pdb_content.split('\n')
+    processed_lines = []
+    
+    for line in lines:
+        if line.startswith(('ATOM', 'HETATM')):
+            # El nombre del residuo está en las columnas 18-20 (0-indexed: 17-20)
+            if len(line) >= 20:
+                residue_name = line[17:20].strip()
+                if residue_name in residue_conversions:
+                    # Reemplazar el nombre del residuo
+                    new_residue = residue_conversions[residue_name]
+                    # Asegurar que tenga 3 caracteres con espacios a la derecha si es necesario
+                    new_residue_padded = f"{new_residue:<3}"
+                    line = line[:17] + new_residue_padded + line[20:]
+        
+        processed_lines.append(line)
+    
+    return '\n'.join(processed_lines)
+
+# Modificar la función get_protein_graph existente
 @viewer_bp.route("/get_protein_graph/<string:source>/<int:pid>")
 def get_protein_graph(source, pid):
     try:
         print(f"🚀 Iniciando análisis de grafo para {source}/{pid}")
         
-    
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         
-
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
@@ -194,15 +239,21 @@ def get_protein_graph(source, pid):
         
         pdb_data = result[0]
 
+        # Procesar el contenido PDB antes de crear el archivo temporal
+        if isinstance(pdb_data, bytes):
+            pdb_content = pdb_data.decode('utf-8')
+        else:
+            pdb_content = str(pdb_data)
+        
+        # ✨ NUEVA LÍNEA: Preprocesar el PDB para convertir residuos no estándar
+        processed_pdb_content = preprocess_pdb_for_graphein(pdb_content)
+
         with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
-            if isinstance(pdb_data, bytes):
-                temp_file.write(pdb_data)
-            else:
-                temp_file.write(pdb_data.encode('utf-8'))
+            # Escribir el contenido procesado en lugar del original
+            temp_file.write(processed_pdb_content.encode('utf-8'))
             temp_path = temp_file.name
         
         try:
-
             if granularity == 'atom':
                 cfg = ProteinGraphConfig(
                     granularity="atom",
@@ -224,10 +275,10 @@ def get_protein_graph(source, pid):
                 )
                 plot_title = f"Grafo de CA (ID: {pid})"
             
-     
+            print(f"📊 Construyendo grafo con granularidad: {granularity}")
             G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
+            print(f"✅ Grafo construido exitosamente: {G.number_of_nodes()} nodos, {G.number_of_edges()} aristas")
             
-           
             # Calcular las propiedades del grafo
             props = compute_graph_properties(G)
             
@@ -263,17 +314,15 @@ def get_protein_graph(source, pid):
                 elif trace.mode == 'lines':
                     trace.name = "Conexiones"
 
-           
             fig_json = fig.to_plotly_json()
 
-            
             # Crear payload
             payload = {
                 "plotData": fig_json["data"],
                 "layout": fig_json["layout"],
                 "properties": props,
-                "pdb_data": pdb_data.decode('utf-8') if isinstance(pdb_data, bytes) else str(pdb_data),
-                # Añadir métricas en un formato amigable para el frontend
+                # Devolver el PDB original, no el procesado
+                "pdb_data": pdb_content,
                 "summary_statistics": {
                     "degree_centrality": {
                         "min": props.get("degree_min", 0),
