@@ -919,6 +919,7 @@ def export_wt_comparison_xlsx(wt_family):
             return jsonify({"error": "Could not process toxins for comparison"}), 500
         
         # Create summary sheet with comparison metrics if both toxins were processed
+        # Create summary sheet with comparison metrics if both toxins were processed
         if 'WT_Target' in comparison_dataframes and 'Reference' in comparison_dataframes:
             # Add summary sheet with key differences and similarities
             wt_df = comparison_dataframes['WT_Target']
@@ -928,23 +929,29 @@ def export_wt_comparison_xlsx(wt_family):
             summary_data = {
                 'Property': [
                     'Toxina WT', 'Toxina Referencia',
-                    'Número de Residuos', 'Aristas Totales',
+                    'Número de Residuos', 'Aristas Totales (estimadas)',
                     'Densidad Promedio', 'Centralidad Grado Promedio',
                     'Centralidad Intermediación Promedio', 'Centralidad Cercanía Promedio',
                     'Coeficiente Agrupamiento Promedio'
                 ],
                 'WT_Target': [
                     wt_code, 'N/A',
-                    wt_df['Num_Nodos_Grafo'].iloc[0], wt_df['Num_Aristas_Grafo'].iloc[0],
-                    wt_df['Densidad_Grafo'].iloc[0], wt_df['Centralidad_Grado'].mean(),
-                    wt_df['Centralidad_Intermediacion'].mean(), wt_df['Centralidad_Cercania'].mean(),
+                    len(wt_df),  # Número de filas = número de residuos
+                    wt_df['Grado_Nodo'].sum() // 2,  # Estimación de aristas totales
+                    wt_df['Densidad_Grafo'].iloc[0],  # Este valor sí existe
+                    wt_df['Centralidad_Grado'].mean(),
+                    wt_df['Centralidad_Intermediacion'].mean(), 
+                    wt_df['Centralidad_Cercania'].mean(),
                     wt_df['Coeficiente_Agrupamiento'].mean()
                 ],
                 'Reference': [
                     'N/A', 'hwt4_Hh2a_WT',
-                    ref_df['Num_Nodos_Grafo'].iloc[0], ref_df['Num_Aristas_Grafo'].iloc[0],
-                    ref_df['Densidad_Grafo'].iloc[0], ref_df['Centralidad_Grado'].mean(),
-                    ref_df['Centralidad_Intermediacion'].mean(), ref_df['Centralidad_Cercania'].mean(),
+                    len(ref_df),  # Número de filas = número de residuos
+                    ref_df['Grado_Nodo'].sum() // 2,  # Estimación de aristas totales
+                    ref_df['Densidad_Grafo'].iloc[0],  # Este valor sí existe
+                    ref_df['Centralidad_Grado'].mean(),
+                    ref_df['Centralidad_Intermediacion'].mean(), 
+                    ref_df['Centralidad_Cercania'].mean(),
                     ref_df['Coeficiente_Agrupamiento'].mean()
                 ]
             }
