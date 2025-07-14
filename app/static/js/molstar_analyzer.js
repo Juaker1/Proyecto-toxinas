@@ -95,29 +95,44 @@ class MolstarProteinAnalyzer {
      */
     extractAtoms(structure) {
         const atoms = [];
-        const atomIt = structure.atomicHierarchy.atoms;
+        const labels = [];
         
-        for (let i = 0; i < atomIt._rowCount; i++) {
-            const atomName = atomIt.auth_atom_id.value(i);
+        const structureView = structure.root;
+        const atomIt = structureView.getAtomIterator();
+        
+        let i = 0;
+        while (atomIt.hasNext) {
+            const atom = atomIt.move();
             
-            // Solo átomos CA para análisis
-            if (atomName === 'CA') {
-                const atom = {
-                    index: i,
-                    name: atomName,
-                    residueIndex: atomIt.residue_index.value(i),
-                    coordinates: [
-                        structure.model.atomicConformation.x.value(i),
-                        structure.model.atomicConformation.y.value(i),
-                        structure.model.atomicConformation.z.value(i)
-                    ]
-                };
-                atoms.push(atom);
-            }
+            const x = atom.x;
+            const y = atom.y;
+            const z = atom.z;
+
+            const atomName = atomIt.label_atom_id.value(i);
+            const residueName = atomIt.auth_comp_id.value(i);
+            const residueNumber = atomIt.auth_seq_id.value(i);
+            const chainId = atomIt.label_asym_id.value(i);
+
+            const label = `${chainId}:${residueName}:${residueNumber}:${atomName}`;
+            labels.push(label);
+
+            atoms.push({
+                index: i,
+                name: atomName,
+                residueIndex: atomIt.residue_index.value(i),
+                residueName: residueName,
+                residueNumber: residueNumber,
+                chainId: chainId,
+                coordinates: [x, y, z],
+                label: label
+            });
+
+            i++;
         }
-        
-        return atoms;
+
+        return { atoms, labels };
     }
+
 
     /**
      * Encuentra el átomo CA de un residuo
@@ -662,10 +677,23 @@ Dirección: [${dipoleData.normalized.map(x => x.toFixed(2)).join(', ')}]`;
         const toggleBtn = document.getElementById('toggle-dipole');
         if (toggleBtn) {
             toggleBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Mostrar Dipolo';
-            toggleBtn.onclick = null; // Will be reassigned by the main event handler
+            toggleBtn.onclick = null; 
         }
     }
 }
 
+
+    /**
+     * VER PARA AGRUPAR
+     */
+function agruparPorResiduo(atoms) {
+    const segmentos = {};
+    for (const atom of atoms) {
+        const clave = `${atom.chainId}:${atom.residueName}:${atom.residueNumber}`;
+        if (!segmentos[clave]) segmentos[clave] = [];
+        segmentos[clave].push(atom.label); // A:ALA:15:CB
+    }
+    return segmentos;
+}
 
 window.MolstarProteinAnalyzer = MolstarProteinAnalyzer;

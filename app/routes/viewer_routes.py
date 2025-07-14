@@ -21,6 +21,7 @@ from plotly.utils import PlotlyJSONEncoder
 import networkx as nx
 from flask import Response
 import openpyxl
+from datetime import datetime
 import pandas as pd
 from app.utils.excel_export import generate_excel
 
@@ -497,19 +498,7 @@ def export_residues_xlsx(source, pid):
             closeness_centrality = nx.closeness_centrality(G)
             clustering_coefficient = nx.clustering(G)
             
-            # Normalize IC50 to consistent units (nM)
-            ic50_nm = None
-            if ic50_value and ic50_unit:
-                if ic50_unit.lower() == "nm":
-                    ic50_nm = ic50_value
-                elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
-                    ic50_nm = ic50_value * 1000
-                elif ic50_unit.lower() == "mm":
-                    ic50_nm = ic50_value * 1000000
-                else:
-                    ic50_nm = ic50_value
-            
-            # Process each node/residue
+            # Preparar los datos
             csv_data = []
             for node in G.nodes():
                 if granularity == 'CA':
@@ -527,14 +516,12 @@ def export_residues_xlsx(source, pid):
                     residue_name = G.nodes[node].get('residue_name', 'UNK')
                     residue_number = str(G.nodes[node].get('residue_number', node))
                 
+                # Excluir columnas redundantes y normalización IC50
                 csv_data.append({
                     'Toxina': toxin_name,
                     'Cadena': chain,
                     'Residuo_Nombre': residue_name,
                     'Residuo_Numero': residue_number,
-                    'IC50_Original': ic50_value,
-                    'IC50_Unidad': ic50_unit,
-                    'IC50_nM': round(ic50_nm, 3) if ic50_nm else None,
                     'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
                     'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
                     'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
@@ -542,38 +529,54 @@ def export_residues_xlsx(source, pid):
                     'Grado_Nodo': G.degree(node)
                 })
             
-            # Convert to DataFrame for Excel export
+            # Crear DataFrame
             df = pd.DataFrame(csv_data)
             
-            # Generate Excel file
+            # Crear metadatos para hoja separada
+            metadata = {
+                'Toxina': toxin_name,
+                'Fuente': source,
+                'ID': pid,
+                'Densidad del grafo': round(nx.density(G), 6),
+                'Número de nodos': G.number_of_nodes(),
+                'Número de aristas': G.number_of_edges()
+            }
+            
+            # Agregar IC50 si está disponible
+            if ic50_value:
+                metadata['IC50 Original'] = ic50_value
+                metadata['Unidad IC50'] = ic50_unit
+            
+            # Generar nombre de archivo
             if source == "nav1_7":
                 filename_prefix = f"Nav1.7-{clean_name}"
             else:
                 filename_prefix = f"Toxinas-{clean_name}"
                 
-            # Create a sheet name based on toxin name
+            # Crear nombre de hoja
             sheet_name = clean_name if clean_name else "Toxina"
                 
-            excel_data, excel_filename = generate_excel(df, filename_prefix, [sheet_name])
+            # Generar Excel con metadatos
+            excel_data, excel_filename = generate_excel(df, filename_prefix, [sheet_name], metadata)
             
-            # Return the Excel file
+            # Retornar el archivo
             return send_file(
                 excel_data,
                 as_attachment=True,
                 download_name=excel_filename,
                 mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
-            
+        
         finally:
+            # Limpiar archivo temporal
             os.unlink(temp_path)
-            print(f"Temporary file removed")
+            print("Temporary file removed")
             
     except Exception as e:
         print(f"Error: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
 @viewer_bp.route("/export_family_xlsx/<string:family_prefix>")
 def export_family_xlsx(family_prefix):
     try:
@@ -603,9 +606,22 @@ def export_family_xlsx(family_prefix):
         
         print(f"Processing family {family_prefix}: {len(family_toxins)} toxins found")
         
-        # Dictionary to store dataframes for each toxin (one sheet per toxin)
+        # Dictionary to store dataframes for each toxin
         toxin_dataframes = {}
         processed_count = 0
+        
+        # Crear metadatos para la familia completa
+        metadata = {
+            'Familia': family_prefix,
+            'Número de toxinas procesadas': len(family_toxins),
+            'Umbral de distancia': distance_threshold,
+            'Umbral de interacción larga': long_threshold,
+            'Granularidad': granularity,
+            'Fecha de exportación': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        # Para cada toxina, añadir datos de IC50 a los metadatos
+        toxin_ic50_data = {}
         
         for toxin_id, peptide_code, ic50_value, ic50_unit in family_toxins:
             print(f"Processing {peptide_code} (IC₅₀: {ic50_value} {ic50_unit})")
@@ -667,21 +683,11 @@ def export_family_xlsx(family_prefix):
                     closeness_centrality = nx.closeness_centrality(G)
                     clustering_coefficient = nx.clustering(G)
                     
-                    # Normalize IC50 to consistent units (nM)
-                    ic50_nm = None
+                    # Añadir información de IC50 a metadatos
                     if ic50_value and ic50_unit:
-                        if ic50_unit.lower() == "nm":
-                            ic50_nm = ic50_value
-                        elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
-                            ic50_nm = ic50_value * 1000
-                        elif ic50_unit.lower() == "mm":
-                            ic50_nm = ic50_value * 1000000
-                        else:
-                            ic50_nm = ic50_value
+                        toxin_ic50_data[f'IC50 {peptide_code}'] = f"{ic50_value} {ic50_unit}"
                     
-                    print(f"IC50 normalized: {ic50_nm} nM")
-                    
-                    # Process each node/residue
+                    # Procesar cada nodo/residuo pero ELIMINAR datos redundantes
                     toxin_data = []
                     for node in G.nodes():
                         if granularity == 'CA':
@@ -699,31 +705,31 @@ def export_family_xlsx(family_prefix):
                             residue_name = G.nodes[node].get('residue_name', 'UNK')
                             residue_number = str(G.nodes[node].get('residue_number', node))
                         
+                        # SOLO incluir datos no redundantes en el DataFrame principal
                         toxin_data.append({
-                            'Familia': family_prefix,
                             'Toxina': peptide_code,
                             'Cadena': chain,
                             'Residuo_Nombre': residue_name,
                             'Residuo_Numero': residue_number,
-                            'IC50_Original': ic50_value,
-                            'IC50_Unidad': ic50_unit,
-                            'IC50_nM': round(ic50_nm, 3) if ic50_nm else None,
                             'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
                             'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
                             'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
                             'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
-                            'Grado_Nodo': G.degree(node),
-                            'Densidad_Grafo': round(nx.density(G), 6)
-
+                            'Grado_Nodo': G.degree(node)
                         })
                     
-                    # Create DataFrame and sort by residue number
+                    # Crear DataFrame y ordenar por número de residuo
                     df = pd.DataFrame(toxin_data)
                     df = df.sort_values(by=['Residuo_Numero'], key=lambda x: x.astype(str).str.extract('(\d+)', expand=False).astype(float))
                     
                     # Add to dictionary of dataframes, using peptide_code as sheet name
                     clean_peptide_code = peptide_code.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
                     toxin_dataframes[clean_peptide_code] = df
+                    
+                    # Añadir información del grafo para esta toxina a metadatos
+                    metadata[f'Nodos en {peptide_code}'] = G.number_of_nodes()
+                    metadata[f'Aristas en {peptide_code}'] = G.number_of_edges()
+                    metadata[f'Densidad en {peptide_code}'] = round(nx.density(G), 6)
                     
                     processed_count += 1
                     print(f"Processed {len(toxin_data)} residues from {peptide_code}")
@@ -740,7 +746,7 @@ def export_family_xlsx(family_prefix):
         if not toxin_dataframes:
             return jsonify({"error": "No valid toxins to process"}), 500
         
-        # Create descriptive filename
+        # Crear descriptive filename
         family_names = {
             'μ': 'Mu-TRTX',
             'β': 'Beta-TRTX', 
@@ -751,7 +757,7 @@ def export_family_xlsx(family_prefix):
         filename_prefix = f"Dataset_Familia_{family_name}_IC50_Topologia_{granularity}"
         
         # Generate Excel file with multiple sheets
-        excel_data, excel_filename = generate_excel(toxin_dataframes, filename_prefix)
+        excel_data, excel_filename = generate_excel(toxin_dataframes, filename_prefix, metadata=metadata)
         
         print(f"Complete dataset generated: {processed_count} toxins")
         
@@ -877,9 +883,6 @@ def export_wt_comparison_xlsx(wt_family):
         
         print(f"Reference file found: {reference_path}")
         
-        # Dictionary to store dataframes
-        comparison_dataframes = {}
-        
         # === PROCESS WT TOXIN ===
         print(f"Processing WT toxin: {wt_code}")
         wt_data = process_single_toxin_for_comparison(
@@ -893,9 +896,6 @@ def export_wt_comparison_xlsx(wt_family):
             toxin_type="WT_Target"
         )
         
-        if wt_data:
-            comparison_dataframes['WT_Target'] = pd.DataFrame(wt_data)
-        
         # === PROCESS REFERENCE TOXIN ===
         print(f"Processing reference toxin: hwt4_Hh2a_WT")
         with open(reference_path, 'r') as ref_file:
@@ -904,7 +904,7 @@ def export_wt_comparison_xlsx(wt_family):
         ref_data = process_single_toxin_for_comparison(
             pdb_data=ref_pdb_content,
             toxin_name="hwt4_Hh2a_WT",
-            ic50_value=None,  # Reference without IC50 data
+            ic50_value=None,
             ic50_unit=None,
             granularity=granularity,
             long_threshold=long_threshold,
@@ -912,13 +912,39 @@ def export_wt_comparison_xlsx(wt_family):
             toxin_type="Reference"
         )
         
-        if ref_data:
-            comparison_dataframes['Reference'] = pd.DataFrame(ref_data)
-            
-        if not comparison_dataframes:
-            return jsonify({"error": "Could not process toxins for comparison"}), 500
+        # Dictionary to store dataframes
+        comparison_dataframes = {}
         
-        # Create summary sheet with comparison metrics if both toxins were processed
+        if wt_data:
+            wt_df = pd.DataFrame(wt_data)
+            comparison_dataframes['WT_Target'] = wt_df
+        
+        if ref_data:
+            ref_df = pd.DataFrame(ref_data)
+            comparison_dataframes['Reference'] = ref_df
+            
+        # Crear metadatos completos
+        metadata = {
+            'Toxina WT': wt_code,
+            'Toxina Referencia': 'hwt4_Hh2a_WT',
+            'Familia': wt_family,
+            'IC50 WT': f"{wt_ic50} {wt_unit}" if wt_ic50 and wt_unit else "No disponible",
+            'Granularidad': granularity,
+            'Umbral de distancia': distance_threshold,
+            'Umbral de interacción larga': long_threshold
+        }
+        
+        # Añadir datos de grafo si están disponibles
+        if 'G_wt' in locals():
+            metadata['Nodos WT'] = G_wt.number_of_nodes()
+            metadata['Aristas WT'] = G_wt.number_of_edges()
+            metadata['Densidad WT'] = round(nx.density(G_wt), 6)
+        
+        if 'G_ref' in locals():
+            metadata['Nodos Referencia'] = G_ref.number_of_nodes()
+            metadata['Aristas Referencia'] = G_ref.number_of_edges() 
+            metadata['Densidad Referencia'] = round(nx.density(G_ref), 6)
+            
         # Create summary sheet with comparison metrics if both toxins were processed
         if 'WT_Target' in comparison_dataframes and 'Reference' in comparison_dataframes:
             # Add summary sheet with key differences and similarities
@@ -929,16 +955,15 @@ def export_wt_comparison_xlsx(wt_family):
             summary_data = {
                 'Property': [
                     'Toxina WT', 'Toxina Referencia',
-                    'Número de Residuos', 'Aristas Totales (estimadas)',
-                    'Densidad Promedio', 'Centralidad Grado Promedio',
-                    'Centralidad Intermediación Promedio', 'Centralidad Cercanía Promedio',
+                    'Número de Residuos', 
+                    'Centralidad Grado Promedio',
+                    'Centralidad Intermediación Promedio', 
+                    'Centralidad Cercanía Promedio',
                     'Coeficiente Agrupamiento Promedio'
                 ],
                 'WT_Target': [
                     wt_code, 'N/A',
-                    len(wt_df),  # Número de filas = número de residuos
-                    wt_df['Grado_Nodo'].sum() // 2,  # Estimación de aristas totales
-                    wt_df['Densidad_Grafo'].iloc[0],  # Este valor sí existe
+                    len(wt_df),
                     wt_df['Centralidad_Grado'].mean(),
                     wt_df['Centralidad_Intermediacion'].mean(), 
                     wt_df['Centralidad_Cercania'].mean(),
@@ -946,9 +971,7 @@ def export_wt_comparison_xlsx(wt_family):
                 ],
                 'Reference': [
                     'N/A', 'hwt4_Hh2a_WT',
-                    len(ref_df),  # Número de filas = número de residuos
-                    ref_df['Grado_Nodo'].sum() // 2,  # Estimación de aristas totales
-                    ref_df['Densidad_Grafo'].iloc[0],  # Este valor sí existe
+                    len(ref_df),
                     ref_df['Centralidad_Grado'].mean(),
                     ref_df['Centralidad_Intermediacion'].mean(), 
                     ref_df['Centralidad_Cercania'].mean(),
@@ -957,17 +980,10 @@ def export_wt_comparison_xlsx(wt_family):
             }
             
             comparison_dataframes['Resumen_Comparativo'] = pd.DataFrame(summary_data)
-        else:
-            print(f"Warning: Not all toxins were processed for comparison: {comparison_dataframes.keys()}")
-        
-        # Create descriptive filename
+        # Generar archivo Excel con metadatos
         family_clean = wt_family.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
         filename_prefix = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}"
-        
-        # Generate Excel file with multiple sheets
-        excel_data, excel_filename = generate_excel(comparison_dataframes, filename_prefix)
-        
-        print(f"Comparison dataset generated")
+        excel_data, excel_filename = generate_excel(comparison_dataframes, filename_prefix, metadata=metadata)
         
         # Return the Excel file
         return send_file(
@@ -1061,7 +1077,6 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
             
             # Procesar cada nodo/residuo
             toxin_data = []
-            node_count = 0
             for node, data in G.nodes(data=True):
                 if granularity == 'CA':
                     parts = str(node).split(':')
@@ -1078,19 +1093,13 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                     residue_name = data.get('residue_name', 'UNK')
                     residue_number = str(data.get('residue_number', node))
                 
+                # Simplificar los datos incluidos
                 toxin_data.append({
-                    # Identificadores
-                    'Tipo_Toxina': toxin_type,
-                    'Familia_WT': family_wt,
+                    # Solo incluir identificadores esenciales
                     'Toxina': toxin_name,
                     'Cadena': chain,
                     'Residuo_Nombre': residue_name,
                     'Residuo_Numero': residue_number,
-                    
-                    # Actividad farmacológica
-                    'IC50_Original': ic50_value,
-                    'IC50_Unidad': ic50_unit,
-                    'IC50_nM': round(ic50_nm, 3) if ic50_nm else None,
                     
                     # Métricas de centralidad
                     'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
@@ -1099,13 +1108,10 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                     'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
                     
                     # Propiedades estructurales
-                    'Grado_Nodo': G.degree(node),
-                    'Densidad_Grafo': round(nx.density(G), 6)
-
+                    'Grado_Nodo': G.degree(node)
                 })
-                node_count += 1
             
-            print(f"     Procesados {node_count} residuos de {toxin_name}")
+            print(f"     Procesados {len(toxin_data)} residuos de {toxin_name}")
             return toxin_data
             
         finally:
