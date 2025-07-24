@@ -24,15 +24,37 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
     
     print(f"🔬 Iniciando segmentación atómica por residuos para grafo con {G.number_of_nodes()} nodos")
     
-    # Agrupar átomos por residuo usando atributos del nodo
+    # Calcular métricas de centralidad del grafo completo una sola vez
+    # Esto es más eficiente y correcto: las métricas se calculan considerando todo el grafo
+    degree_centrality = nx.degree_centrality(G)
+    betweenness_centrality = nx.betweenness_centrality(G)
+    closeness_centrality = nx.closeness_centrality(G)
+    clustering_coeff = nx.clustering(G)
+    
+    # Agrupar átomos por residuo parseando directamente el ID del nodo
     residuos_atomicos = {}
     
     for nodo, data in G.nodes(data=True):
-        # Extraer información del residuo desde los atributos del nodo
-        cadena = data.get('chain_id', 'A')
-        residuo_nombre = data.get('residue_name', 'UNK')
-        residuo_numero = data.get('residue_number', 1)
-        atomo_nombre = data.get('atom_name', 'UNK')
+        # Parsear información directamente del ID del nodo
+        # Formato esperado: "P:ASP:1:N" (cadena:residuo:numero:atomo)
+        if isinstance(nodo, str) and ':' in nodo:
+            partes = nodo.split(':')
+            if len(partes) >= 4:
+                cadena = partes[0]
+                residuo_nombre = partes[1]
+                residuo_numero = partes[2]
+                atomo_nombre = partes[3] 
+            else:
+                continue
+        else:
+            # Fallback: intentar obtener de los atributos de Graphein
+            cadena = data.get('chain_id', 'A')
+            residuo_nombre = data.get('residue_name', 'UNK')
+            residuo_numero = str(data.get('residue_number', 1))
+            atomo_nombre = data.get('atom_type', 'UNK')  # Aquí estaba el error: era atom_type, no atom_name
+            
+            if atomo_nombre == 'UNK':
+                continue
         
         # Clave del residuo basada en cadena y número de residuo
         residuo_key = f"{cadena}_{residuo_numero}"
@@ -41,7 +63,7 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
             residuos_atomicos[residuo_key] = {
                 'cadena': cadena,
                 'residuo_nombre': residuo_nombre,
-                'residuo_numero': residuo_numero,
+                'residuo_numero': int(residuo_numero) if residuo_numero.isdigit() else residuo_numero,
                 'atomos': []
             }
         
@@ -55,43 +77,44 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
     segmentos_data = []
     
     for idx, (residuo_key, residuo_info) in enumerate(residuos_atomicos.items()):
-        segmento_id = f"RES_{residuo_info['residuo_numero']:03d}"
+        residuo_num = residuo_info['residuo_numero']
+        if isinstance(residuo_num, int):
+            segmento_id = f"RES_{residuo_num:03d}"
+        else:
+            segmento_id = f"RES_{residuo_num}"
         
-        # Lista de nodos de átomos para este residuo
+        # Lista de nodos de átomos para este residuo (mantener orden original)
         atomos_nodos = [atomo['nodo'] for atomo in residuo_info['atomos']]
         atomos_nombres = [atomo['atomo_nombre'] for atomo in residuo_info['atomos']]
         
-        # Crear subgrafo para análisis de métricas
+        # Crear subgrafo para análisis estructural básico (conexiones internas)
         subgrafo = G.subgraph(atomos_nodos)
         
-        # Calcular métricas del residuo
+        # Calcular métricas estructurales del residuo
         num_atomos = len(atomos_nodos)
         num_conexiones = subgrafo.number_of_edges()
         
-        # Grado promedio del residuo
+        # Grado promedio del residuo (basado en el grafo completo)
         if num_atomos > 0:
-            grados = [subgrafo.degree(nodo) for nodo in atomos_nodos]
+            grados = [G.degree(nodo) for nodo in atomos_nodos]  # Usar grafo completo, no subgrafo
             grado_promedio = sum(grados) / len(grados)
             grado_max = max(grados)
             grado_min = min(grados)
         else:
             grado_promedio = grado_max = grado_min = 0
         
-        # Centralidades del residuo
-        if num_atomos > 1:
-            try:
-                degree_centrality = nx.degree_centrality(subgrafo)
-                betweenness_centrality = nx.betweenness_centrality(subgrafo)
-                closeness_centrality = nx.closeness_centrality(subgrafo)
-                clustering_coeff = nx.clustering(subgrafo)
-                
-                degree_cent_avg = sum(degree_centrality.values()) / len(degree_centrality)
-                between_cent_avg = sum(betweenness_centrality.values()) / len(betweenness_centrality)
-                close_cent_avg = sum(closeness_centrality.values()) / len(closeness_centrality)
-                cluster_avg = sum(clustering_coeff.values()) / len(clustering_coeff)
-                
-            except Exception:
-                degree_cent_avg = between_cent_avg = close_cent_avg = cluster_avg = 0
+        # Promediar las métricas de centralidad del grafo completo para este residuo
+        # Cada átomo tiene su centralidad calculada en el contexto del grafo completo
+        if num_atomos > 0:
+            degree_cent_values = [degree_centrality.get(nodo, 0) for nodo in atomos_nodos]
+            between_cent_values = [betweenness_centrality.get(nodo, 0) for nodo in atomos_nodos]
+            close_cent_values = [closeness_centrality.get(nodo, 0) for nodo in atomos_nodos]
+            cluster_values = [clustering_coeff.get(nodo, 0) for nodo in atomos_nodos]
+            
+            degree_cent_avg = sum(degree_cent_values) / len(degree_cent_values)
+            between_cent_avg = sum(between_cent_values) / len(between_cent_values)
+            close_cent_avg = sum(close_cent_values) / len(close_cent_values)
+            cluster_avg = sum(cluster_values) / len(cluster_values)
         else:
             degree_cent_avg = between_cent_avg = close_cent_avg = cluster_avg = 0
         
@@ -103,7 +126,7 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
             'Segmento_ID': segmento_id,
             'Num_Atomos': num_atomos,
             'Num_Conexiones': num_conexiones,
-            'Atomos_Lista': ', '.join(sorted(atomos_nombres)),
+            'Atomos_Lista': ', '.join(atomos_nombres),  # Mantener orden original, sin sorted()
             'Residuo_Nombre': residuo_info['residuo_nombre'],
             'Residuo_Numero': residuo_info['residuo_numero'],
             'Cadena': residuo_info['cadena'],
@@ -120,7 +143,7 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
         segmentos_data.append(segmento_info)
     
     # Ordenar por número de residuo
-    segmentos_data.sort(key=lambda x: (x['Cadena'], x['Residuo_Numero']))
+    segmentos_data.sort(key=lambda x: (x['Cadena'], x['Residuo_Numero'] if isinstance(x['Residuo_Numero'], int) else 999))
     
     print(f"🎯 Segmentación completada: {len(segmentos_data)} residuos procesados")
     

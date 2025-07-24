@@ -7,6 +7,7 @@ import sys
 import io
 import csv
 import numpy as np
+import pandas as pd
 import re
 import unicodedata
 import traceback
@@ -1184,8 +1185,13 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                         partial(add_distance_threshold,
                                 long_interaction_threshold=long_threshold,
                                 threshold=distance_threshold)
+                    ],
+                    node_metadata_functions=[
+                        amino_acid_one_hot,
+                        add_sidechain_vector
                     ]
                 )
+
             else:
                 cfg = ProteinGraphConfig(
                     granularity="CA",
