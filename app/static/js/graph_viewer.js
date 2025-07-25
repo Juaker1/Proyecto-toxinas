@@ -353,6 +353,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         // FAMILY EXPORT
         if (familySelector && exportFamilyBtn) {
+            const familyExportTypeSelector = document.getElementById('family-export-type-selector');
+            
+            // Update family button text based on export type
+            function updateFamilyExportButtonText() {
+                const familyButtonText = exportFamilyBtn.querySelector('.button-text');
+                const exportType = familyExportTypeSelector ? familyExportTypeSelector.value : 'residues';
+                
+                if (exportType === 'segments_atomicos') {
+                    familyButtonText.textContent = '🧩 Descargar Dataset Segmentación Atómica Familia + IC₅₀';
+                } else {
+                    familyButtonText.textContent = '📈 Descargar Dataset Excel Familia Completa + IC₅₀';
+                }
+            }
+            
+            // Update button text when family export type changes
+            if (familyExportTypeSelector) {
+                familyExportTypeSelector.addEventListener('change', updateFamilyExportButtonText);
+                updateFamilyExportButtonText(); // Set initial text
+            }
+            
             familySelector.addEventListener('change', () => {
                 exportFamilyBtn.disabled = !familySelector.value;
             });
@@ -360,12 +380,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             exportFamilyBtn.addEventListener('click', async () => {
                 const selectedFamily = familySelector.value;
                 if (!selectedFamily) {
-                    exportFeedback.showWarning('Please select a toxin family');
+                    exportFeedback.showWarning('Por favor selecciona una familia de toxinas');
                     return;
                 }
                 
                 const familyButtonText = exportFamilyBtn.querySelector('.button-text');
                 const familyLoadingText = exportFamilyBtn.querySelector('.loading-text');
+                
+                // Get export type for families
+                const familyExportType = familyExportTypeSelector ? familyExportTypeSelector.value : 'residues';
+                
+                // Validate atomic segmentation requirements for families
+                if (familyExportType === 'segments_atomicos') {
+                    const granularity = granularityToggle.checked ? 'atom' : 'CA';
+                    if (granularity !== 'atom') {
+                        exportFeedback.showError('La segmentación atómica requiere granularidad "Átomos". Por favor actívela en los controles del grafo.');
+                        return;
+                    }
+                }
                 
                 exportFamilyBtn.disabled = true;
                 familyButtonText.style.display = 'none';
@@ -376,8 +408,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
-                    // Show family export modal
-                    exportFeedback.startFamilyExport(selectedFamily, 'multiple');
+                    // Show family export modal with appropriate text
+                    if (familyExportType === 'segments_atomicos') {
+                        exportFeedback.showExportModal({
+                            icon: '🧩',
+                            title: 'Exportando Segmentación Atómica Familiar',
+                            subtitle: `Procesando familia: ${selectedFamily}`,
+                            details: 'Aplicando segmentación atómica a todas las toxinas de la familia con métricas estructurales completas'
+                        });
+                    } else {
+                        exportFeedback.startFamilyExport(selectedFamily, 'multiple');
+                    }
                     
                     const familyNames = {
                         'μ-TRTX-Hh2a': 'Mu_TRTX_Hh2a',
@@ -387,13 +428,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     };
                     
                     const familyName = familyNames[selectedFamily] || selectedFamily.replace(/[^\w]/g, '_');
-                    const filename = `Dataset_${familyName}_IC50_Topologia_${granularity}.xlsx`; // Changed from .csv to .xlsx
                     
-                    // Use the new Excel endpoint
-                    const url = `/export_family_xlsx/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    let filename;
+                    if (familyExportType === 'segments_atomicos') {
+                        filename = `Dataset_${familyName}_Segmentacion_Atomica_${granularity}.xlsx`;
+                    } else {
+                        filename = `Dataset_${familyName}_IC50_Topologia_${granularity}.xlsx`;
+                    }
                     
-                    // Simulate delay for family processing (longer time)
-                    await new Promise(resolve => setTimeout(resolve, 2500));
+                    // Add export_type parameter to URL
+                    const url = `/export_family_xlsx/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${familyExportType}`;
+                    
+                    // Simulate delay for family processing (longer time for atomic segmentation)
+                    const delay = familyExportType === 'segments_atomicos' ? 3500 : 2500;
+                    await new Promise(resolve => setTimeout(resolve, delay));
                     
                     const link = document.createElement('a');
                     link.href = url;
@@ -408,18 +456,39 @@ document.addEventListener("DOMContentLoaded", async () => {
                         residueCount: 'multiple'
                     });
                 } catch (error) {
-                    console.error('Family export failed:', error);
-                    exportFeedback.showError('Family export failed. Please try again.');
+                    console.error('Exportación de familia falló:', error);
+                    exportFeedback.showError('Exportación de familia falló. Por favor intenta de nuevo.');
                 } finally {
                     exportFamilyBtn.disabled = false;
                     familyButtonText.style.display = 'inline';
                     familyLoadingText.style.display = 'none';
+                    updateFamilyExportButtonText(); // Restore proper text
                 }
             });
         }
         
         // WT COMPARISON
         if (wtFamilySelector && exportWtBtn) {
+            const wtExportTypeSelector = document.getElementById('wt-export-type-selector');
+            
+            // Update WT button text based on export type
+            function updateWtExportButtonText() {
+                const wtButtonText = exportWtBtn.querySelector('.button-text');
+                const exportType = wtExportTypeSelector ? wtExportTypeSelector.value : 'residues';
+                
+                if (exportType === 'segments_atomicos') {
+                    wtButtonText.textContent = '🧩 Comparar WT vs Referencia Segmentación Atómica + Excel';
+                } else {
+                    wtButtonText.textContent = '🔬 Comparar WT vs Referencia + Exportar Excel';
+                }
+            }
+            
+            // Update button text when WT export type changes
+            if (wtExportTypeSelector) {
+                wtExportTypeSelector.addEventListener('change', updateWtExportButtonText);
+                updateWtExportButtonText(); // Set initial text
+            }
+            
             wtFamilySelector.addEventListener('change', () => {
                 exportWtBtn.disabled = !wtFamilySelector.value;
             });
@@ -427,12 +496,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             exportWtBtn.addEventListener('click', async () => {
                 const selectedWtFamily = wtFamilySelector.value;
                 if (!selectedWtFamily) {
-                    exportFeedback.showWarning('Please select a WT family');
+                    exportFeedback.showWarning('Por favor selecciona una familia WT');
                     return;
                 }
                 
                 const wtButtonText = exportWtBtn.querySelector('.button-text');
                 const wtLoadingText = exportWtBtn.querySelector('.loading-text');
+                
+                // Get export type for WT comparison
+                const wtExportType = wtExportTypeSelector ? wtExportTypeSelector.value : 'residues';
+                
+                // Validate atomic segmentation requirements for WT
+                if (wtExportType === 'segments_atomicos') {
+                    const granularity = granularityToggle.checked ? 'atom' : 'CA';
+                    if (granularity !== 'atom') {
+                        exportFeedback.showError('La segmentación atómica requiere granularidad "Átomos". Por favor actívela en los controles del grafo.');
+                        return;
+                    }
+                }
                 
                 exportWtBtn.disabled = true;
                 wtButtonText.style.display = 'none';
@@ -443,8 +524,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
-                    // Show WT comparison modal
-                    exportFeedback.startWTComparison(selectedWtFamily);
+                    // Show WT comparison modal with appropriate text
+                    if (wtExportType === 'segments_atomicos') {
+                        exportFeedback.showExportModal({
+                            icon: '🧩',
+                            title: 'Comparación WT con Segmentación Atómica',
+                            subtitle: `Comparando: ${selectedWtFamily} vs hwt4_Hh2a_WT`,
+                            details: 'Aplicando segmentación atómica para comparar diferencias estructurales detalladas a nivel de residuos'
+                        });
+                    } else {
+                        exportFeedback.startWTComparison(selectedWtFamily);
+                    }
                     
                     const familyClean = selectedWtFamily
                         .replace('μ', 'mu')
@@ -452,13 +542,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                         .replace('ω', 'omega')
                         .replace('δ', 'delta');
                     
-                    const filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_${granularity}.xlsx`; // Changed from .csv to .xlsx
+                    let filename;
+                    if (wtExportType === 'segments_atomicos') {
+                        filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_Segmentacion_Atomica_${granularity}.xlsx`;
+                    } else {
+                        filename = `Comparacion_WT_${familyClean}_vs_hwt4_Hh2a_WT_${granularity}.xlsx`;
+                    }
                     
-                    // Use the new Excel endpoint
-                    const url = `/export_wt_comparison_xlsx/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    // Add export_type parameter to URL
+                    const url = `/export_wt_comparison_xlsx/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${wtExportType}`;
                     
-                    // Simulate delay for WT comparison
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // Simulate delay for WT comparison (longer for atomic segmentation)
+                    const delay = wtExportType === 'segments_atomicos' ? 3000 : 2000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
                     
                     const link = document.createElement('a');
                     link.href = url;
@@ -472,12 +568,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                         wtFamily: selectedWtFamily
                     });
                 } catch (error) {
-                    console.error('WT comparison export failed:', error);
-                    exportFeedback.showError('WT comparison export failed. Please try again.');
+                    console.error('Comparación WT falló:', error);
+                    exportFeedback.showError('Comparación WT falló. Por favor intenta de nuevo.');
                 } finally {
                     exportWtBtn.disabled = false;
                     wtButtonText.style.display = 'inline';
                     wtLoadingText.style.display = 'none';
+                    updateWtExportButtonText(); // Restore proper text
                 }
             });
         }

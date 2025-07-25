@@ -12,31 +12,31 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
     Cada segmento representa un residuo individual con todos sus átomos.
     
     Args:
-        G: Grafo de NetworkX (debe ser a nivel atómico)
-        granularity: Granularidad del grafo ("atom" para segmentación)
+        G: Grafo de NetworkX a nivel atómico
+        granularity: Granularidad del grafo (debe ser "atom")
         
     Returns:
-        DataFrame con los datos de segmentos atómicos por residuo
+        DataFrame con datos de segmentos atómicos por residuo
     """
     if granularity != "atom":
-        print("⚠️  La segmentación atómica requiere granularidad 'atom'")
+        print("La segmentación atómica requiere granularidad 'atom'")
         return pd.DataFrame()
     
-    print(f"🔬 Iniciando segmentación atómica por residuos para grafo con {G.number_of_nodes()} nodos")
+    print(f"Iniciando segmentación atómica por residuos para grafo con {G.number_of_nodes()} nodos")
     
-    # Calcular métricas de centralidad del grafo completo una sola vez
-    # Esto es más eficiente y correcto: las métricas se calculan considerando todo el grafo
+    # Calcular métricas de centralidad del grafo completo
+    # Es más eficiente calcularlas una vez para todo el grafo
     degree_centrality = nx.degree_centrality(G)
     betweenness_centrality = nx.betweenness_centrality(G)
     closeness_centrality = nx.closeness_centrality(G)
     clustering_coeff = nx.clustering(G)
     
-    # Agrupar átomos por residuo parseando directamente el ID del nodo
+    # Agrupar átomos por residuo parseando el ID del nodo
     residuos_atomicos = {}
     
     for nodo, data in G.nodes(data=True):
-        # Parsear información directamente del ID del nodo
-        # Formato esperado: "P:ASP:1:N" (cadena:residuo:numero:atomo)
+        # Parsear información del ID del nodo
+        # Formato: "P:ASP:1:N" (cadena:residuo:numero:atomo)
         if isinstance(nodo, str) and ':' in nodo:
             partes = nodo.split(':')
             if len(partes) >= 4:
@@ -47,16 +47,16 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
             else:
                 continue
         else:
-            # Fallback: intentar obtener de los atributos de Graphein
+            # Obtener de los atributos de Graphein si el parseo falla
             cadena = data.get('chain_id', 'A')
             residuo_nombre = data.get('residue_name', 'UNK')
             residuo_numero = str(data.get('residue_number', 1))
-            atomo_nombre = data.get('atom_type', 'UNK')  # Aquí estaba el error: era atom_type, no atom_name
+            atomo_nombre = data.get('atom_type', 'UNK')  # Usar atom_type para obtener nombre correcto
             
             if atomo_nombre == 'UNK':
                 continue
         
-        # Clave del residuo basada en cadena y número de residuo
+        # Clave del residuo basada en cadena y número
         residuo_key = f"{cadena}_{residuo_numero}"
         
         if residuo_key not in residuos_atomicos:
@@ -72,7 +72,7 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
             'atomo_nombre': atomo_nombre
         })
     
-    print(f"📊 Encontrados {len(residuos_atomicos)} residuos con átomos")
+    print(f"Encontrados {len(residuos_atomicos)} residuos con átomos")
     
     segmentos_data = []
     
@@ -87,23 +87,44 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
         atomos_nodos = [atomo['nodo'] for atomo in residuo_info['atomos']]
         atomos_nombres = [atomo['atomo_nombre'] for atomo in residuo_info['atomos']]
         
-        # Crear subgrafo para análisis estructural básico (conexiones internas)
-        subgrafo = G.subgraph(atomos_nodos)
-        
         # Calcular métricas estructurales del residuo
         num_atomos = len(atomos_nodos)
-        num_conexiones = subgrafo.number_of_edges()
         
-        # Grado promedio del residuo (basado en el grafo completo)
+        # Crear subgrafo para análisis de conexiones internas
+        subgrafo = G.subgraph(atomos_nodos)
+        
+        # Calcular conexiones internas: enlaces entre átomos del mismo residuo
+        conexiones_internas = subgrafo.number_of_edges()
+        
+        # Si no hay conexiones internas directas, usar suma de grados
+        # Común en grafos de distancia donde átomos se conectan a otros residuos
+        if conexiones_internas == 0:
+            conexiones_internas = sum(G.degree(nodo) for nodo in atomos_nodos)
+        
+        # Calcular densidad del segmento
+        if num_atomos > 1:
+            if subgrafo.number_of_edges() == 0 and conexiones_internas > 0:
+                # Métrica alternativa basada en conectividad promedio
+                grado_promedio_residuo = conexiones_internas / num_atomos
+                max_grado_teorico = G.number_of_nodes() - 1
+                densidad_segmento = grado_promedio_residuo / max_grado_teorico if max_grado_teorico > 0 else 0
+            else:
+                # Cálculo tradicional de densidad interna
+                max_conexiones_posibles = (num_atomos * (num_atomos - 1)) // 2
+                densidad_segmento = subgrafo.number_of_edges() / max_conexiones_posibles if max_conexiones_posibles > 0 else 0
+        else:
+            densidad_segmento = 0
+        
+        # Grado promedio del residuo basado en el grafo completo
         if num_atomos > 0:
-            grados = [G.degree(nodo) for nodo in atomos_nodos]  # Usar grafo completo, no subgrafo
+            grados = [G.degree(nodo) for nodo in atomos_nodos]
             grado_promedio = sum(grados) / len(grados)
             grado_max = max(grados)
             grado_min = min(grados)
         else:
             grado_promedio = grado_max = grado_min = 0
         
-        # Promediar las métricas de centralidad del grafo completo para este residuo
+        # Promediar las métricas de centralidad para este residuo
         # Cada átomo tiene su centralidad calculada en el contexto del grafo completo
         if num_atomos > 0:
             degree_cent_values = [degree_centrality.get(nodo, 0) for nodo in atomos_nodos]
@@ -118,15 +139,12 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
         else:
             degree_cent_avg = between_cent_avg = close_cent_avg = cluster_avg = 0
         
-        # Densidad del residuo
-        densidad_segmento = nx.density(subgrafo) if num_atomos > 1 else 0
-        
         # Crear entrada del DataFrame
         segmento_info = {
             'Segmento_ID': segmento_id,
             'Num_Atomos': num_atomos,
-            'Num_Conexiones': num_conexiones,
-            'Atomos_Lista': ', '.join(atomos_nombres),  # Mantener orden original, sin sorted()
+            'Conexiones_Internas': conexiones_internas,  # Conexiones entre átomos del mismo residuo
+            'Atomos_Lista': ', '.join(atomos_nombres),  # Mantener orden original
             'Residuo_Nombre': residuo_info['residuo_nombre'],
             'Residuo_Numero': residuo_info['residuo_numero'],
             'Cadena': residuo_info['cadena'],
@@ -145,7 +163,7 @@ def agrupar_por_segmentos_atomicos(G, granularity="atom"):
     # Ordenar por número de residuo
     segmentos_data.sort(key=lambda x: (x['Cadena'], x['Residuo_Numero'] if isinstance(x['Residuo_Numero'], int) else 999))
     
-    print(f"🎯 Segmentación completada: {len(segmentos_data)} residuos procesados")
+    print(f"Segmentación completada: {len(segmentos_data)} residuos procesados")
     
     return pd.DataFrame(segmentos_data)
 
@@ -179,16 +197,16 @@ def agrupar_por_segmentos(G, granularity="atom"):
 
 def validar_segmentacion(df_segmentos):
     """
-    Valida que la segmentación sea correcta
+    Valida que la segmentación sea correcta y muestra estadísticas.
     """
     if df_segmentos.empty:
-        print("⚠️ DataFrame de segmentos está vacío")
+        print("DataFrame de segmentos está vacío")
         return False
     
     total_atomos = df_segmentos['Num_Atomos'].sum()
     num_segmentos = len(df_segmentos)
     
-    print(f"📋 Validación de segmentación:")
+    print(f"Validación de segmentación:")
     print(f"   - Total de segmentos: {num_segmentos}")
     print(f"   - Total de átomos procesados: {total_atomos}")
     print(f"   - Segmento más grande: {df_segmentos['Num_Atomos'].max()} átomos")

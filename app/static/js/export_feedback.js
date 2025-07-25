@@ -112,6 +112,7 @@ class ExportFeedbackManager {
 
         return toastId;
     }
+    
 
     hideToast(toastId) {
         const toast = document.getElementById(toastId);
@@ -161,7 +162,7 @@ class ExportFeedbackManager {
         switch (type) {
             case 'individual':
                 title = '¡Exportación Individual Completada!';
-                message = `CSV generado exitosamente para la toxina ${details.toxinName || 'seleccionada'}. El archivo incluye métricas de centralidad y propiedades topológicas de todos los residuos.`;
+                message = `XLSX generado exitosamente para la toxina ${details.toxinName || 'seleccionada'}. El archivo incluye métricas de centralidad y propiedades topológicas de todos los residuos.`;
                 break;
 
             case 'family':
@@ -176,7 +177,7 @@ class ExportFeedbackManager {
 
             default:
                 title = '¡Exportación Completada!';
-                message = 'El archivo CSV ha sido generado exitosamente y está listo para descarga.';
+                message = 'El archivo XLSX ha sido generado exitosamente y está listo para descarga.';
         }
 
         return this.showToast('success', title, message, 6000);

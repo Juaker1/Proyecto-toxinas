@@ -240,7 +240,7 @@
                         <label for="export-type-selector">Tipo de análisis para exportar:</label>
                         <select id="export-type-selector" class="export-type-selector">
                             <option value="residues">Análisis por Residuos</option>
-                            <option value="segments_atomicos">Segmentación Atómica (Solo Nav1.7)</option>
+                            <option value="segments_atomicos">Segmentación Atómica </option>
                         </select>
                         <div class="tooltip">
                             <span class="tooltip-icon">ℹ</span>
@@ -258,6 +258,20 @@
                     <!-- Exportación por familias -->
                     <div class="family-export-section">
                         <h6>Análisis por Familias de Toxinas</h6>
+                        
+                        <!-- Selector de tipo de análisis para familias -->
+                        <div class="export-type-selection">
+                            <label for="family-export-type-selector">Tipo de análisis:</label>
+                            <select id="family-export-type-selector" class="export-type-selector">
+                                <option value="residues">Análisis por Residuos</option>
+                                <option value="segments_atomicos">Segmentación Atómica </option>
+                            </select>
+                            <div class="tooltip">
+                                <span class="tooltip-icon">ℹ</span>
+                                <span class="tooltip-text">La segmentación atómica agrupa átomos por residuos con métricas estructurales completas. Requiere granularidad atómica.</span>
+                            </div>
+                        </div>
+                        
                         <select id="family-selector" class="family-selector">
                             <option value="">Seleccionar familia...</option>
                             <option value="μ-TRTX-Hh2a">μ-TRTX-Hh2a (Familia Hh2a)</option>
@@ -282,6 +296,19 @@
                     Compara la toxina WT representativa de cada familia contra la referencia estructural 
                     <code>hwt4_Hh2a_WT.pdb</code> para identificar diferencias topológicas.
                 </p>
+                
+                <!-- Selector de tipo de análisis para WT -->
+                <div class="export-type-selection">
+                    <label for="wt-export-type-selector">Tipo de análisis:</label>
+                    <select id="wt-export-type-selector" class="export-type-selector">
+                        <option value="residues">Análisis por Residuos</option>
+                        <option value="segments_atomicos">Segmentación Atómica</option>
+                    </select>
+                    <div class="tooltip">
+                        <span class="tooltip-icon">ℹ</span>
+                        <span class="tooltip-text">Segmentación atómica permite comparar estructuras a nivel atómico agrupadas por residuos con métricas completas.</span>
+                    </div>
+                </div>
                 
                 <select id="wt-family-selector" class="family-selector">
                     <option value="">Seleccionar familia WT...</option>

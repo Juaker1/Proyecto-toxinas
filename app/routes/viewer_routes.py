@@ -743,14 +743,19 @@ def export_segments_atomicos_xlsx(source, pid):
 @viewer_bp.route("/export_family_xlsx/<string:family_prefix>")
 def export_family_xlsx(family_prefix):
     try:
-        # Get parameters
+        # Obtener parámetros
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
+        export_type = request.args.get('export_type', 'residues')  # 'residues' o 'segments_atomicos'
         
-        print(f"Processing family {family_prefix} with parameters: long={long_threshold}, dist={distance_threshold}, granularity={granularity}")
+        print(f"Procesando familia {family_prefix} con parámetros: long={long_threshold}, dist={distance_threshold}, granularity={granularity}, tipo={export_type}")
         
-        # Get toxins for this family
+        # Validación para segmentación atómica
+        if export_type == 'segments_atomicos' and granularity != 'atom':
+            return jsonify({"error": "La segmentación atómica requiere granularidad 'atom'"}), 400
+        
+        # Obtener toxinas de esta familia
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
@@ -764,33 +769,34 @@ def export_family_xlsx(family_prefix):
         conn.close()
         
         if not family_toxins:
-            print(f"No toxins found for family {family_prefix}")
-            return jsonify({"error": f"No toxins found for family {family_prefix}"}), 404
+            print(f"No se encontraron toxinas para la familia {family_prefix}")
+            return jsonify({"error": f"No se encontraron toxinas para la familia {family_prefix}"}), 404
         
-        print(f"Processing family {family_prefix}: {len(family_toxins)} toxins found")
+        print(f"Procesando familia {family_prefix}: {len(family_toxins)} toxinas encontradas")
         
-        # Dictionary to store dataframes for each toxin
+        # Diccionario para almacenar DataFrames de cada toxina
         toxin_dataframes = {}
         processed_count = 0
         
         # Crear metadatos para la familia completa
         metadata = {
             'Familia': family_prefix,
-            'Número de toxinas procesadas': len(family_toxins),
-            'Umbral de distancia': distance_threshold,
-            'Umbral de interacción larga': long_threshold,
+            'Tipo_Analisis': 'Segmentación Atómica' if export_type == 'segments_atomicos' else 'Análisis por Residuos',
+            'Numero_Toxinas_Procesadas': len(family_toxins),
+            'Umbral_Distancia': distance_threshold,
+            'Umbral_Interaccion_Larga': long_threshold,
             'Granularidad': granularity,
-            'Fecha de exportación': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'Fecha_Exportacion': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
-        # Para cada toxina, añadir datos de IC50 a los metadatos
+        # Información de IC50 para metadatos
         toxin_ic50_data = {}
         
         for toxin_id, peptide_code, ic50_value, ic50_unit in family_toxins:
-            print(f"Processing {peptide_code} (IC₅₀: {ic50_value} {ic50_unit})")
+            print(f"Procesando {peptide_code} (IC₅₀: {ic50_value} {ic50_unit})")
             
             try:
-                # Get PDB data
+                # Obtener datos PDB
                 conn = sqlite3.connect(DB_PATH)
                 cursor = conn.cursor()
                 cursor.execute("SELECT pdb_blob FROM Nav1_7_InhibitorPeptides WHERE id = ?", (toxin_id,))
@@ -798,24 +804,29 @@ def export_family_xlsx(family_prefix):
                 conn.close()
                 
                 if not result or not result[0]:
-                    print(f"No PDB data for {peptide_code}")
+                    print(f"No hay datos PDB para {peptide_code}")
                     continue
                 
                 pdb_data = result[0]
-                print(f"PDB obtained for {peptide_code} ({len(pdb_data)} bytes)")
+                print(f"PDB obtenido para {peptide_code} ({len(pdb_data)} bytes)")
                 
-                # Create temporary file
+                # Preprocesar PDB para graphein
+                if isinstance(pdb_data, bytes):
+                    pdb_content = pdb_data.decode('utf-8')
+                else:
+                    pdb_content = pdb_data
+                
+                processed_pdb_content = preprocess_pdb_for_graphein(pdb_content)
+                
+                # Crear archivo temporal
                 with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
-                    if isinstance(pdb_data, bytes):
-                        temp_file.write(pdb_data)
-                    else:
-                        temp_file.write(pdb_data.encode('utf-8'))
+                    temp_file.write(processed_pdb_content.encode('utf-8'))
                     temp_path = temp_file.name
                 
-                print(f"Temporary file created: {temp_path}")
+                print(f"Archivo temporal creado: {temp_path}")
                 
                 try:
-                    # Build graph with appropriate configuration
+                    # Construir grafo con configuración apropiada
                     if granularity == 'atom':
                         cfg = ProteinGraphConfig(
                             granularity="atom",
@@ -835,81 +846,111 @@ def export_family_xlsx(family_prefix):
                             ]
                         )
                     
-                    print(f"Building graph for {peptide_code}...")
+                    print(f"Construyendo grafo para {peptide_code}...")
                     G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
-                    print(f"Graph built: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
+                    print(f"Grafo construido: {G.number_of_nodes()} nodos, {G.number_of_edges()} aristas")
                     
-                    # Calculate centrality metrics
-                    print(f"Calculating centrality metrics...")
-                    degree_centrality = nx.degree_centrality(G)
-                    betweenness_centrality = nx.betweenness_centrality(G)
-                    closeness_centrality = nx.closeness_centrality(G)
-                    clustering_coefficient = nx.clustering(G)
-                    
-                    # Añadir información de IC50 a metadatos
+                    # Agregar información de IC50 a metadatos
                     if ic50_value and ic50_unit:
-                        toxin_ic50_data[f'IC50 {peptide_code}'] = f"{ic50_value} {ic50_unit}"
+                        toxin_ic50_data[f'IC50_{peptide_code}'] = f"{ic50_value} {ic50_unit}"
                     
-                    # Procesar cada nodo/residuo pero ELIMINAR datos redundantes
-                    toxin_data = []
-                    for node in G.nodes():
-                        if granularity == 'CA':
-                            parts = str(node).split(':')
-                            if len(parts) >= 3:
-                                chain = parts[0]
-                                residue_name = parts[1]
-                                residue_number = parts[2]
-                            else:
+                    # Procesar según el tipo de exportación
+                    if export_type == 'segments_atomicos':
+                        # Usar segmentación atómica
+                        print(f"Aplicando segmentación atómica para {peptide_code}...")
+                        df_segmentos = agrupar_por_segmentos_atomicos(G, granularity=granularity)
+                        
+                        if not df_segmentos.empty:
+                            # Agregar información de la toxina
+                            df_segmentos['Toxina'] = peptide_code
+                            df_segmentos['IC50_Value'] = ic50_value
+                            df_segmentos['IC50_Unit'] = ic50_unit
+                            
+                            # Reordenar columnas para que la toxina aparezca primero
+                            cols = ['Toxina', 'IC50_Value', 'IC50_Unit'] + [col for col in df_segmentos.columns if col not in ['Toxina', 'IC50_Value', 'IC50_Unit']]
+                            df_segmentos = df_segmentos[cols]
+                            
+                            clean_peptide_code = peptide_code.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
+                            toxin_dataframes[clean_peptide_code] = df_segmentos
+                            
+                            print(f"Segmentación completada: {len(df_segmentos)} segmentos procesados para {peptide_code}")
+                        else:
+                            print(f"⚠️ No se generaron segmentos para {peptide_code}")
+                    
+                    else:
+                        # Análisis por residuos tradicional
+                        print(f"Calculando métricas de centralidad para {peptide_code}...")
+                        degree_centrality = nx.degree_centrality(G)
+                        betweenness_centrality = nx.betweenness_centrality(G)
+                        closeness_centrality = nx.closeness_centrality(G)
+                        clustering_coefficient = nx.clustering(G)
+                        
+                        # Procesar cada nodo/residuo eliminando redundancias
+                        toxin_data = []
+                        for node in G.nodes():
+                            if granularity == 'CA':
+                                parts = str(node).split(':')
+                                if len(parts) >= 3:
+                                    chain = parts[0]
+                                    residue_name = parts[1]
+                                    residue_number = parts[2]
+                                else:
+                                    chain = G.nodes[node].get('chain_id', 'A')
+                                    residue_name = G.nodes[node].get('residue_name', 'UNK')
+                                    residue_number = str(node)
+                            else:  # nivel atómico
                                 chain = G.nodes[node].get('chain_id', 'A')
                                 residue_name = G.nodes[node].get('residue_name', 'UNK')
-                                residue_number = str(node)
-                        else:  # atom level
-                            chain = G.nodes[node].get('chain_id', 'A')
-                            residue_name = G.nodes[node].get('residue_name', 'UNK')
-                            residue_number = str(G.nodes[node].get('residue_number', node))
+                                residue_number = str(G.nodes[node].get('residue_number', node))
+                            
+                            # Solo incluir datos esenciales
+                            toxin_data.append({
+                                'Toxina': peptide_code,
+                                'IC50_Value': ic50_value,
+                                'IC50_Unit': ic50_unit,
+                                'Cadena': chain,
+                                'Residuo_Nombre': residue_name,
+                                'Residuo_Numero': residue_number,
+                                'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
+                                'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
+                                'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
+                                'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
+                                'Grado_Nodo': G.degree(node)
+                            })
                         
-                        # SOLO incluir datos no redundantes en el DataFrame principal
-                        toxin_data.append({
-                            'Toxina': peptide_code,
-                            'Cadena': chain,
-                            'Residuo_Nombre': residue_name,
-                            'Residuo_Numero': residue_number,
-                            'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
-                            'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
-                            'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
-                            'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
-                            'Grado_Nodo': G.degree(node)
-                        })
+                        # Crear DataFrame y ordenar por número de residuo
+                        df = pd.DataFrame(toxin_data)
+                        df = df.sort_values(by=['Residuo_Numero'], key=lambda x: x.astype(str).str.extract('(\d+)', expand=False).astype(float))
+                        
+                        # Agregar al diccionario usando codigo limpio como nombre de hoja
+                        clean_peptide_code = peptide_code.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
+                        toxin_dataframes[clean_peptide_code] = df
+                        
+                        print(f"Procesados {len(toxin_data)} residuos de {peptide_code}")
                     
-                    # Crear DataFrame y ordenar por número de residuo
-                    df = pd.DataFrame(toxin_data)
-                    df = df.sort_values(by=['Residuo_Numero'], key=lambda x: x.astype(str).str.extract('(\d+)', expand=False).astype(float))
-                    
-                    # Add to dictionary of dataframes, using peptide_code as sheet name
-                    clean_peptide_code = peptide_code.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
-                    toxin_dataframes[clean_peptide_code] = df
-                    
-                    # Añadir información del grafo para esta toxina a metadatos
-                    metadata[f'Nodos en {peptide_code}'] = G.number_of_nodes()
-                    metadata[f'Aristas en {peptide_code}'] = G.number_of_edges()
-                    metadata[f'Densidad en {peptide_code}'] = round(nx.density(G), 6)
+                    # Agregar información del grafo a metadatos
+                    metadata[f'Nodos_en_{peptide_code}'] = G.number_of_nodes()
+                    metadata[f'Aristas_en_{peptide_code}'] = G.number_of_edges()
+                    metadata[f'Densidad_en_{peptide_code}'] = round(nx.density(G), 6)
                     
                     processed_count += 1
-                    print(f"Processed {len(toxin_data)} residues from {peptide_code}")
                     
                 finally:
                     os.unlink(temp_path)
-                    print(f"Temporary file removed")
+                    print(f"Archivo temporal eliminado")
                 
             except Exception as e:
-                print(f"Error processing toxin {peptide_code}: {str(e)}")
+                print(f"Error procesando toxina {peptide_code}: {str(e)}")
                 import traceback
                 traceback.print_exc()
         
-        if not toxin_dataframes:
-            return jsonify({"error": "No valid toxins to process"}), 500
+        # Agregar información de IC50 a metadatos
+        metadata.update(toxin_ic50_data)
         
-        # Crear descriptive filename
+        if not toxin_dataframes:
+            return jsonify({"error": "No se pudieron procesar toxinas válidas"}), 500
+        
+        # Crear nombre descriptivo del archivo
         family_names = {
             'μ': 'Mu-TRTX',
             'β': 'Beta-TRTX', 
@@ -917,14 +958,19 @@ def export_family_xlsx(family_prefix):
         }
         
         family_name = family_names.get(family_prefix, f"{family_prefix}-TRTX")
-        filename_prefix = f"Dataset_Familia_{family_name}_IC50_Topologia_{granularity}"
         
-        # Generate Excel file with multiple sheets
+        # Ajustar nombre según tipo de análisis
+        if export_type == 'segments_atomicos':
+            filename_prefix = f"Dataset_Familia_{family_name}_Segmentacion_Atomica_{granularity}"
+        else:
+            filename_prefix = f"Dataset_Familia_{family_name}_IC50_Topologia_{granularity}"
+        
+        # Generar archivo Excel con múltiples hojas
         excel_data, excel_filename = generate_excel(toxin_dataframes, filename_prefix, metadata=metadata)
         
-        print(f"Complete dataset generated: {processed_count} toxins")
+        print(f"Dataset completo generado: {processed_count} toxinas procesadas")
         
-        # Return the Excel file
+        # Devolver el archivo Excel
         return send_file(
             excel_data,
             as_attachment=True,
@@ -1000,12 +1046,17 @@ def calculate_dipole():
 @viewer_bp.route("/export_wt_comparison_xlsx/<string:wt_family>")
 def export_wt_comparison_xlsx(wt_family):
     try:
-        # Get parameters
+        # Obtener parámetros
         long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
+        export_type = request.args.get('export_type', 'residues')  # 'residues' o 'segments_atomicos'
         
-        print(f"Processing WT comparison for {wt_family} with parameters: long={long_threshold}, dist={distance_threshold}, granularity={granularity}")
+        print(f"Procesando comparación WT para {wt_family} con parámetros: long={long_threshold}, dist={distance_threshold}, granularity={granularity}, tipo={export_type}")
+        
+        # Validación para segmentación atómica
+        if export_type == 'segments_atomicos' and granularity != 'atom':
+            return jsonify({"error": "La segmentación atómica requiere granularidad atómica"}), 400
         
         # Mapping of family identifiers to peptide codes
         wt_mapping = {
@@ -1046,8 +1097,8 @@ def export_wt_comparison_xlsx(wt_family):
         
         print(f"Reference file found: {reference_path}")
         
-        # === PROCESS WT TOXIN ===
-        print(f"Processing WT toxin: {wt_code}")
+        # === PROCESAR TOXINA WT ===
+        print(f"Procesando toxina WT: {wt_code}")
         wt_data = process_single_toxin_for_comparison(
             pdb_data=wt_pdb_data,
             toxin_name=wt_code,
@@ -1056,11 +1107,12 @@ def export_wt_comparison_xlsx(wt_family):
             granularity=granularity,
             long_threshold=long_threshold,
             distance_threshold=distance_threshold,
-            toxin_type="WT_Target"
+            toxin_type="WT_Target",
+            export_type=export_type
         )
         
-        # === PROCESS REFERENCE TOXIN ===
-        print(f"Processing reference toxin: hwt4_Hh2a_WT")
+        # === PROCESAR TOXINA DE REFERENCIA ===
+        print(f"Procesando toxina de referencia: hwt4_Hh2a_WT")
         with open(reference_path, 'r') as ref_file:
             ref_pdb_content = ref_file.read()
         
@@ -1072,80 +1124,121 @@ def export_wt_comparison_xlsx(wt_family):
             granularity=granularity,
             long_threshold=long_threshold,
             distance_threshold=distance_threshold,
-            toxin_type="Reference"
+            toxin_type="Reference",
+            export_type=export_type
         )
         
-        # Dictionary to store dataframes
+        # Diccionario para almacenar dataframes
         comparison_dataframes = {}
         
         if wt_data:
-            wt_df = pd.DataFrame(wt_data)
-            comparison_dataframes['WT_Target'] = wt_df
+            if export_type == 'segments_atomicos':
+                # Para segmentación atómica, wt_data ya es un DataFrame
+                comparison_dataframes['WT_Target'] = wt_data
+            else:
+                # Para análisis por residuos, convertir lista a DataFrame
+                wt_df = pd.DataFrame(wt_data)
+                comparison_dataframes['WT_Target'] = wt_df
         
         if ref_data:
-            ref_df = pd.DataFrame(ref_data)
-            comparison_dataframes['Reference'] = ref_df
+            if export_type == 'segments_atomicos':
+                # Para segmentación atómica, ref_data ya es un DataFrame
+                comparison_dataframes['Reference'] = ref_data
+            else:
+                # Para análisis por residuos, convertir lista a DataFrame
+                ref_df = pd.DataFrame(ref_data)
+                comparison_dataframes['Reference'] = ref_df
             
         # Crear metadatos completos
         metadata = {
-            'Toxina WT': wt_code,
-            'Toxina Referencia': 'hwt4_Hh2a_WT',
+            'Toxina_WT': wt_code,
+            'Toxina_Referencia': 'hwt4_Hh2a_WT',
             'Familia': wt_family,
-            'IC50 WT': f"{wt_ic50} {wt_unit}" if wt_ic50 and wt_unit else "No disponible",
+            'Tipo_Analisis': 'Segmentación Atómica' if export_type == 'segments_atomicos' else 'Análisis por Residuos',
+            'IC50_WT': f"{wt_ic50} {wt_unit}" if wt_ic50 and wt_unit else "No disponible",
             'Granularidad': granularity,
-            'Umbral de distancia': distance_threshold,
-            'Umbral de interacción larga': long_threshold
+            'Umbral_Distancia': distance_threshold,
+            'Umbral_Interaccion_Larga': long_threshold,
+            'Fecha_Exportacion': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
-        # Añadir datos de grafo si están disponibles
-        if 'G_wt' in locals():
-            metadata['Nodos WT'] = G_wt.number_of_nodes()
-            metadata['Aristas WT'] = G_wt.number_of_edges()
-            metadata['Densidad WT'] = round(nx.density(G_wt), 6)
-        
-        if 'G_ref' in locals():
-            metadata['Nodos Referencia'] = G_ref.number_of_nodes()
-            metadata['Aristas Referencia'] = G_ref.number_of_edges() 
-            metadata['Densidad Referencia'] = round(nx.density(G_ref), 6)
+        # Añadir datos de grafo si están disponibles (se eliminan referencias erróneas)
+        # Las métricas de grafo ahora se incluyen en process_single_toxin_for_comparison
             
-        # Create summary sheet with comparison metrics if both toxins were processed
+        # Crear hoja de resumen con métricas comparativas si ambas toxinas fueron procesadas
         if 'WT_Target' in comparison_dataframes and 'Reference' in comparison_dataframes:
-            # Add summary sheet with key differences and similarities
+            # Agregar hoja de resumen con diferencias y similitudes clave
             wt_df = comparison_dataframes['WT_Target']
             ref_df = comparison_dataframes['Reference']
             
-            # Calculate overall graph properties for comparison
-            summary_data = {
-                'Property': [
-                    'Toxina WT', 'Toxina Referencia',
-                    'Número de Residuos', 
-                    'Centralidad Grado Promedio',
-                    'Centralidad Intermediación Promedio', 
-                    'Centralidad Cercanía Promedio',
-                    'Coeficiente Agrupamiento Promedio'
-                ],
-                'WT_Target': [
-                    wt_code, 'N/A',
-                    len(wt_df),
-                    wt_df['Centralidad_Grado'].mean(),
-                    wt_df['Centralidad_Intermediacion'].mean(), 
-                    wt_df['Centralidad_Cercania'].mean(),
-                    wt_df['Coeficiente_Agrupamiento'].mean()
-                ],
-                'Reference': [
-                    'N/A', 'hwt4_Hh2a_WT',
-                    len(ref_df),
-                    ref_df['Centralidad_Grado'].mean(),
-                    ref_df['Centralidad_Intermediacion'].mean(), 
-                    ref_df['Centralidad_Cercania'].mean(),
-                    ref_df['Coeficiente_Agrupamiento'].mean()
-                ]
-            }
+            # Calcular propiedades generales del grafo para comparación
+            if export_type == 'segments_atomicos':
+                # Para segmentación atómica, usar métricas específicas
+                summary_data = {
+                    'Propiedad': [
+                        'Toxina_WT', 'Toxina_Referencia',
+                        'Numero_Segmentos_Atomicos', 
+                        'Conexiones_Internas_Promedio',
+                        'Densidad_Segmento_Promedio', 
+                        'Centralidad_Grado_Promedio',
+                        'Centralidad_Intermediacion_Promedio'
+                    ],
+                    'WT_Target': [
+                        wt_code, 'N/A',
+                        len(wt_df),
+                        wt_df['Conexiones_Internas'].mean() if 'Conexiones_Internas' in wt_df.columns else 0,
+                        wt_df['Densidad_Segmento'].mean() if 'Densidad_Segmento' in wt_df.columns else 0,
+                        wt_df['Centralidad_Grado_Promedio'].mean() if 'Centralidad_Grado_Promedio' in wt_df.columns else 0,
+                        wt_df['Centralidad_Intermediacion_Promedio'].mean() if 'Centralidad_Intermediacion_Promedio' in wt_df.columns else 0
+                    ],
+                    'Reference': [
+                        'N/A', 'hwt4_Hh2a_WT',
+                        len(ref_df),
+                        ref_df['Conexiones_Internas'].mean() if 'Conexiones_Internas' in ref_df.columns else 0,
+                        ref_df['Densidad_Segmento'].mean() if 'Densidad_Segmento' in ref_df.columns else 0,
+                        ref_df['Centralidad_Grado_Promedio'].mean() if 'Centralidad_Grado_Promedio' in ref_df.columns else 0,
+                        ref_df['Centralidad_Intermediacion_Promedio'].mean() if 'Centralidad_Intermediacion_Promedio' in ref_df.columns else 0
+                    ]
+                }
+            else:
+                # Para análisis por residuos, usar métricas tradicionales
+                summary_data = {
+                    'Propiedad': [
+                        'Toxina_WT', 'Toxina_Referencia',
+                        'Numero_Residuos', 
+                        'Centralidad_Grado_Promedio',
+                        'Centralidad_Intermediacion_Promedio', 
+                        'Centralidad_Cercania_Promedio',
+                        'Coeficiente_Agrupamiento_Promedio'
+                    ],
+                    'WT_Target': [
+                        wt_code, 'N/A',
+                        len(wt_df),
+                        wt_df['Centralidad_Grado'].mean() if 'Centralidad_Grado' in wt_df.columns else 0,
+                        wt_df['Centralidad_Intermediacion'].mean() if 'Centralidad_Intermediacion' in wt_df.columns else 0,
+                        wt_df['Centralidad_Cercania'].mean() if 'Centralidad_Cercania' in wt_df.columns else 0,
+                        wt_df['Coeficiente_Agrupamiento'].mean() if 'Coeficiente_Agrupamiento' in wt_df.columns else 0
+                    ],
+                    'Reference': [
+                        'N/A', 'hwt4_Hh2a_WT',
+                        len(ref_df),
+                        ref_df['Centralidad_Grado'].mean() if 'Centralidad_Grado' in ref_df.columns else 0,
+                        ref_df['Centralidad_Intermediacion'].mean() if 'Centralidad_Intermediacion' in ref_df.columns else 0,
+                        ref_df['Centralidad_Cercania'].mean() if 'Centralidad_Cercania' in ref_df.columns else 0,
+                        ref_df['Coeficiente_Agrupamiento'].mean() if 'Coeficiente_Agrupamiento' in ref_df.columns else 0
+                    ]
+                }
             
             comparison_dataframes['Resumen_Comparativo'] = pd.DataFrame(summary_data)
+            
         # Generar archivo Excel con metadatos
         family_clean = wt_family.replace('μ', 'mu').replace('β', 'beta').replace('ω', 'omega').replace('δ', 'delta')
-        filename_prefix = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}"
+        
+        if export_type == 'segments_atomicos':
+            filename_prefix = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_Segmentacion_Atomica_{granularity}"
+        else:
+            filename_prefix = f"Comparacion_WT_{family_clean}_vs_hwt4_Hh2a_WT_{granularity}"
+            
         excel_data, excel_filename = generate_excel(comparison_dataframes, filename_prefix, metadata=metadata)
         
         # Return the Excel file
@@ -1163,17 +1256,23 @@ def export_wt_comparison_xlsx(wt_family):
         return jsonify({"error": str(e)}), 500
 
 
-def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_unit, granularity, long_threshold, distance_threshold, toxin_type):
+def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_unit, granularity, long_threshold, distance_threshold, toxin_type, export_type='residues'):
     """
-    Procesa una sola toxina para análisis comparativo
+    Procesa una sola toxina para análisis comparativo.
+    Ahora soporta tanto análisis por residuos como segmentación atómica.
     """
     try:
+        # Preprocesar PDB para graphein
+        if isinstance(pdb_data, bytes):
+            pdb_content = pdb_data.decode('utf-8')
+        else:
+            pdb_content = pdb_data
+        
+        processed_pdb_content = preprocess_pdb_for_graphein(pdb_content)
+        
         # Crear archivo temporal
         with tempfile.NamedTemporaryFile(suffix='.pdb', delete=False) as temp_file:
-            if isinstance(pdb_data, bytes):
-                temp_file.write(pdb_data)
-            else:
-                temp_file.write(pdb_data.encode('utf-8'))
+            temp_file.write(processed_pdb_content.encode('utf-8'))
             temp_path = temp_file.name
         
         try:
@@ -1191,7 +1290,6 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
                         add_sidechain_vector
                     ]
                 )
-
             else:
                 cfg = ProteinGraphConfig(
                     granularity="CA",
@@ -1206,81 +1304,147 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
             G = construct_graph(config=cfg, pdb_code=None, path=temp_path)
             print(f"    ✅ Grafo construido: {G.number_of_nodes()} nodos, {G.number_of_edges()} aristas")
             
-            # Calcular métricas de centralidad
-            print(f"    📊 Calculando métricas de centralidad...")
-            degree_centrality = nx.degree_centrality(G)
-            betweenness_centrality = nx.betweenness_centrality(G)
-            closeness_centrality = nx.closeness_centrality(G)
-            clustering_coefficient = nx.clustering(G)
-            
-            # Normalizar IC50 a unidades consistentes (nM)
-            ic50_nm = None
-            if ic50_value and ic50_unit:
-                if ic50_unit.lower() == "nm":
-                    ic50_nm = ic50_value
-                elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
-                    ic50_nm = ic50_value * 1000
-                elif ic50_unit.lower() == "mm":
-                    ic50_nm = ic50_value * 1000000
-                else:
-                    ic50_nm = ic50_value
-            
-            print(f"     IC50 normalizado: {ic50_nm} nM")
-            
-            # Extraer familia WT
-            family_wt = None
-            if toxin_type == "WT_Target":
-                if "μ-TRTX-Hh2a" in toxin_name:
-                    family_wt = "Mu-TRTX-2a"
-                elif "μ-TRTX-Hhn2b" in toxin_name:
-                    family_wt = "Mu-TRTX-2b"
-                elif "β-TRTX" in toxin_name:
-                    family_wt = "Beta-TRTX"
-                elif "ω-TRTX" in toxin_name:
-                    family_wt = "Omega-TRTX"
-                else:
-                    family_wt = "Unknown"
-            else:
-                family_wt = "Reference"
-            
-            # Procesar cada nodo/residuo
-            toxin_data = []
-            for node, data in G.nodes(data=True):
-                if granularity == 'CA':
-                    parts = str(node).split(':')
-                    if len(parts) >= 3:
-                        chain = parts[0]
-                        residue_name = parts[1]
-                        residue_number = parts[2]
+            # Procesar según el tipo de exportación
+            if export_type == 'segments_atomicos':
+                # Usar segmentación atómica
+                print(f"    🧩 Aplicando segmentación atómica para {toxin_name}...")
+                df_segmentos = agrupar_por_segmentos_atomicos(G, granularity=granularity)
+                
+                if not df_segmentos.empty:
+                    # Agregar información de la toxina
+                    df_segmentos['Toxina'] = toxin_name
+                    df_segmentos['Tipo_Toxina'] = toxin_type
+                    if ic50_value and ic50_unit:
+                        df_segmentos['IC50_Value'] = ic50_value
+                        df_segmentos['IC50_Unit'] = ic50_unit
                     else:
+                        df_segmentos['IC50_Value'] = None
+                        df_segmentos['IC50_Unit'] = None
+                    
+                    # Normalizar IC50 a unidades consistentes (nM)
+                    if ic50_value and ic50_unit:
+                        if ic50_unit.lower() == "nm":
+                            ic50_nm = ic50_value
+                        elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
+                            ic50_nm = ic50_value * 1000
+                        elif ic50_unit.lower() == "mm":
+                            ic50_nm = ic50_value * 1000000
+                        else:
+                            ic50_nm = ic50_value
+                        df_segmentos['IC50_nM'] = ic50_nm
+                    else:
+                        df_segmentos['IC50_nM'] = None
+                    
+                    # Extraer familia WT
+                    if toxin_type == "WT_Target":
+                        if "μ-TRTX-Hh2a" in toxin_name:
+                            family_wt = "Mu-TRTX-2a"
+                        elif "μ-TRTX-Hhn2b" in toxin_name:
+                            family_wt = "Mu-TRTX-2b"
+                        elif "β-TRTX" in toxin_name:
+                            family_wt = "Beta-TRTX"
+                        elif "ω-TRTX" in toxin_name:
+                            family_wt = "Omega-TRTX"
+                        else:
+                            family_wt = "Unknown"
+                    else:
+                        family_wt = "Reference"
+                    
+                    df_segmentos['Familia_WT'] = family_wt
+                    
+                    # Reordenar columnas para que la información de toxina aparezca primero
+                    cols = ['Toxina', 'Tipo_Toxina', 'Familia_WT', 'IC50_Value', 'IC50_Unit', 'IC50_nM'] + [col for col in df_segmentos.columns if col not in ['Toxina', 'Tipo_Toxina', 'Familia_WT', 'IC50_Value', 'IC50_Unit', 'IC50_nM']]
+                    df_segmentos = df_segmentos[cols]
+                    
+                    print(f"    ✅ Segmentación completada: {len(df_segmentos)} segmentos procesados")
+                    return df_segmentos
+                else:
+                    print(f"    ⚠️ No se generaron segmentos para {toxin_name}")
+                    return pd.DataFrame()
+            
+            else:
+                # Análisis por residuos tradicional
+                print(f"    📊 Calculando métricas de centralidad para {toxin_name}...")
+                degree_centrality = nx.degree_centrality(G)
+                betweenness_centrality = nx.betweenness_centrality(G)
+                closeness_centrality = nx.closeness_centrality(G)
+                clustering_coefficient = nx.clustering(G)
+                
+                # Normalizar IC50 a unidades consistentes (nM)
+                ic50_nm = None
+                if ic50_value and ic50_unit:
+                    if ic50_unit.lower() == "nm":
+                        ic50_nm = ic50_value
+                    elif ic50_unit.lower() == "μm" or ic50_unit.lower() == "um":
+                        ic50_nm = ic50_value * 1000
+                    elif ic50_unit.lower() == "mm":
+                        ic50_nm = ic50_value * 1000000
+                    else:
+                        ic50_nm = ic50_value
+                
+                print(f"     IC50 normalizado: {ic50_nm} nM")
+                
+                # Extraer familia WT
+                family_wt = None
+                if toxin_type == "WT_Target":
+                    if "μ-TRTX-Hh2a" in toxin_name:
+                        family_wt = "Mu-TRTX-2a"
+                    elif "μ-TRTX-Hhn2b" in toxin_name:
+                        family_wt = "Mu-TRTX-2b"
+                    elif "β-TRTX" in toxin_name:
+                        family_wt = "Beta-TRTX"
+                    elif "ω-TRTX" in toxin_name:
+                        family_wt = "Omega-TRTX"
+                    else:
+                        family_wt = "Unknown"
+                else:
+                    family_wt = "Reference"
+                
+                # Procesar cada nodo/residuo
+                toxin_data = []
+                for node, data in G.nodes(data=True):
+                    if granularity == 'CA':
+                        parts = str(node).split(':')
+                        if len(parts) >= 3:
+                            chain = parts[0]
+                            residue_name = parts[1]
+                            residue_number = parts[2]
+                        else:
+                            chain = data.get('chain_id', 'A')
+                            residue_name = data.get('residue_name', 'UNK')
+                            residue_number = str(node)
+                    else:  # nivel atómico
                         chain = data.get('chain_id', 'A')
                         residue_name = data.get('residue_name', 'UNK')
-                        residue_number = str(node)
-                else:  # atom level
-                    chain = data.get('chain_id', 'A')
-                    residue_name = data.get('residue_name', 'UNK')
-                    residue_number = str(data.get('residue_number', node))
+                        residue_number = str(data.get('residue_number', node))
+                    
+                    # Incluir datos esenciales y métricas
+                    toxin_data.append({
+                        # Identificadores
+                        'Toxina': toxin_name,
+                        'Tipo_Toxina': toxin_type,
+                        'Familia_WT': family_wt,
+                        'Cadena': chain,
+                        'Residuo_Nombre': residue_name,
+                        'Residuo_Numero': residue_number,
+                        
+                        # Información de IC50
+                        'IC50_Value': ic50_value,
+                        'IC50_Unit': ic50_unit,
+                        'IC50_nM': ic50_nm,
+                        
+                        # Métricas de centralidad
+                        'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
+                        'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
+                        'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
+                        'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
+                        
+                        # Propiedades estructurales
+                        'Grado_Nodo': G.degree(node)
+                    })
                 
-                # Simplificar los datos incluidos
-                toxin_data.append({
-                    # Solo incluir identificadores esenciales
-                    'Toxina': toxin_name,
-                    'Cadena': chain,
-                    'Residuo_Nombre': residue_name,
-                    'Residuo_Numero': residue_number,
-                    
-                    # Métricas de centralidad
-                    'Centralidad_Grado': round(degree_centrality.get(node, 0), 6),
-                    'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6),
-                    'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6),
-                    'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6),
-                    
-                    # Propiedades estructurales
-                    'Grado_Nodo': G.degree(node)
-                })
-            
-            print(f"     Procesados {len(toxin_data)} residuos de {toxin_name}")
-            return toxin_data
+                print(f"     ✅ Procesados {len(toxin_data)} residuos de {toxin_name}")
+                return toxin_data
             
         finally:
             os.unlink(temp_path)
@@ -1290,7 +1454,7 @@ def process_single_toxin_for_comparison(pdb_data, toxin_name, ic50_value, ic50_u
         print(f"     Error procesando {toxin_name}: {str(e)}")
         import traceback
         traceback.print_exc()
-        return []
+        return [] if export_type != 'segments_atomicos' else pd.DataFrame()
         
 # Agregar este nuevo endpoint después de get_pdb
 @viewer_bp.route("/get_psf/<string:source>/<int:pid>")
