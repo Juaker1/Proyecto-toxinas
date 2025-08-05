@@ -152,31 +152,45 @@ class DipoleFamilyAnalyzer {
             const { all_peptides } = familyData;
             
             listHTML += `
-                <div class="alert alert-info">
-                    <strong><i class="fas fa-info-circle me-2"></i>Familia β-TRTX:</strong><br>
-                    <span class="text-muted">Esta familia contiene múltiples péptidos originales relacionados.</span>
-                </div>
                 <div class="mt-3">
                     <strong><i class="fas fa-dna me-2"></i>Péptidos de la Familia (${total_count}):</strong>
-                    <ul class="list-group list-group-flush mt-2">
+                    <div class="table-responsive mt-2">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Secuencia</th>
+                                    <th>IC50</th>
+                                </tr>
+                            </thead>
+                            <tbody>
             `;
             
             all_peptides.forEach(peptide => {
                 listHTML += `
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="font-monospace fw-bold">${peptide.peptide_code}</span>
-                        </div>
-                        <small class="text-muted">
-                            IC50: ${peptide.ic50_value} ${peptide.ic50_unit}
-                        </small>
-                    </li>
+                    <tr>
+                        <td>
+                            <span class="font-monospace fw-bold text-primary">${peptide.peptide_code}</span>
+                        </td>
+                        <td>
+                            <div class="sequence-container">
+                                <code class="sequence-text" title="Clic para expandir">${this.formatSequence(peptide.sequence)}</code>
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                ${peptide.ic50_value} ${peptide.ic50_unit}
+                            </small>
+                        </td>
+                    </tr>
                 `;
             });
             
             listHTML += `
-                    </ul>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             `;
         } 
         // Manejar familias con original + modificados
@@ -187,11 +201,27 @@ class DipoleFamilyAnalyzer {
             if (original_peptide) {
                 listHTML += `
                     <div class="alert alert-primary">
-                        <strong><i class="fas fa-star me-2"></i>Péptido Original:</strong><br>
-                        <span class="font-monospace">${original_peptide.peptide_code}</span>
-                        <small class="text-muted ms-2">
-                            (IC50: ${original_peptide.ic50_value} ${original_peptide.ic50_unit})
-                        </small>
+                        <div class="row">
+                            <div class="col-12">
+                                <strong><i class="fas fa-star me-2"></i>Péptido Original:</strong>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-3">
+                                <strong>Código:</strong><br>
+                                <span class="font-monospace text-primary">${original_peptide.peptide_code}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Secuencia:</strong><br>
+                                <code class="sequence-text bg-light p-1 rounded">${this.formatSequence(original_peptide.sequence)}</code>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>IC50:</strong><br>
+                                <small class="text-muted">
+                                    ${original_peptide.ic50_value} ${original_peptide.ic50_unit}
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -201,25 +231,47 @@ class DipoleFamilyAnalyzer {
                 listHTML += `
                     <div class="mt-3">
                         <strong><i class="fas fa-flask me-2"></i>Péptidos Modificados (${modified_count}):</strong>
-                        <ul class="list-group list-group-flush mt-2">
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Secuencia</th>
+                                        <th>IC50</th>
+                                        <th>Diferencias</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                 `;
                 
                 modified_peptides.forEach(peptide => {
+                    const differences = this.findSequenceDifferences(original_peptide.sequence, peptide.sequence);
+                    
                     listHTML += `
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div>
+                        <tr>
+                            <td>
                                 <span class="font-monospace">${peptide.peptide_code}</span>
-                            </div>
-                            <small class="text-muted">
-                                IC50: ${peptide.ic50_value} ${peptide.ic50_unit}
-                            </small>
-                        </li>
+                            </td>
+                            <td>
+                                <code class="sequence-text small">${this.formatSequence(peptide.sequence)}</code>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    ${peptide.ic50_value} ${peptide.ic50_unit}
+                                </small>
+                            </td>
+                            <td>
+                                ${differences ? `<span class="badge bg-warning text-dark">${differences}</span>` : '<span class="text-muted">-</span>'}
+                            </td>
+                        </tr>
                     `;
                 });
                 
                 listHTML += `
-                        </ul>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
                 `;
             }
         }
@@ -231,6 +283,66 @@ class DipoleFamilyAnalyzer {
         
         this.peptideList.innerHTML = listHTML;
         this.peptideList.style.display = 'block';
+        
+        // Añadir funcionalidad de clic para expandir secuencias
+        this.addSequenceClickHandlers();
+    }
+
+    // ✨ NUEVO: Método para formatear secuencias
+    formatSequence(sequence) {
+        if (!sequence) return 'N/A';
+        
+        // Si la secuencia es muy larga, truncar para la vista inicial
+        if (sequence.length > 50) {
+            return sequence.substring(0, 47) + '...';
+        }
+        return sequence;
+    }
+
+    // ✨ NUEVO: Método para encontrar diferencias entre secuencias
+    findSequenceDifferences(originalSeq, modifiedSeq) {
+        if (!originalSeq || !modifiedSeq) return null;
+        
+        // Buscar el patrón de modificación en el nombre del péptido
+        // Por ejemplo: μ-TRTX-Hh2a_Y33W indica una sustitución Y→W en posición 33
+        const modifications = [];
+        
+        for (let i = 0; i < Math.min(originalSeq.length, modifiedSeq.length); i++) {
+            if (originalSeq[i] !== modifiedSeq[i]) {
+                modifications.push(`${originalSeq[i]}${i+1}${modifiedSeq[i]}`);
+            }
+        }
+        
+        if (originalSeq.length !== modifiedSeq.length) {
+            modifications.push(`Δ${Math.abs(originalSeq.length - modifiedSeq.length)}`);
+        }
+        
+        return modifications.length > 0 ? modifications.join(', ') : null;
+    }
+
+    // ✨ NUEVO: Añadir manejadores de clic para expandir secuencias
+    addSequenceClickHandlers() {
+        document.querySelectorAll('.sequence-text').forEach(element => {
+            element.style.cursor = 'pointer';
+            element.addEventListener('click', function() {
+                const isExpanded = this.dataset.expanded === 'true';
+                
+                if (isExpanded) {
+                    // Contraer
+                    this.textContent = this.dataset.shortText;
+                    this.dataset.expanded = 'false';
+                    this.title = 'Clic para expandir';
+                } else {
+                    // Expandir
+                    const fullSequence = this.dataset.fullText || this.textContent.replace('...', '');
+                    this.dataset.shortText = this.textContent;
+                    this.dataset.fullText = fullSequence;
+                    this.textContent = fullSequence;
+                    this.dataset.expanded = 'true';
+                    this.title = 'Clic para contraer';
+                }
+            });
+        });
     }
 
     async loadFamilyData() {
@@ -262,6 +374,9 @@ class DipoleFamilyAnalyzer {
         
         if (!selectedFamily) return;
         
+        console.log('🔍 DEBUG: Iniciando visualización familiar');
+        console.log('🔍 Familia seleccionada:', selectedFamily);
+        
         try {
             this.showLoading(true, 'Calculando dipolos de la familia...');
             
@@ -270,6 +385,11 @@ class DipoleFamilyAnalyzer {
             const data = await response.json();
             
             if (data.success) {
+                console.log('🔍 Response completa:', data);
+                console.log('🔍 Número de resultados dipolo:', data.data?.dipole_results?.length || 0);
+                console.log('🔍 Número de errores:', data.data?.errors?.length || 0);
+                console.log('🔍 Primer resultado (si existe):', data.data?.dipole_results?.[0]);
+                
                 this.currentFamilyData = data.data;
                 this.createDipoleGrid(data.data.dipole_results);
                 this.displayFamilyStats();

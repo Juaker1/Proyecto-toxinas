@@ -11,7 +11,7 @@ peptides_data = [
         "accession_number": None, "peptide_code": "μ-TRTX-Hh2a_E1A", "sequence": "ACLEIFKACNPSNDQCCKSSKLVCSRKTRWCKYQI", "pharmacophore_match": "IF–S–WCKY", "residue_count": 7, "ic50": 6.0, "unit": "nM", "pdb_download_link": None
     },
     {
-        "accession_number": None, "peptide_code": "μ-TRTX-Hh2a_E4A", "sequence": "ECLAIFKACNPSNDQvCCKSSKLVCSRKTRWCKYQI", "pharmacophore_match": "IF–S–WCKY", "residue_count": 7, "ic50": 26.0, "unit": "nM", "pdb_download_link": None
+        "accession_number": None, "peptide_code": "μ-TRTX-Hh2a_E4A", "sequence": "ECLAIFKACNPSNDQCCKSSKLVCSRKTRWCKYQI", "pharmacophore_match": "IF–S–WCKY", "residue_count": 7, "ic50": 26.0, "unit": "nM", "pdb_download_link": None
     },
     {
         "accession_number": None, "peptide_code": "μ-TRTX-Hh2a_Y33W", "sequence": "ECLEIFKACNPSNDQCCKSSKLVCSRKTRWCKWQI", "pharmacophore_match": "IF–S–WCKW", "residue_count": 7, "ic50": 1.4, "unit": "nM", "pdb_download_link": None

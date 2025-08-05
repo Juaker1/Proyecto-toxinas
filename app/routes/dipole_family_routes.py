@@ -106,27 +106,32 @@ def get_family_dipoles(family_name):
                 psf_data = db_service.get_psf_data(peptide['id'])
                 
                 if pdb_data:
-                    # Calcular dipolo para cada péptido
+                    # ✅ CORRECCIÓN: No codificar los datos que ya vienen como bytes
                     dipole_result = dipole_service.process_dipole_calculation(
-                        pdb_data.encode('utf-8') if isinstance(pdb_data, str) else pdb_data,
-                        psf_data.encode('utf-8') if psf_data and isinstance(psf_data, str) else psf_data
+                        pdb_data,  # Sin .encode()
+                        psf_data   # Sin .encode()
                     )
-                    print(dipole_result)
+                    
+                    
                     if dipole_result['success']:
-                        
+                        # ✅ CORRECCIÓN: Convertir PDB a string para el frontend
+                        pdb_text = pdb_data.decode('utf-8') if isinstance(pdb_data, bytes) else pdb_data
+                        psf_data = psf_data.decode('utf-8') if isinstance(psf_data, bytes) else psf_data
+
                         dipole_results.append({
                             'peptide_id': peptide['id'],
                             'peptide_code': peptide['peptide_code'],
                             'ic50_value': peptide['ic50_value'],
                             'ic50_unit': peptide['ic50_unit'],
-                            'pdb_data': pdb_data,
-                            'dipole_data': dipole_result['dipole_data']
+                            'pdb_data': pdb_text, 
+                            'psf_data': psf_data,
+                            'dipole_data': dipole_result['dipole']
                         })
                         
                     else:
                         calculation_errors.append({
                             'peptide_code': peptide['peptide_code'],
-                            'error': dipole_result['error']
+                            'error': dipole_result.get('error', 'Error desconocido en cálculo dipolar')
                         })
                         
                 else:
@@ -135,11 +140,10 @@ def get_family_dipoles(family_name):
                         'error': 'No se encontraron datos PDB'
                     })
                     
-                    
             except Exception as e:
                 calculation_errors.append({
                     'peptide_code': peptide['peptide_code'],
-                    'error': str(e)
+                    'error': f'Error procesando péptido: {str(e)}'
                 })
         
         # Calcular estadísticas
@@ -172,6 +176,7 @@ def get_family_dipoles(family_name):
         })
         
     except Exception as e:
+        print(f"Error en get_family_dipoles: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)

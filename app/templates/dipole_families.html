@@ -4,119 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análisis de Dipolo por Familia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- ✅ Solo CSS del proyecto -->
+    <link href="{{ url_for('static', filename='css/viewer.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/dipole_families.css') }}" rel="stylesheet">
+    <!-- ✅ Solo py3Dmol externo necesario -->
     <script src="https://3dmol.org/build/3Dmol-min.js"></script>
 </head>
-<body class="bg-light">
-    <div class="container-fluid mt-4">
-        <!-- Header con botón de regreso -->
-        <div class="row mb-4">
-            <div class="col-12 d-flex justify-content-between align-items-center">
-                <h1 class="text-primary">Análisis de Dipolo por Familia</h1>
-                <a href="{{ url_for('viewer.viewer') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Visualizador
+<body class="family-analysis-body">
+    <div class="family-container">
+        <!-- Header con navegación -->
+        <div class="family-header">
+            <div class="header-content">
+                <h1 class="page-title">
+                    <i class="icon-dna"></i>Análisis de Dipolo por Familia
+                </h1>
+                <a href="{{ url_for('viewer.viewer') }}" class="btn btn-back">
+                    <i class="icon-arrow-left"></i>Volver al Visualizador
                 </a>
             </div>
         </div>
 
         <!-- Selector de familia -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-dna me-2"></i>Selección de Familia de Toxinas
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="familySelector" class="form-label">Familia de Toxinas</label>
-                                <select class="form-select" id="familySelector">
-                                    <option value="" selected disabled>Seleccione una familia de toxinas...</option>
-                                    <!-- Opciones se cargarán dinámicamente -->
-                                </select>
-                            </div>
-                            <div class="col-md-6 d-flex align-items-end">
-                                <button type="button" class="btn btn-primary me-2" id="visualizeFamilyBtn" disabled>
-                                    <i class="fas fa-eye me-2"></i>Visualizar Dipolos de la Familia
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Info de la familia seleccionada -->
-                        <div id="familyInfo" class="alert alert-info" style="display: none;">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <span id="familyInfoText">Información de la familia...</span>
-                        </div>
-                        
-                        <!-- Nueva área para mostrar lista de péptidos -->
-                        <div id="peptideList" style="display: none;">
-                            <!-- Los péptidos se cargarán aquí dinámicamente -->
-                        </div>
-                    </div>
+        <div class="family-selection-section">
+            <div class="selection-card">
+                <div class="card-header">
+                    <h2 class="section-title">
+                        <i class="icon-family"></i>Selección de Familia de Toxinas
+                    </h2>
                 </div>
-            </div>
-        </div>
-
-        <!-- Área de visualización (inicialmente oculta) -->
-        <div class="row mt-4" id="visualizationArea" style="display: none;">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-chart-scatter me-2"></i>Visualización de Dipolos - <span id="selectedFamilyTitle"></span>
-                        </h5>
-                        <div>
-                            <button type="button" class="btn btn-sm btn-outline-primary" id="exportDataBtn">
-                                <i class="fas fa-file-export me-1"></i>Exportar Datos
+                <div class="card-body">
+                    <div class="selection-controls">
+                        <div class="control-group">
+                            <label for="familySelector" class="control-label">Familia de Toxinas</label>
+                            <select class="family-selector" id="familySelector">
+                                <option value="" selected disabled>Seleccione una familia de toxinas...</option>
+                                <!-- Opciones se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="action-controls">
+                            <button type="button" class="btn btn-primary btn-visualize" id="visualizeFamilyBtn" disabled>
+                                <i class="icon-eye"></i>Visualizar Dipolos de la Familia
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <!-- Área donde se mostrará la visualización -->
-                        <div id="dipoleVisualization">
-                            <div class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: none;">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                                <p class="text-muted mt-3" id="visualizationPlaceholder">Seleccione "Visualizar Dipolos" para ver las estructuras...</p>
-                            </div>
-                        </div>
-                        <!-- Agregar este elemento que falta -->
-                        <div id="visualizationGrid"></div>
+                    
+                    <!-- Info de la familia seleccionada -->
+                    <div id="familyInfo" class="family-info-alert" style="display: none;">
+                        <i class="icon-info"></i>
+                        <span id="familyInfoText">Información de la familia...</span>
+                    </div>
+                    
+                    <!-- Lista de péptidos -->
+                    <div id="peptideList" class="peptide-list-container" style="display: none;">
+                        <!-- Los péptidos se cargarán aquí dinámicamente -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Área de estadísticas (inicialmente oculta) -->
-        <div class="row mt-4" id="statisticsArea" style="display: none;">
-            <div class="col-md-6">
-                <div class="card">
+        <!-- Área de visualización -->
+        <div class="visualization-section" id="visualizationArea" style="display: none;">
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="header-left">
+                        <h2 class="section-title">
+                            <i class="icon-chart"></i>Visualización de Dipolos - <span id="selectedFamilyTitle"></span>
+                        </h2>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-export" id="exportDataBtn">
+                            <i class="icon-export"></i>Exportar Datos
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Área de visualización -->
+                    <div id="dipoleVisualization" class="dipole-visualization-area">
+                        <div class="loading-state">
+                            <div class="spinner" id="loadingSpinner" style="display: none;"></div>
+                            <p class="loading-text" id="visualizationPlaceholder">
+                                Seleccione "Visualizar Dipolos" para ver las estructuras...
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Grid de visualizaciones -->
+                    <div id="visualizationGrid" class="visualization-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de estadísticas -->
+        <div class="statistics-section" id="statisticsArea" style="display: none;">
+            <div class="statistics-grid">
+                <div class="stat-card">
                     <div class="card-header">
-                        <h6 class="card-title mb-0">
-                            <i class="fas fa-calculator me-2"></i>Estadísticas de Magnitud
-                        </h6>
+                        <h3 class="card-title">
+                            <i class="icon-calculator"></i>Estadísticas de Magnitud
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <div id="magnitudeStats">
+                        <div id="magnitudeStats" class="stats-content">
                             <!-- Estadísticas se cargarán aquí -->
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
+                <div class="stat-card">
                     <div class="card-header">
-                        <h6 class="card-title mb-0">
-                            <i class="fas fa-compass me-2"></i>Análisis de Orientación
-                        </h6>
+                        <h3 class="card-title">
+                            <i class="icon-compass"></i>Análisis de Orientación
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <div id="orientationStats">
+                        <div id="orientationStats" class="stats-content">
                             <!-- Análisis de orientación se cargará aquí -->
                         </div>
                     </div>
