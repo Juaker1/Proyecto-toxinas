@@ -15,7 +15,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer.css') }}">
 </head>
 <body>
-    <h3>Visualizador de Proteínas - Vista Integrada</h3>
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1 class="page-title">
+                <i class="icon-molecule"></i>Visualizador de Proteínas - Vista Integrada
+            </h1>
+            <a href="{{ url_for('dipole_family_routes.dipole_family_analysis') }}" class="btn btn-family-analysis">
+                <i class="icon-dna"></i>Análisis de Dipolo por Familia
+            </a>
+        </div>
+    </div>
 
     <!-- Controles superiores -->
     <div class="controls-container">

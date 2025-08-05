@@ -1606,3 +1606,214 @@ input:not(:checked) + .slider .slider-text:before {
     visibility: visible;
     opacity: 1;
 }
+
+/* ===== HEADER PRINCIPAL ===== */
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ===== ICONOS PERSONALIZADOS ===== */
+.icon-molecule::before {
+    content: "🧬";
+    font-size: 1.8rem;
+}
+
+.icon-dna::before {
+    content: "🧬";
+    font-size: 1rem;
+    margin-right: 8px;
+}
+
+.icon-arrow-left::before {
+    content: "←";
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* ===== BOTÓN ANÁLISIS DE FAMILIA (igual al de volver) ===== */
+.btn-family-analysis {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+}
+
+.btn-family-analysis:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-family-analysis:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* ===== LAYOUT DEL HEADER ===== */
+.row.mb-4 {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px 25px;
+    border-radius: 12px;
+    border: 2px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 25px !important;
+}
+
+.row.mb-4 .col-12 {
+    align-items: center;
+    gap: 20px;
+}
+
+/* ===== RESPONSIVE PARA EL HEADER ===== */
+@media (max-width: 1200px) {
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .btn-family-analysis {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .row.mb-4 .col-12 {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+        justify-content: center;
+    }
+    
+    .btn-family-analysis {
+        width: auto;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .row.mb-4 {
+        padding: 15px 20px;
+        margin-bottom: 20px !important;
+    }
+    
+    .page-title {
+        font-size: 1.6rem;
+        gap: 8px;
+    }
+    
+    .icon-molecule::before {
+        font-size: 1.5rem;
+    }
+    
+    .btn-family-analysis {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+    }
+    
+    .icon-dna::before {
+        font-size: 0.9rem;
+        margin-right: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.4rem;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn-family-analysis {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+    
+    .row.mb-4 {
+        padding: 12px 15px;
+    }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes headerSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.row.mb-4 {
+    animation: headerSlideIn 0.5s ease-out;
+}
+
+/* ===== EFECTOS VISUALES ADICIONALES ===== */
+.btn-family-analysis::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    border-radius: 25px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.btn-family-analysis:hover::before {
+    opacity: 1;
+}
+
+.btn-family-analysis {
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== MANTENER COMPATIBILIDAD CON ESTILOS EXISTENTES ===== */
+.text-primary {
+    color: #2c3e50 !important;
+}
+
+/* Actualizar el h1 existente para que use la nueva clase */
+h1.text-primary {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}

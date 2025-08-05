@@ -349,3 +349,4 @@ def export_family_xlsx(family_prefix):
         print(f"Error: {str(e)}")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+    

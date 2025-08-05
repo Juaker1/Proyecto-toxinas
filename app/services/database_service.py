@@ -207,7 +207,7 @@ class DatabaseService:
             return cursor.fetchall()
         finally:
             conn.close()
-    
+
     def get_wt_toxin_by_code(self, peptide_code: str) -> Optional[Tuple[int, str, Optional[float], Optional[str], bytes]]:
         """
         Obtiene una toxina WT específica por su código.
@@ -229,5 +229,60 @@ class DatabaseService:
             """, (peptide_code,))
             
             return cursor.fetchone()
+        finally:
+            conn.close()
+    
+    def get_family_peptides(self, family_prefix: str) -> List[Dict]:
+        """
+        Obtiene todos los péptidos de una familia específica incluyendo el original y modificados.
+        
+        Args:
+            family_prefix: Nombre base de la familia (ej: 'μ-TRTX-Hh2a', 'μ-TRTX-Hhn2b', 'β-TRTX')
+            
+        Returns:
+            Lista de diccionarios con información de péptidos
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        try:
+            # Caso especial para β-TRTX: buscar todos los péptidos que empiecen con β-TRTX
+            if family_prefix == 'β-TRTX':
+                cursor.execute("""
+                    SELECT id, peptide_code, ic50_value, ic50_unit, sequence, 
+                           'original' as peptide_type
+                    FROM Nav1_7_InhibitorPeptides 
+                    WHERE peptide_code LIKE 'β-TRTX-%'
+                    ORDER BY peptide_code ASC
+                """, ())
+            else:
+                # Para otras familias: buscar péptido original (nombre exacto) y modificados
+                cursor.execute("""
+                    SELECT id, peptide_code, ic50_value, ic50_unit, sequence, 
+                           CASE 
+                               WHEN peptide_code = ? THEN 'original'
+                               ELSE 'modified'
+                           END as peptide_type
+                    FROM Nav1_7_InhibitorPeptides 
+                    WHERE peptide_code = ? OR peptide_code LIKE ?
+                    ORDER BY peptide_type ASC, peptide_code ASC
+                """, (family_prefix, family_prefix, f"{family_prefix}_%"))
+        
+            results = cursor.fetchall()
+            
+            # Convertir a lista de diccionarios
+            peptides = []
+            for row in results:
+                peptides.append({
+                    'id': row[0],
+                    'peptide_code': row[1],
+                    'ic50_value': row[2],
+                    'ic50_unit': row[3],
+                    'sequence': row[4],
+                    'peptide_type': row[5]
+                })
+            
+            return peptides
+            
         finally:
             conn.close()

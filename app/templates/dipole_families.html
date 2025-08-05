@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Dipolo por Familia</title>
+    <!-- ✅ Solo CSS del proyecto -->
+    <link href="{{ url_for('static', filename='css/viewer.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dipole_families.css') }}" rel="stylesheet">
+    <!-- ✅ Solo py3Dmol externo necesario -->
+    <script src="https://3dmol.org/build/3Dmol-min.js"></script>
+</head>
+<body class="family-analysis-body">
+    <div class="family-container">
+        <!-- Header con navegación -->
+        <div class="family-header">
+            <div class="header-content">
+                <h1 class="page-title">
+                    <i class="icon-dna"></i>Análisis de Dipolo por Familia
+                </h1>
+                <a href="{{ url_for('viewer.viewer') }}" class="btn btn-back">
+                    <i class="icon-arrow-left"></i>Volver al Visualizador
+                </a>
+            </div>
+        </div>
+
+        <!-- Selector de familia -->
+        <div class="family-selection-section">
+            <div class="selection-card">
+                <div class="card-header">
+                    <h2 class="section-title">
+                        <i class="icon-family"></i>Selección de Familia de Toxinas
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="selection-controls">
+                        <div class="control-group">
+                            <label for="familySelector" class="control-label">Familia de Toxinas</label>
+                            <select class="family-selector" id="familySelector">
+                                <option value="" selected disabled>Seleccione una familia de toxinas...</option>
+                                <!-- Opciones se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="action-controls">
+                            <button type="button" class="btn btn-primary btn-visualize" id="visualizeFamilyBtn" disabled>
+                                <i class="icon-eye"></i>Visualizar Dipolos de la Familia
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Info de la familia seleccionada -->
+                    <div id="familyInfo" class="family-info-alert" style="display: none;">
+                        <i class="icon-info"></i>
+                        <span id="familyInfoText">Información de la familia...</span>
+                    </div>
+                    
+                    <!-- Lista de péptidos -->
+                    <div id="peptideList" class="peptide-list-container" style="display: none;">
+                        <!-- Los péptidos se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de visualización -->
+        <div class="visualization-section" id="visualizationArea" style="display: none;">
+            <div class="visualization-card">
+                <div class="card-header">
+                    <div class="header-left">
+                        <h2 class="section-title">
+                            <i class="icon-chart"></i>Visualización de Dipolos - <span id="selectedFamilyTitle"></span>
+                        </h2>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-export" id="exportDataBtn">
+                            <i class="icon-export"></i>Exportar Datos
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Área de visualización -->
+                    <div id="dipoleVisualization" class="dipole-visualization-area">
+                        <div class="loading-state">
+                            <div class="spinner" id="loadingSpinner" style="display: none;"></div>
+                            <p class="loading-text" id="visualizationPlaceholder">
+                                Seleccione "Visualizar Dipolos" para ver las estructuras...
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Grid de visualizaciones -->
+                    <div id="visualizationGrid" class="visualization-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de estadísticas -->
+        <div class="statistics-section" id="statisticsArea" style="display: none;">
+            <div class="statistics-grid">
+                <div class="stat-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="icon-calculator"></i>Estadísticas de Magnitud
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="magnitudeStats" class="stats-content">
+                            <!-- Estadísticas se cargarán aquí -->
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="icon-compass"></i>Análisis de Orientación
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="orientationStats" class="stats-content">
+                            <!-- Análisis de orientación se cargará aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dipole_family_analysis.js') }}"></script>
+</body>
+</html>

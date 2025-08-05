@@ -3,7 +3,7 @@ Rutas para análisis de momento dipolar.
 Este módulo maneja los cálculos de momento dipolar de toxinas.
 """
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 import traceback
 
 from app.services.database_service import DatabaseService
