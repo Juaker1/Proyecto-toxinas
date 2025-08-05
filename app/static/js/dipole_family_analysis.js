@@ -413,62 +413,50 @@ class DipoleFamilyAnalyzer {
             return;
         }
 
-        // Crear contenedor del grid
-        let gridHTML = `
-            <div class="dipole-grid-container">
-                <div class="row">
-        `;
+        // ✅ CAMBIO: CSS Grid puro sin Bootstrap
+        let gridHTML = '';
 
         dipoleResults.forEach((result, index) => {
-            // Crear nueva fila cada 2 elementos
-            if (index > 0 && index % 2 === 0) {
-                gridHTML += `
-                </div>
-                <div class="row mt-4">
-                `;
-            }
-
             const dipoleData = result.dipole_data;
             const peptideCode = result.peptide_code;
             
             gridHTML += `
-                <div class="col-md-6">
-                    <div class="card dipole-visualization-card">
-                        <div class="card-header">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-dna me-2"></i>${peptideCode}
-                            </h6>
-                            <small class="text-muted">
-                                IC50: ${result.ic50_value} ${result.ic50_unit}
-                            </small>
+                <div class="dipole-visualization-card">
+                    <div class="dipole-card-header">
+                        <h6 class="dipole-card-title">
+                            <i class="fas fa-dna"></i>${peptideCode}
+                        </h6>
+                        <small class="dipole-card-subtitle">
+                            IC50: ${result.ic50_value} ${result.ic50_unit}
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <!-- Visualización 3D del dipolo -->
+                        <div id="dipole-viewer-${index}" class="dipole-viewer">
+                            <div class="loading-placeholder">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Cargando estructura...</span>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <!-- Visualización 3D del dipolo -->
-                            <div id="dipole-viewer-${index}" class="dipole-viewer" style="height: 400px;">
-                                <div class="loading-placeholder">
-                                    <div class="spinner-border spinner-border-sm" role="status"></div>
-                                    <span class="ms-2">Cargando estructura...</span>
+                        
+                        <!-- Información del dipolo -->
+                        <div class="dipole-info-compact">
+                            <div class="dipole-stats">
+                                <div class="dipole-stat">
+                                    <div class="stat-label">Magnitud</div>
+                                    <div class="stat-value">${dipoleData.magnitude.toFixed(3)} D</div>
+                                </div>
+                                <div class="dipole-stat">
+                                    <div class="stat-label">Ángulo Z</div>
+                                    <div class="stat-value">${dipoleData.angle_with_z_axis.degrees.toFixed(1)}°</div>
+                                </div>
+                                <div class="dipole-stat">
+                                    <div class="stat-label">Componentes</div>
+                                    <div class="stat-value">X,Y,Z</div>
                                 </div>
                             </div>
-                            
-                            <!-- Información del dipolo -->
-                            <div class="dipole-info-compact mt-3">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <small class="text-muted">Magnitud:</small><br>
-                                        <strong>${dipoleData.magnitude.toFixed(3)} D</strong>
-                                    </div>
-                                    <div class="col-6">
-                                        <small class="text-muted">Ángulo Z:</small><br>
-                                        <strong>${dipoleData.angle_with_z_axis.degrees.toFixed(1)}°</strong>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-12">
-                                        <small class="text-muted">Vector:</small><br>
-                                        <code class="small">[${dipoleData.vector.map(x => x.toFixed(2)).join(', ')}]</code>
-                                    </div>
-                                </div>
+                            <div class="dipole-vector-info">
+                                <code class="vector-code">[${dipoleData.vector.map(x => x.toFixed(2)).join(', ')}]</code>
                             </div>
                         </div>
                     </div>
@@ -476,14 +464,15 @@ class DipoleFamilyAnalyzer {
             `;
         });
 
-        gridHTML += `
-                </div>
-            </div>
-        `;
-
-        // Insertar HTML en el contenedor
+        // ✅ Insertar directamente en visualizationGrid
         const dipoleVisualization = document.getElementById('dipoleVisualization');
-        dipoleVisualization.innerHTML = gridHTML;
+        const visualizationGrid = document.getElementById('visualizationGrid');
+        
+        // Limpiar el área de carga
+        dipoleVisualization.innerHTML = '';
+        
+        // Insertar grid en visualizationGrid
+        visualizationGrid.innerHTML = gridHTML;
 
         // Inicializar visualizadores py3Dmol para cada toxina
         this.initializeDipoleViewers(dipoleResults);
