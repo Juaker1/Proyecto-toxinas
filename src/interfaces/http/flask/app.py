@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+import os, importlib
 import os
 import importlib
 
@@ -137,6 +138,12 @@ def create_app_v2() -> Flask:
         app.register_blueprint(families_v2)
     except Exception as e:
         app.logger.warning(f"v2 families blueprint not registered: {e}")
+    # Toxin filter (motif) page
+    try:
+        from src.interfaces.http.flask.controllers.v2.toxins_filter_controller import toxin_filter_v2
+        app.register_blueprint(toxin_filter_v2)
+    except Exception as e:
+        app.logger.warning(f"v2 toxin_filter blueprint not registered: {e}")
     try:
         from src.interfaces.http.flask.controllers.graphs_controller import graphs_v2, configure_graphs_dependencies
         configure_graphs_dependencies(

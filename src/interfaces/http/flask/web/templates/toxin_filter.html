@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Toxinas NaSpTx-like</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer.css') }}">
+</head>
+<body class="family-analysis-body">
+<div class="family-container">
+    <div class="family-header">
+        <div class="header-content">
+            <h1 class="page-title"><i class="icon-dna"></i>Motivos NaSpTx-like</h1>
+            <div>
+                <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="btn btn-back"><i class="icon-arrow-left"></i>Visualizador</a>
+                <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="btn btn-family-analysis"><i class="icon-dna"></i>Dipolos Familias</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="family-selection-section">
+        <div class="selection-card">
+            <div class="card-header"><h2 class="section-title">Filtros</h2></div>
+            <div class="card-body">
+                <div class="selection-controls">
+                    <div class="control-group">
+                        <label>Gap mínimo</label>
+                        <input id="gap-min" type="number" value="3" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label>Gap máximo</label>
+                        <input id="gap-max" type="number" value="6" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label>Pareja hidrofóbica</label>
+                        <input id="require-pair" type="checkbox">
+                    </div>
+                    <div class="action-controls">
+                        <button id="run-filter" class="btn btn-primary btn-visualize"><i class="icon-eye"></i>Buscar</button>
+                        <button id="export-xlsx" class="btn btn-secondary btn-export" disabled><i class="icon-export"></i>XLSX</button>
+                    </div>
+                </div>
+                <div class="family-info-alert" id="status-line"><i class="icon-info"></i><span>Listo.</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="visualization-section" style="display:block;">
+        <div class="visualization-card">
+            <div class="card-header"><h2 class="section-title">Resultados (<span id="hit-count">0</span>)</h2></div>
+            <div class="card-body">
+                <div class="peptide-list-container">
+                    <table class="properties-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Nombre</th><th>Score</th><th>Gap</th><th>X3</th><th>Pair</th><th>Long</th><th>Secuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="motif-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- SheetJS para exportar a XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="{{ url_for('static', filename='js/toxin_filter.js') }}"></script>
+</body>
+</html>
