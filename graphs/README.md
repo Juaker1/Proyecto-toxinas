@@ -1,6 +1,6 @@
 # graphs — Análisis de grafos moleculares (2D/3D) y propiedades físico‑químicas
 
-Este módulo implementa la representación y el análisis topológico de toxinas peptídicas a partir de estructuras obtenidas desde PDB/AlphaFold y secuencias/identificadores provenientes de consultas a UniProt junto con las NaV1.7. Cubre desde la construcción de grafos a nivel de residuo (2D) con atributos físico‑químicos y estructurales, hasta la visualización 3D de grafos atómicos.
+Este módulo modela toxinas peptídicas como grafos, combinando estructura (PDB/AlphaFold) y secuencia (UniProt) con una representación computacional que cuantifica conectividad, relevancia de residuos, parches superficiales y orientación del dipolo. Se trabaja a dos escalas: grafo 2D por residuo (nodo = CA) para análisis topológico y grafo 3D atómico para inspección fina.
 
 ## Qué resuelve
 - Construcción de grafos moleculares a partir de PDB (nodo = residuo, arista = proximidad/peptídica/SS) con umbral configurable.
@@ -50,6 +50,38 @@ Nota: Para DSSP se requiere el binario `mkdssp` disponible en el sistema. Si no 
 - Usa Graphein para construir un grafo atómico con enlaces covalentes reales (`add_atomic_edges`) a partir de un PDB local.
 - Visualiza con `plotly_protein_structure_graph` y guarda `protein_3d_view.html`.
 - Parámetros clave: `granularity="atom"`, `pdb_dir="pdbs/"`, `path=PDB_FILE`.
+
+## Fórmulas y reglas empleadas
+
+- Distancia euclídea entre CA (proximidad): $d(u,v) = \lVert \mathbf{r}_u - \mathbf{r}_v \rVert_2$.
+- Peso e intensidad de interacción (heurístico): $w(u,v)=d(u,v)$; $\text{interaction\_strength}(u,v)=1/d(u,v)$.
+- Enlace peptídico (consecutividad): si $\text{id}_{i+1}=\text{id}_i+1$ ⇒ arista con $w=1.0$ e intensidad 5.0.
+- Puente disulfuro: si $d(\mathrm{SG}_i,\mathrm{SG}_j)<2.2\,\text{Å}$ ⇒ arista S–S con intensidad 10.0.
+- Superficie por SASA: umbral por defecto $\text{SASA}>25$ para marcar `is_surface`.
+- Momento dipolar (aprox. por CA): $\mathbf{r}_{cm}=\tfrac{1}{N}\sum_i \mathbf{r}_i$, $\boldsymbol{\mu}=\sum_i q_i\,(\mathbf{r}_i-\mathbf{r}_{cm})$, $\theta=\arccos(\hat{\mu}\cdot\hat{z})$.
+- Momento dipolar con PSF (atómico): $\boldsymbol{\mu}=\sum_a q_a\,(\mathbf{r}_a-\mathbf{r}_{cm})$.
+
+Funciones asociadas: `build_enhanced_graph`, `find_disulfide_bridges`, `calculate_secondary_structure`, `identify_surface_residues`, `identify_pharmacophore_residues`, `calculate_dipole_moment(_with_psf)`.
+
+## Métricas de grafo (definiciones)
+
+- Densidad: $\rho=\tfrac{2m}{n(n-1)}$.
+- Degree: $C_D(v)=\tfrac{\deg(v)}{n-1}$.
+- Betweenness: $C_B(v)=\sum_{s\neq v\neq t}\tfrac{\sigma_{st}(v)}{\sigma_{st}}$.
+- Closeness: $C_C(v)=\tfrac{n-1}{\sum_{u\neq v} d(v,u)}$.
+- Eigenvector: $x_i=\tfrac{1}{\lambda}\sum_j A_{ij}\,x_j$.
+- Clustering local: $C_i=\tfrac{2t_i}{k_i(k_i-1)}$.
+- Modularidad: $Q=\tfrac{1}{2m}\sum_{ij}\big(A_{ij}-\tfrac{k_i k_j}{2m}\big)\,\delta(c_i,c_j)$.
+
+Función: `calculate_graph_metrics` (NetworkX).
+
+## Motivos estructurales (heurísticos usados)
+
+- Horquilla β: presente si hay ≥4 residuos con SS=“beta”.
+- Nudo de cistina: presente si `disulfide_count ≥ 3` y ≥6 nodos en S–S.
+- Parches superficiales cargados/hidrofóbicos: sobre nodos con carga>0 o hidrofobicidad>1.0; si $\min\,\text{pdist}(\{\mathbf{r}_i\})<10\,\text{Å}$ ⇒ “parche”.
+
+Función: `detect_structural_motifs`.
 
 ## Requisitos previos
 - PDBs en `pdbs/` con nombres coherentes con las toxinas.

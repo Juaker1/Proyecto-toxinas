@@ -1,6 +1,6 @@
 # loaders — Carga e inserción de datos estructurales/experimentales en la base de datos
 
-Este paquete contiene scripts de carga (ETL ligero) que consolidan datos de toxinas peptídicas en la base SQLite del proyecto. Integra información proveniente de consultas a UniProt, estructuras de PDB/AlphaFold y archivos locales (PDB/PSF), y adjunta los binarios necesarios para análisis topológicos y de campos eléctricos.
+Scripts de ETL ligero para consolidar toxinas peptídicas en SQLite. Integran información de UniProt (metadatos/secuencias), PDB/AlphaFold (estructuras) y archivos locales (PDB/PSF), y adjuntan binarios para habilitar análisis topológicos y electrostáticos posteriores.
 
 ## Qué resuelve
 - Inserción de paneles de péptidos con metadatos clave (códigos, secuencias, farmacóforo, IC50, enlaces PDB/AlphaFold).
@@ -35,7 +35,7 @@ Consideraciones:
   1. `fetch_peptides()` consulta todos los `peptide_code` en la tabla.
   2. `read_file_as_blob(folder, filename, extension)` abre `<folder>/<peptide_code>.<ext>` y devuelve bytes o `None` si falta.
   3. `update_blobs_in_database(peptide_code, pdb_blob, psf_blob)` hace `UPDATE` de los campos `pdb_blob` y `psf_blob`.
-  4. Log en consola por cada péptido: encontrado/ausente/errores.
+  4. Log de progreso por péptido: encontrado/ausente/errores.
 
 Consideraciones:
 - Nombres de archivo deben coincidir exactamente con `peptide_code` (incluyendo caracteres especiales como `β`, `μ`, `ω`). En Windows, los nombres Unicode son soportados, pero evita inconsistencias de normalización.
