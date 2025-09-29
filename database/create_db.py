@@ -79,6 +79,7 @@ def create_database():
     conn.commit()
     conn.close()
     print(f"[✓] Base de datos creada en: {DB_PATH}")
-
+'''
 if __name__ == "__main__":
     create_database()
+'''

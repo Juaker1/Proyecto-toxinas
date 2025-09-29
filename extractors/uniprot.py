@@ -331,6 +331,7 @@ class UniProtPipeline:
 
         print("[✓] Datos insertados en la base de datos.")
 
+'''
 def main():
     # Punto de entrada del script.
     # Solicita una query al usuario, busca proteínas relacionadas y ejecuta el flujo completo:
@@ -348,3 +349,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+'''
+    

@@ -7,7 +7,7 @@ import aiohttp
 import tempfile
 from typing import Dict, List, Tuple, Optional, Union
 from Bio.PDB import PDBParser, PPBuilder
-from cortar_pdb import PDBHandler
+from .cortar_pdb import PDBHandler
 
 class PeptideExtractor:
     """
@@ -49,7 +49,6 @@ class PeptideExtractor:
         
         # Si ya existe, solo devolvemos la ruta
         if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-            print(f"Usando archivo local existente: {file_path}")
             return file_path
         
         # Determinar si es un ID de PDB (4 caracteres) o no
@@ -60,14 +59,11 @@ class PeptideExtractor:
                 # Primero intenta RCSB PDB si el ID es compatible
                 if is_pdb_id:
                     url = f"https://files.rcsb.org/download/{pdb_id}.pdb"
-                    print(f"Intentando descarga desde RCSB: {url}")
-                    
                     async with session.get(url) as response:
                         if response.status == 200:
                             pdb_content = await response.text()
                             with open(file_path, 'w') as f:
                                 f.write(pdb_content)
-                            print(f"Archivo PDB descargado con éxito desde RCSB: {file_path}")
                             return file_path
                 
                 # Si llegamos aquí, intentamos AlphaFold
@@ -79,14 +75,11 @@ class PeptideExtractor:
                     alphafold_id = f"AF-{original_id}-F1-model_v4"
                     
                 alphafold_url = f"https://alphafold.ebi.ac.uk/files/{alphafold_id}.pdb"
-                print(f"Intentando descarga desde AlphaFold: {alphafold_url}")
-                
                 async with session.get(alphafold_url) as af_response:
                     if af_response.status == 200:
                         pdb_content = await af_response.text()
                         with open(file_path, 'w') as f:
                             f.write(pdb_content)
-                        print(f"Archivo PDB descargado con éxito desde AlphaFold: {file_path}")
                         return file_path
                     
                 # Intentar con versiones alternativas del modelo de AlphaFold
@@ -98,18 +91,16 @@ class PeptideExtractor:
                         
                     alt_alphafold_id = f"AF-{original_id}-{model_version}-model_v4"
                     alt_url = f"https://alphafold.ebi.ac.uk/files/{alt_alphafold_id}.pdb"
-                    print(f"Intentando descarga alternativa: {alt_url}")
                     
                     async with session.get(alt_url) as alt_response:
                         if alt_response.status == 200:
                             pdb_content = await alt_response.text()
                             with open(file_path, 'w') as f:
                                 f.write(pdb_content)
-                            print(f"Archivo PDB descargado con éxito desde AlphaFold (modelo alternativo): {file_path}")
                             return file_path
                     
                 # Si llegamos aquí, no pudimos descargar el archivo
-                print(f"No se pudo encontrar estructura para {original_id} en AlphaFold ni RCSB PDB")
+                print(f"Error: No se pudo encontrar estructura para {original_id} en AlphaFold ni RCSB PDB")
                 raise ValueError(f"No se pudo descargar el archivo PDB: {original_id}")
         except Exception as e:
             print(f"Error descargando archivo PDB: {str(e)}")
@@ -190,7 +181,6 @@ class PeptideExtractor:
             if pdb_structures:
                 # Si hay estructuras PDB, usar los rangos de residuos específicos
                 pdb_count += 1
-                print(f"Proteína {accession} tiene {len(pdb_structures)} estructuras PDB")
                 
                 # Extraer todos los rangos de residuos disponibles en las estructuras PDB
                 all_pdb_ranges = []
@@ -220,10 +210,8 @@ class PeptideExtractor:
                     }
                     
                     peptides.append(peptide_info)
-                    print(f"  - Usando rango de PDB: {start}-{end} (chain {chain_id})")
                 else:
                     # Si no hay información de rango en las estructuras PDB, usar rango de péptidos
-                    print(f"  - No hay información de rangos en PDB, buscando péptidos definidos")
                     # Proceder con la lógica de péptidos (similar al caso de AlphaFold)
                     self._process_peptide_features(protein, accession, sequence, pdb_structures + alphafold_structures, peptides)
                     
@@ -231,8 +219,7 @@ class PeptideExtractor:
                 # Si solo hay estructuras AlphaFold, aplicar la lógica de péptidos
                 self._process_peptide_features(protein, accession, sequence, alphafold_structures, peptides)
         
-        print(f"Extraídos {len(peptides)} péptidos de {protein_count} proteínas "
-              f"({pdb_count} con estructura PDB, {multicut_count} con múltiples regiones de péptidos)")
+      # (Resumen suprimido; solo se reportará el guardado final)
         return peptides
 
     def _process_peptide_features(self, protein, accession, sequence, structures, peptides_list):
@@ -298,15 +285,14 @@ class PeptideExtractor:
                 # CASO 1: Péptidos superpuestos - seleccionar el más largo
                 protein_peptides.sort(key=lambda p: p["length"], reverse=True)
                 selected_peptide = protein_peptides[0]
-                print(f"Proteína {accession} tiene {len(protein_peptides)} péptidos superpuestos. "
-                      f"Seleccionando el más largo: {selected_peptide['peptide_name']} ({selected_peptide['length']} aa)")
+            # Mensaje informativo suprimido
                 # Eliminar campos auxiliares
                 del selected_peptide["length"]
                 del selected_peptide["region"]
                 peptides_list.append(selected_peptide)
             else:
                 # CASO 2: Péptidos separados - procesar todos como cortes independientes
-                print(f"Proteína {accession} tiene {len(protein_peptides)} péptidos en regiones distintas - procesando todos:")
+                # Mensaje informativo suprimido
                 for i, pep in enumerate(protein_peptides):
                     # Modificar el nombre para indicar que es un corte específico
                     original_name = pep["peptide_name"]
@@ -314,7 +300,7 @@ class PeptideExtractor:
                     # Eliminar campos auxiliares
                     del pep["length"]
                     del pep["region"]
-                    print(f"  - {pep['peptide_name']}: pos {pep['start_position']}-{pep['end_position']} ({pep['end_position']-pep['start_position']+1} aa)")
+                    # Detalle individual suprimido
                     peptides_list.append(pep)
         else:
             # Solo hay un péptido
@@ -353,7 +339,7 @@ class PeptideExtractor:
         struct_type = struct["type"]
         
         # Debug para verificar IDs correctos
-        print(f"Procesando péptido: {peptide['peptide_name']}, AccNum: {peptide['accession_number']}, Struct: {struct_type} - {struct_id}")
+    # Mensaje de progreso suprimido
         
         try:
             # Descargar el archivo PDB
@@ -382,14 +368,14 @@ class PeptideExtractor:
                 try:
                     # Extrae la secuencia del PDB para obtener el rango válido
                     seq = PDBHandler.extract_primary_sequence(pdb_file)
-                    print(f"Secuencia PDB tiene {len(seq)} residuos vs. rango solicitado: {peptide['start_position']}-{peptide['end_position']}")
+                    # Mensaje de diagnóstico suprimido
                     
                     # Intenta usar rango ajustado si es necesario
                     start_adjusted = min(max(1, peptide["start_position"]), len(seq))
                     end_adjusted = min(peptide["end_position"], len(seq))
                     
                     if start_adjusted < end_adjusted:
-                        print(f"Reintentando con rango ajustado: {start_adjusted}-{end_adjusted}")
+                        # Mensaje de reintento suprimido
                         PDBHandler.cut_pdb_by_residue_indices(
                             pdb_file, 
                             peptide_pdb_path, 
@@ -398,15 +384,15 @@ class PeptideExtractor:
                         )
                         cut_successful = True
                     else:
-                        print(f"Rango inválido después de ajuste: {start_adjusted}-{end_adjusted}, usando estructura completa")
+                        print(f"Error: rango inválido después de ajuste para {peptide['peptide_name']} ({start_adjusted}-{end_adjusted}) -> usando estructura completa")
                         using_full_structure = True
                 except Exception as inner_e:
-                    print(f"Fallo en ajuste de rango: {str(inner_e)}, usando estructura completa")
+                    print(f"Error: fallo en ajuste de rango para {peptide['peptide_name']}: {str(inner_e)} (usando estructura completa)")
                     using_full_structure = True
             
             # Si no se pudo cortar, usar la estructura completa
             if using_full_structure:
-                print(f"Usando estructura completa para {peptide['peptide_name']} de {peptide['accession_number']}")
+                # Mensaje informativo suprimido (estructura completa)
                 # Copiar el archivo completo en lugar del recorte
                 import shutil
                 shutil.copy(pdb_file, peptide_pdb_path)
@@ -518,7 +504,7 @@ class PeptideExtractor:
             list: Lista de IDs de péptidos insertados.
         """
         peptides = self.extract_peptides_from_xml(xml_path)
-        print(f"Encontrados {len(peptides)} péptidos en {xml_path}")
+    # Mensaje de conteo inicial suprimido
         
         # Procesar péptidos con limitación de concurrencia
         semaphore = asyncio.Semaphore(max_concurrent)
@@ -532,7 +518,7 @@ class PeptideExtractor:
         
         # Filtrar péptidos que no se pudieron procesar
         valid_peptides = [p for p in processed_peptides if p is not None]
-        print(f"Procesados exitosamente {len(valid_peptides)} péptidos")
+    # Mensaje de éxito intermedio suprimido
         
         # Guardar en la base de datos
         peptide_ids = []
@@ -553,6 +539,7 @@ async def extract_peptides_from_file(xml_path, db_path="database/toxins.db"):
     return peptide_ids
     
 # Punto de entrada para ejecución directa
+'''
 if __name__ == "__main__":
     import sys
 
@@ -571,3 +558,5 @@ if __name__ == "__main__":
     print(f"[RUN] Procesando archivo {xml_path} → BD {db_path}")
     asyncio.run(extract_peptides_from_file(xml_path, db_path))
     print("[END] Proceso completado.")
+    
+'''

@@ -2,6 +2,17 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en “versiones” retrospectivas según hitos de desarrollo.
 
+## [1.7.1] – 2025-09-29
+### Added
+- Script maestro run_full_pipeline.py que ejecuta de forma interactiva y secuencial todo el pipeline (UniProt → Proteins → Peptides → Nav1.7 curados → blobs PDB/PSF).
+- Integración automática de los loaders: inserción de péptidos Nav1.7 y posterior carga de blobs PDB/PSF en la misma ejecución.
+
+### Changed
+- Simplificación del flujo: se eliminó el uso de parámetros/flags CLI; ahora el pipeline solicita solo la query por consola.
+- Limpieza de salida estándar: se redujeron prints informativos, dejando solo mensajes de error y confirmaciones clave (p.ej. cantidad de péptidos guardados).
+
+---
+
 ## [1.7.0] – 2025-09-24 → 2025-09-26
 ### Added
 - Página de filtrado de toxinas almacenadas en la base de datos según criterios del paper de toxinas Nav1.7.

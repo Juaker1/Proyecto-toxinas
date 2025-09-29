@@ -105,5 +105,7 @@ def insert_peptides():
     conn.close()
     print(f"[✓] Insertados {len(peptides_data)} péptidos en la tabla.")
 
+'''
 if __name__ == "__main__":
     insert_peptides()
+'''

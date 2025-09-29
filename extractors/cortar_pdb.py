@@ -49,7 +49,6 @@ class PDBHandler:
         with PDBWriter(output_pdb) as writer:
             writer.write(selection)
 
-        print(f"Archivo recortado guardado en: {output_pdb}")
 
 class VSDAnalyzer:
     """

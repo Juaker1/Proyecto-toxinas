@@ -66,7 +66,8 @@ class PDBAndPSFInserter:
             except Exception as e:
                 print(f"  [!] Error en {peptide_code}: {str(e)}")
 
-
+'''
 if __name__ == "__main__":
     inserter = PDBAndPSFInserter(db_path="database/toxins.db", pdb_folder="pdbs/", psf_folder="psfs/")
     inserter.process_all_peptides()
+'''
