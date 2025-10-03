@@ -17,6 +17,37 @@
         </div>
     </div>
 
+    <!-- NUEVO: Dipolo de referencia + grilla paginada de filtrados -->
+    <div class="visualization-section" style="display:block;">
+        <div class="visualization-card">
+            <div class="card-header">
+                <h2 class="section-title" style="margin:0;">Dipolo de Referencia: μ-TRTX-Cg4a</h2>
+            </div>
+            <div class="card-body">
+                <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
+                    <div class="loading-state">
+                        <div class="spinner" id="refSpinner"></div>
+                        <p class="loading-text">Cargando referencia...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization-card" id="filtered-dipoles-card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                <h2 class="section-title" style="margin:0;">Dipolos de Toxinas Filtradas</h2>
+                <div>
+                    <button id="prev-page" class="btn btn-secondary">Anterior</button>
+                    <span id="page-indicator" style="margin:0 8px;">Página 1</span>
+                    <button id="next-page" class="btn btn-secondary">Siguiente</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="filtered-grid" class="visualization-grid"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="family-selection-section">
         <div class="selection-card">
             <div class="card-header"><h2 class="section-title">Filtros</h2></div>
@@ -45,14 +76,19 @@
     </div>
 
     <div class="visualization-section" style="display:block;">
-        <div class="visualization-card">
-            <div class="card-header"><h2 class="section-title">Resultados (<span id="hit-count">0</span>)</h2></div>
-            <div class="card-body">
-                <div class="peptide-list-container">
+        <div class="visualization-card" id="results-card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                <h2 class="section-title" style="margin:0;">Resultados (<span id="hit-count">0</span>)</h2>
+                <div style="display:flex;gap:.5rem;align-items:center;">
+                    <button id="toggle-results" class="btn btn-secondary" aria-expanded="true" aria-controls="results-body">Colapsar</button>
+                </div>
+            </div>
+            <div class="card-body" id="results-body">
+                <div class="peptide-list-container" id="results-container">
                     <table class="properties-table">
                         <thead>
                             <tr>
-                                <th>ID</th><th>Nombre</th><th>Score</th><th>Gap</th><th>X3</th><th>Pair</th><th>Long</th><th>Secuencia</th>
+                                <th>ID</th><th>Nombre</th><th>Score</th><th>Gap</th><th>X3</th><th>Pair?</th><th>Par Hidrofóbico</th><th>Score Par</th><th>Long</th><th>Secuencia</th>
                             </tr>
                         </thead>
                         <tbody id="motif-body"></tbody>
@@ -64,6 +100,10 @@
 </div>
 <!-- SheetJS para exportar a XLSX -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- py3Dmol para viewers 3D -->
+<script src="https://3dmol.org/build/3Dmol-min.js"></script>
 <script src="{{ url_for('static', filename='js/toxin_filter.js') }}"></script>
+<!-- Nuevo: lógica para dipolos de referencia y paginación -->
+<script src="{{ url_for('static', filename='js/motif_dipoles.js') }}"></script>
 </body>
 </html>

@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const bodyEl = document.getElementById('motif-body');
   const hitCountEl = document.getElementById('hit-count');
   const statusEl = document.getElementById('status-line');
+  const toggleBtn = document.getElementById('toggle-results');
+  const resultsBody = document.getElementById('results-body');
 
   async function fetchtoxin_filter() {
     const gapMin = gapMinEl.value || 3;
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const requirePair = requirePairEl.checked ? 1 : 0;
     const url = `/v2/toxin_filter?gap_min=${gapMin}&gap_max=${gapMax}&require_pair=${requirePair}`;
     statusEl.querySelector('span').textContent = 'Buscando...';
-    bodyEl.innerHTML = '<tr><td colspan="8">Cargando...</td></tr>';
+  bodyEl.innerHTML = '<tr><td colspan="10">Cargando...</td></tr>';
     try {
       const res = await fetch(url);
       const data = await res.json();
@@ -26,19 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<tr>
           <td>${r.peptide_id}</td>
           <td>${r.name || ''}</td>
-            <td>${r.score}</td>
-            <td>${r.gap}</td>
-            <td>${r.X3 || ''}</td>
-            <td>${r.has_hydrophobic_pair ? '✔' : ''}</td>
-            <td>${r.length}</td>
-            <td><code>${seqHtml}</code></td>
+          <td>${r.score}</td>
+          <td>${r.gap}</td>
+          <td>${r.X3 || ''}</td>
+          <td>${r.has_hydrophobic_pair ? '✔' : ''}</td>
+          <td>${r.hydrophobic_pair || ''}</td>
+          <td>${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : ''}</td>
+          <td>${r.length}</td>
+          <td><code>${seqHtml}</code></td>
         </tr>`;
       }).join('');
       statusEl.querySelector('span').textContent = 'Listo.';
       // store for export
   exportBtn.dataset.rows = JSON.stringify(data.results);
     } catch (e) {
-      bodyEl.innerHTML = `<tr><td colspan="8">Error: ${e.message}</td></tr>`;
+  bodyEl.innerHTML = `<tr><td colspan="10">Error: ${e.message}</td></tr>`;
       statusEl.querySelector('span').textContent = 'Error al cargar.';
     }
   }
@@ -46,13 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function highlightSequence(seq, meta) {
     const s = seq.split('');
     const marks = new Map();
-    ['iC5','iS','iW','iK','iX3'].forEach(k => {
+    ['iC5','iS','iW','iK','iX3','iHP1','iHP2'].forEach(k => {
       if (meta[k] !== null && meta[k] !== undefined) marks.set(meta[k], k);
     });
     return s.map((ch,i) => {
       if (!marks.has(i)) return ch;
       const cls = marks.get(i);
-      const color = ({iC5:'#d9534f', iS:'#0275d8', iW:'#5cb85c', iK:'#f0ad4e', iX3:'#6f42c1'})[cls] || '#222';
+      const color = ({
+        iC5:'#d9534f',
+        iS:'#0275d8',
+        iW:'#5cb85c',
+        iK:'#f0ad4e',
+        iX3:'#6f42c1',
+        iHP1:'#20c997',
+        iHP2:'#20c997'
+      })[cls] || '#222';
       return `<span style="color:${color};font-weight:bold;">${ch}</span>`;
     }).join('');
   }
@@ -82,5 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   runBtn.addEventListener('click', fetchtoxin_filter);
   exportBtn.addEventListener('click', exportXlsx);
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        resultsBody.style.display = 'none';
+        toggleBtn.textContent = 'Expandir';
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        resultsBody.style.display = '';
+        toggleBtn.textContent = 'Colapsar';
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
   fetchtoxin_filter();
 });

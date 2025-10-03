@@ -14,6 +14,11 @@ data/processed/*.json
 pdbs/*.pdb
 psfs/*.psf
 processed/*.json
+tools/test_output/*.pdb
+tools/test_output/*.psf
+tools/filtered/*.pdb
+tools/filtered/*.psf
+tools/filtered/logs/*.log
 
 __pycache__/
 *.pyc

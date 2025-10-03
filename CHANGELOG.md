@@ -2,6 +2,39 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en “versiones” retrospectivas según hitos de desarrollo.
 
+## [1.8.0] – 2025-10-03
+### Added
+- Generación masiva de PSF/PDB para péptidos filtrados:
+  - Nuevo script tools/generate_filtered_psfs.py que crea outputs en tools/filtered/ nombrados por accession_number.
+  - Ejecución de VMD por subproceso, captura de logs por péptido en tools/filtered/logs y reintento automático con tail del log.
+- Mejoras en psfgen (resources/psf_gen.tcl):
+  - Detección de DISU robusta (medida de distancias SG-SG con función propia), y patch DISU forzado al segmento único.
+  - Sanitización previa del PDB (elimina NH2, PCA, ACE, NME), renumeración de resid y segid uniforme, alias de residuos frecuentes (HIS→HSE/HSD, MSE→MET, SEC/CYX→CYS).
+  - Carga única de topologías por sesión (evita duplicados).
+- Integración Flask para comparación de dipolos:
+  - Nuevo blueprint v2 con endpoints:
+    - GET /v2/motif_dipoles/reference: retorna PDB y dipolo de la referencia μ-TRTX-Cg4a.
+    - GET /v2/motif_dipoles/page: pagina toxinas filtradas y calcula/retorna su dipolo desde tools/filtered.
+- UI de comparación integrada en la página de filtrado:
+  - Sección superior fija con el dipolo de la referencia μ-TRTX-Cg4a.
+  - Grid paginado de toxinas filtradas (6 por página, 3 por fila) con visualizador 3D.
+  - Visualización con ejes XYZ, flecha de dipolo y leyenda (magnitud en Debye y ángulo respecto a Z).
+  - Nuevo JS estático motif_dipoles.js y estilos de grid/alturas para py3Dmol.
+
+### Changed
+- Panel de filtros movido debajo de la nueva sección de visualización.
+
+
+---
+
+## [1.7.2] – 2025-10-02
+### Added
+- Cálculo y exposición del par hidrofóbico óptimo previo a la S posterior al 5.º C (campos: hydrophobic_pair, hydrophobic_pair_score, hydrophobic_pair_start, iHP1, iHP2).
+- Nuevas columnas en la tabla de filtrado: Par Hidrofóbico y Score Par (incluye resaltado visual en la secuencia).
+- Botón para colapsar/expandir la lista de resultados (mejorando la usabilidad en listas largas).
+
+---
+ 
 ## [1.7.1] – 2025-09-29
 ### Added
 - Script maestro run_full_pipeline.py que ejecuta de forma interactiva y secuencial todo el pipeline (UniProt → Proteins → Peptides → Nav1.7 curados → blobs PDB/PSF).

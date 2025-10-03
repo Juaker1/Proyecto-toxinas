@@ -144,6 +144,17 @@ def create_app_v2() -> Flask:
         app.register_blueprint(toxin_filter_v2)
     except Exception as e:
         app.logger.warning(f"v2 toxin_filter blueprint not registered: {e}")
+    # Motif dipoles (reference + paginated filtered dipoles)
+    try:
+        from src.interfaces.http.flask.controllers.v2.motif_dipoles_controller import motif_dipoles_v2, configure_motif_dipoles_dependencies
+        configure_motif_dipoles_dependencies(
+            db_path=getattr(cfg, 'db_path', 'database/toxins.db'),
+            filtered_dir=os.path.join(os.getcwd(), 'tools', 'filtered'),
+            dipole_adapter=dipole_service,
+        )
+        app.register_blueprint(motif_dipoles_v2)
+    except Exception as e:
+        app.logger.warning(f"v2 motif_dipoles blueprint not registered: {e}")
     try:
         from src.interfaces.http.flask.controllers.graphs_controller import graphs_v2, configure_graphs_dependencies
         configure_graphs_dependencies(
