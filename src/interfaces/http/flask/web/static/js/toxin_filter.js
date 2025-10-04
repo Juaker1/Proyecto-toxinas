@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = document.getElementById('status-line');
   const toggleBtn = document.getElementById('toggle-results');
   const resultsBody = document.getElementById('results-body');
+  // Tabla: paginación local
+  const tblPrev = document.getElementById('tbl-prev');
+  const tblNext = document.getElementById('tbl-next');
+  const tblPage = document.getElementById('tbl-page');
+  let tblPageNum = 1;
+  const tblPageSize = 10;
+  let tblRows = [];
 
   async function fetchtoxin_filter() {
     const gapMin = gapMinEl.value || 3;
@@ -23,9 +30,27 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.error) throw new Error(data.error);
       hitCountEl.textContent = data.count;
       exportBtn.disabled = data.count === 0;
-      bodyEl.innerHTML = data.results.map(r => {
-        const seqHtml = highlightSequence(r.sequence, r);
-        return `<tr>
+      tblRows = data.results || [];
+      tblPageNum = 1;
+      renderTablePage();
+      statusEl.querySelector('span').textContent = 'Listo.';
+      // store for export
+      exportBtn.dataset.rows = JSON.stringify(data.results);
+    } catch (e) {
+  bodyEl.innerHTML = `<tr><td colspan="10">Error: ${e.message}</td></tr>`;
+      statusEl.querySelector('span').textContent = 'Error al cargar.';
+    }
+  }
+
+  function renderTablePage() {
+    const total = tblRows.length;
+    const maxPage = Math.max(1, Math.ceil(total / tblPageSize));
+    tblPageNum = Math.min(Math.max(1, tblPageNum), maxPage);
+    const start = (tblPageNum - 1) * tblPageSize;
+    const pageRows = tblRows.slice(start, start + tblPageSize);
+    bodyEl.innerHTML = pageRows.map(r => {
+      const seqHtml = highlightSequence(r.sequence, r);
+      return `<tr>
           <td>${r.peptide_id}</td>
           <td>${r.name || ''}</td>
           <td>${r.score}</td>
@@ -37,14 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${r.length}</td>
           <td><code>${seqHtml}</code></td>
         </tr>`;
-      }).join('');
-      statusEl.querySelector('span').textContent = 'Listo.';
-      // store for export
-  exportBtn.dataset.rows = JSON.stringify(data.results);
-    } catch (e) {
-  bodyEl.innerHTML = `<tr><td colspan="10">Error: ${e.message}</td></tr>`;
-      statusEl.querySelector('span').textContent = 'Error al cargar.';
-    }
+    }).join('');
+    if (tblPage) tblPage.textContent = `Página ${tblPageNum}`;
+    if (tblPrev) tblPrev.disabled = tblPageNum <= 1;
+    if (tblNext) tblNext.disabled = tblPageNum >= maxPage;
   }
 
   function highlightSequence(seq, meta) {
@@ -106,6 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleBtn.textContent = 'Colapsar';
         toggleBtn.setAttribute('aria-expanded', 'true');
       }
+    });
+  }
+  // Wire table pagination
+  if (tblPrev) tblPrev.addEventListener('click', () => { if (tblPageNum > 1) { tblPageNum--; renderTablePage(); } });
+  if (tblNext) tblNext.addEventListener('click', () => {
+    const maxPage = Math.max(1, Math.ceil(tblRows.length / tblPageSize));
+    if (tblPageNum < maxPage) { tblPageNum++; renderTablePage(); }
+  });
+
+  // Custom checkbox visuals
+  const chkBoxWrap = document.getElementById('require-pair-box');
+  if (chkBoxWrap && requirePairEl) {
+    chkBoxWrap.addEventListener('click', () => {
+      requirePairEl.checked = !requirePairEl.checked;
+      chkBoxWrap.classList.toggle('checked', requirePairEl.checked);
     });
   }
   fetchtoxin_filter();

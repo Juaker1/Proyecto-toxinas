@@ -61,23 +61,23 @@ class DualViewManager {
             if (viewType === 'graph') {
                 detailedAnalysis.style.display = 'block';
                 detailedAnalysis.classList.add('show');
-                toggleAnalysisBtn.innerHTML = '📊 Ocultar Análisis Detallado <span class="toggle-icon">▲</span>';
+                toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Ocultar Análisis Detallado <i class="fas fa-chevron-up toggle-icon"></i>';
                 toggleAnalysisBtn.classList.add('expanded');
                 
                 // Reset dipole button
                 if (toggleDipoleBtn) {
-                    toggleDipoleBtn.innerHTML = '🧬 Mostrar Cálculos Dipolo <span class="toggle-icon">▼</span>';
+                    toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Mostrar Cálculos del Dipolo <i class="fas fa-chevron-down toggle-icon"></i>';
                     toggleDipoleBtn.classList.remove('expanded');
                 }
                 
             } else if (viewType === 'dipole') {
                 dipoleCalculations.style.display = 'block';
                 dipoleCalculations.classList.add('show');
-                toggleDipoleBtn.innerHTML = '🧬 Ocultar Cálculos Dipolo <span class="toggle-icon">▲</span>';
+                toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Ocultar Cálculos del Dipolo <i class="fas fa-chevron-up toggle-icon"></i>';
                 toggleDipoleBtn.classList.add('expanded');
                 
                 // Reset graph button
-                toggleAnalysisBtn.innerHTML = '📈 Mostrar Análisis Detallado <span class="toggle-icon">▼</span>';
+                toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Análisis Detallado <i class="fas fa-chevron-down toggle-icon"></i>';
                 toggleAnalysisBtn.classList.remove('expanded');
             }
             
@@ -104,12 +104,12 @@ class DualViewManager {
 
         // Reset all buttons
         if (toggleAnalysisBtn) {
-            toggleAnalysisBtn.innerHTML = '📈 Mostrar Análisis Detallado <span class="toggle-icon">▼</span>';
+            toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Análisis Detallado <i class="fas fa-chevron-down toggle-icon"></i>';
             toggleAnalysisBtn.classList.remove('expanded');
         }
         
         if (toggleDipoleBtn) {
-            toggleDipoleBtn.innerHTML = '🧬 Mostrar Cálculos Dipolo <span class="toggle-icon">▼</span>';
+            toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Mostrar Cálculos del Dipolo <i class="fas fa-chevron-down toggle-icon"></i>';
             toggleDipoleBtn.classList.remove('expanded');
         }
     }

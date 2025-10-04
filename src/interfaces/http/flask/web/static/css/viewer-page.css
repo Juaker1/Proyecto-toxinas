@@ -1,0 +1,818 @@
+/* ============================================
+   PÁGINA PRINCIPAL - VISUALIZADOR
+   Vista dual profesional con estructura 3D y grafo
+   ============================================ */
+
+/* === LAYOUT PRINCIPAL === */
+.viewer-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 50%, var(--accent-50) 100%);
+    padding-bottom: var(--space-16);
+}
+
+.viewer-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: var(--space-6);
+}
+
+/* === HEADER DE LA PÁGINA === */
+.page-header {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    margin-bottom: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    animation: slideDown var(--transition-slow) ease-out;
+}
+
+.page-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.page-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.page-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-500) 100%);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-4xl);
+    box-shadow: var(--shadow-md);
+}
+
+.page-title-text h1 {
+    font-size: var(--text-4xl);
+    background: linear-gradient(135deg, var(--primary-700) 0%, var(--accent-700) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--gray-600);
+    font-size: var(--text-lg);
+    margin: 0;
+}
+
+/* === CONTROLES === */
+.controls-section {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-md);
+    animation: slideUp var(--transition-slow) ease-out;
+    animation-delay: 100ms;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+    align-items: end;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.control-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.control-icon {
+    color: var(--primary-500);
+}
+
+/* Estado del dipolo */
+.dipole-status-box {
+    background: linear-gradient(135deg, var(--accent-50) 0%, var(--accent-100) 100%);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--accent-500);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.dipole-indicator {
+    width: 12px;
+    height: 12px;
+    background: var(--secondary-500);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.dipole-indicator.active {
+    background: var(--secondary-500);
+    box-shadow: 0 0 12px var(--secondary-400);
+}
+
+.dipole-indicator.inactive {
+    background: var(--gray-400);
+}
+
+/* === VISTA DUAL === */
+.dual-view-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+    animation: fadeIn var(--transition-slow) ease-in;
+    animation-delay: 200ms;
+}
+
+/* Panel individual */
+.view-panel {
+    background: white;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+}
+
+.view-panel:hover {
+    box-shadow: var(--shadow-2xl);
+    transform: translateY(-4px);
+}
+
+.panel-header {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    color: white;
+    padding: var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--primary-800);
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    margin: 0;
+}
+
+.panel-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.view-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1);
+    gap: var(--space-1);
+}
+
+.view-toggle-btn {
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.view-toggle-btn.active {
+    background: white;
+    color: var(--primary-700);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Contenedor del visualizador */
+.viewer-container-box {
+    position: relative;
+    flex: 1;
+    min-height: 600px;
+    background: var(--gray-50);
+}
+
+.viewer-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.viewer-canvas.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.viewer-info-overlay {
+    position: absolute;
+    bottom: var(--space-4);
+    left: var(--space-4);
+    right: var(--space-4);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--text-sm);
+    z-index: 2;
+}
+
+/* Panel de grafo */
+.graph-panel .panel-header {
+    background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+    border-bottom-color: var(--accent-800);
+}
+
+.graph-controls-section {
+    background: var(--gray-50);
+    padding: var(--space-4);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.graph-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    align-items: end;
+}
+
+.graph-plot-wrapper {
+    flex: 1;
+    position: relative;
+    padding: var(--space-4);
+    min-height: 600px;
+}
+
+/* Toggle de granularidad */
+.granularity-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.toggle-switch {
+    position: relative;
+    width: 64px;
+    height: 32px;
+    background: var(--gray-300);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.toggle-switch.active {
+    background: var(--secondary-500);
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: transform var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(32px);
+}
+
+.toggle-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+/* === ANÁLISIS DETALLADO === */
+.analysis-section {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-md);
+    animation: slideUp var(--transition-slow) ease-out;
+}
+
+.analysis-toggle-btn {
+    width: 100%;
+    padding: var(--space-4);
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-500) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-base);
+}
+
+.analysis-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.toggle-icon {
+    transition: transform var(--transition-base);
+}
+
+.analysis-toggle-btn.open .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.analysis-content {
+    display: none;
+}
+
+.analysis-content.open {
+    display: block;
+    animation: slideDown var(--transition-base) ease-out;
+}
+
+/* Grid de métricas */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.metric-card {
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--gray-200);
+    transition: all var(--transition-base);
+}
+
+.metric-card:hover {
+    border-color: var(--primary-400);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-500) 100%);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--text-xl);
+}
+
+.metric-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.metric-value {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--accent-600) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-2);
+}
+
+.metric-label {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+}
+
+/* === ANÁLISIS DETALLADO (MANTENER ESTILOS ORIGINALES) === */
+.analysis-toggle {
+    margin-bottom: var(--space-6);
+}
+
+.detailed-analysis-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    animation: slideDown var(--transition-base) ease-out;
+}
+
+.analysis-panel h4 {
+    font-size: var(--text-2xl);
+    color: var(--gray-900);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 3px solid var(--primary-500);
+}
+
+.analysis-panel h5 {
+    font-size: var(--text-xl);
+    color: var(--gray-800);
+    margin-bottom: var(--space-4);
+    margin-top: var(--space-6);
+}
+
+.analysis-panel h6 {
+    font-size: var(--text-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--space-3);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.info-item {
+    padding: var(--space-4);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary-500);
+}
+
+.info-item .label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-600);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-2);
+}
+
+.info-item .value {
+    display: block;
+    font-weight: 700;
+    color: var(--primary-700);
+    font-size: var(--text-lg);
+}
+
+.centrality-summary,
+.top-residues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.metric-card,
+.top-metric-column {
+    padding: var(--space-5);
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--gray-200);
+}
+
+.metric-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.metric-range,
+.metric-mean,
+.top-residues {
+    font-size: var(--text-sm);
+    color: var(--gray-700);
+}
+
+.residue-list {
+    list-style: none;
+    padding: 0;
+}
+
+.residue-list li {
+    padding: var(--space-2);
+    background: var(--primary-50);
+    margin-bottom: var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+}
+
+.export-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.export-type-selection {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.export-type-selector {
+    flex: 1;
+    min-width: 200px;
+}
+
+.export-button {
+    padding: var(--space-4) var(--space-6);
+}
+
+.export-info {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    margin-top: var(--space-2);
+}
+
+.family-export-section,
+.wt-comparison-section {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.comparison-description {
+    color: var(--gray-700);
+    margin-bottom: var(--space-4);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-500);
+    color: white;
+    border-radius: 50%;
+    font-size: var(--text-xs);
+    cursor: help;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gray-900);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    white-space: normal;
+    width: 250px;
+    z-index: 1000;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+/* Dipole calculations section */
+.dipole-info-container {
+    background: linear-gradient(135deg, var(--accent-50) 0%, var(--accent-100) 100%);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--accent-300);
+}
+
+.dipole-header {
+    margin-bottom: var(--space-5);
+}
+
+.dipole-properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+}
+
+.dipole-property {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: white;
+    border-radius: var(--radius-lg);
+}
+
+.property-label {
+    font-weight: 600;
+    color: var(--gray-600);
+    font-size: var(--text-sm);
+}
+
+.property-value {
+    font-weight: 700;
+    color: var(--accent-700);
+    font-size: var(--text-xl);
+}
+
+.property-unit {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+}
+
+.direction-value,
+.coordinates-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+/* === EXPORT MODAL & TOASTS === */
+/* Modal base (hidden by default) */
+.export-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+}
+
+.export-modal.show {
+    display: flex;
+}
+
+.export-modal .modal-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    padding: var(--space-6);
+    width: min(560px, 92vw);
+}
+
+.export-modal .modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-500) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-4);
+}
+
+.export-modal .modal-title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: var(--space-2);
+}
+
+.export-modal .modal-subtitle {
+    color: var(--gray-700);
+    margin-bottom: var(--space-4);
+}
+
+.export-modal .modal-progress {
+    background: var(--gray-100);
+    border-radius: var(--radius-full);
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: var(--space-4);
+}
+
+.export-modal .progress-bar {
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-500), var(--accent-500));
+    border-radius: var(--radius-full);
+    animation: progressAnimation 2.2s ease-in-out infinite;
+}
+
+@keyframes progressAnimation {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(20%); }
+    100% { transform: translateX(100%); }
+}
+
+.export-modal .modal-details {
+    font-size: var(--text-sm);
+    color: var(--gray-700);
+}
+
+/* Toasts */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    z-index: var(--z-popover);
+}
+
+.toast {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 360px;
+    max-width: 92vw;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all var(--transition-base);
+    border-left: 4px solid var(--primary-500);
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.hide { opacity: 0; transform: translateY(-8px); }
+
+.toast-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--gray-200);
+}
+.toast-title { font-weight: 800; color: var(--gray-900); }
+.toast-message { padding: var(--space-3) var(--space-4); color: var(--gray-700); }
+.toast-icon { color: var(--primary-600); font-size: var(--text-lg); }
+.toast.success { border-left-color: var(--secondary-600); }
+.toast.info { border-left-color: var(--primary-600); }
+.toast.warning { border-left-color: var(--warning-700); }
+.toast.error { border-left-color: var(--error-700); }
+.toast-close { background: transparent; border: none; font-size: var(--text-xl); color: var(--gray-600); cursor: pointer; }
+
+/* === RESPONSIVE === */
+@media (max-width: 1400px) {
+    .dual-view-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title-text h1 {
+        font-size: var(--text-2xl);
+    }
+    
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-grid,
+    .centrality-summary,
+    .top-residues-grid,
+    .dipole-properties-grid {
+        grid-template-columns: 1fr;
+    }
+}

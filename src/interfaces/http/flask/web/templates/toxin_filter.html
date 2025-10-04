@@ -2,108 +2,207 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Toxinas NaSpTx-like</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro de Toxinas | Proyecto Toxinas</title>
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de diseño -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/filter-page.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer.css') }}">
+    
+    <!-- SheetJS para exportar XLSX -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- py3Dmol para visualización molecular -->
+    <script src="https://3dmol.org/build/3Dmol-min.js"></script>
 </head>
-<body class="family-analysis-body">
-<div class="family-container">
-    <div class="family-header">
-        <div class="header-content">
-            <h1 class="page-title"><i class="icon-dna"></i>Motivos NaSpTx-like</h1>
-            <div>
-                <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="btn btn-back"><i class="icon-arrow-left"></i>Visualizador</a>
-                <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="btn btn-family-analysis"><i class="icon-dna"></i>Dipolos Familias</a>
+<body class="filter-page">
+    <!-- NAVBAR -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="navbar-brand">
+                <div class="navbar-logo"><i class="fas fa-dna"></i></div>
+                <span class="navbar-title">Proyecto Toxinas</span>
+            </a>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-microscope"></i></span>
+                        <span>Visualizador</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-flask"></i></span>
+                        <span>Familias</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-filter"></i></span>
+                        <span>Filtros</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="navbar-actions">
+                <button class="action-btn" id="navbar-export-xlsx">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Exportar</span>
+                </button>
+            </div>
+            
+            <button class="navbar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="filter-container">
+
+        <!-- NUEVO: Dipolo de referencia + grilla paginada de filtrados -->
+        <div class="visualization-section" style="display:block;">
+            <div class="visualization-card">
+                <div class="card-header">
+                    <h2 class="section-title" style="margin:0;"><i class="fas fa-star"></i> Dipolo de Referencia: μ-TRTX-Cg4a</h2>
+                </div>
+                <div class="card-body">
+                    <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
+                        <div class="loading-state">
+                            <div class="spinner" id="refSpinner"></div>
+                            <p class="loading-text">Cargando referencia...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization-card" id="filtered-dipoles-card">
+                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                    <h2 class="section-title" style="margin:0;"><i class="fas fa-bolt"></i> Dipolos de Toxinas Filtradas</h2>
+                    <div>
+                        <button id="prev-page" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Anterior</button>
+                        <span id="page-indicator" style="margin:0 8px;">Página 1</span>
+                        <button id="next-page" class="btn btn-secondary">Siguiente <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="filtered-grid" class="visualization-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Filtros pulida -->
+        <div class="filters-section">
+            <div class="filters-header">
+                <div class="filters-icon"><i class="fas fa-sliders-h"></i></div>
+                <h2 class="filters-title">Configuración de Filtros</h2>
+            </div>
+            
+            <div class="filters-grid">
+                <div class="filter-input-group">
+                    <label class="filter-label">
+                        <span class="filter-label-icon"><i class="fas fa-grip-lines-vertical"></i></span>
+                        Gap Mínimo
+                    </label>
+                    <input id="gap-min" type="number" class="filter-input" value="3" min="1">
+                </div>
+                
+                <div class="filter-input-group">
+                    <label class="filter-label">
+                        <span class="filter-label-icon"><i class="fas fa-grip-lines"></i></span>
+                        Gap Máximo
+                    </label>
+                    <input id="gap-max" type="number" class="filter-input" value="6" min="1">
+                </div>
+                
+                <div class="filter-input-group">
+                    <label class="checkbox-wrapper" for="require-pair">
+                        <div class="custom-checkbox" id="require-pair-box">
+                            <input id="require-pair" type="checkbox" style="display: none;">
+                        </div>
+                        <span class="checkbox-label">
+                            <i class="fas fa-link"></i>
+                            Requerir Pareja Hidrofóbica
+                        </span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button id="run-filter" class="btn btn-primary btn-lg search-btn">
+                    <i class="fas fa-search"></i>
+                    <span>Buscar Toxinas</span>
+                </button>
+                <button id="export-xlsx" class="btn btn-secondary btn-export" disabled>
+                    <i class="fas fa-file-excel"></i> XLSX
+                </button>
+            </div>
+            
+            <div class="filter-status" id="status-line">
+                <span class="status-icon"><i class="fas fa-info-circle"></i></span>
+                <span class="status-text">Listo para buscar</span>
+            </div>
+        </div>
+
+        <!-- Tabla de Resultados -->
+        <div class="results-table-section" id="results-card">
+            <div class="results-table-header">
+                    <div class="results-title-wrapper">
+                        <div class="results-icon"><i class="fas fa-table"></i></div>
+                    <h2 class="results-title">
+                        Tabla de Resultados 
+                        <span class="results-count" id="hit-count">0</span>
+                    </h2>
+                </div>
+                <button id="toggle-results" class="toggle-table-btn" aria-expanded="true" aria-controls="results-body">
+                    <i class="fas fa-eye"></i>
+                    <span>Mostrar/Ocultar</span>
+                </button>
+            </div>
+            
+            <div class="results-table-wrapper" id="results-body">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Score</th>
+                            <th>Gap</th>
+                            <th>X3</th>
+                            <th>Pair?</th>
+                            <th>Par Hidrofóbico</th>
+                            <th>Score Par</th>
+                            <th>Long</th>
+                            <th>Secuencia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="motif-body">
+                        <!-- Resultados dinámicos -->
+                    </tbody>
+                </table>
+                <!-- Paginación de tabla -->
+                <div class="results-header" style="margin-top: var(--space-4);">
+                    <div class="pagination-controls">
+                        <button id="tbl-prev" class="pagination-btn"><i class="fas fa-chevron-left"></i> Anterior</button>
+                        <span id="tbl-page" class="page-indicator">Página 1</span>
+                        <button id="tbl-next" class="pagination-btn">Siguiente <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- NUEVO: Dipolo de referencia + grilla paginada de filtrados -->
-    <div class="visualization-section" style="display:block;">
-        <div class="visualization-card">
-            <div class="card-header">
-                <h2 class="section-title" style="margin:0;">Dipolo de Referencia: μ-TRTX-Cg4a</h2>
-            </div>
-            <div class="card-body">
-                <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
-                    <div class="loading-state">
-                        <div class="spinner" id="refSpinner"></div>
-                        <p class="loading-text">Cargando referencia...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="visualization-card" id="filtered-dipoles-card">
-            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                <h2 class="section-title" style="margin:0;">Dipolos de Toxinas Filtradas</h2>
-                <div>
-                    <button id="prev-page" class="btn btn-secondary">Anterior</button>
-                    <span id="page-indicator" style="margin:0 8px;">Página 1</span>
-                    <button id="next-page" class="btn btn-secondary">Siguiente</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div id="filtered-grid" class="visualization-grid"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="family-selection-section">
-        <div class="selection-card">
-            <div class="card-header"><h2 class="section-title">Filtros</h2></div>
-            <div class="card-body">
-                <div class="selection-controls">
-                    <div class="control-group">
-                        <label>Gap mínimo</label>
-                        <input id="gap-min" type="number" value="3" min="1">
-                    </div>
-                    <div class="control-group">
-                        <label>Gap máximo</label>
-                        <input id="gap-max" type="number" value="6" min="1">
-                    </div>
-                    <div class="control-group">
-                        <label>Pareja hidrofóbica</label>
-                        <input id="require-pair" type="checkbox">
-                    </div>
-                    <div class="action-controls">
-                        <button id="run-filter" class="btn btn-primary btn-visualize"><i class="icon-eye"></i>Buscar</button>
-                        <button id="export-xlsx" class="btn btn-secondary btn-export" disabled><i class="icon-export"></i>XLSX</button>
-                    </div>
-                </div>
-                <div class="family-info-alert" id="status-line"><i class="icon-info"></i><span>Listo.</span></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="visualization-section" style="display:block;">
-        <div class="visualization-card" id="results-card">
-            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                <h2 class="section-title" style="margin:0;">Resultados (<span id="hit-count">0</span>)</h2>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                    <button id="toggle-results" class="btn btn-secondary" aria-expanded="true" aria-controls="results-body">Colapsar</button>
-                </div>
-            </div>
-            <div class="card-body" id="results-body">
-                <div class="peptide-list-container" id="results-container">
-                    <table class="properties-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th><th>Nombre</th><th>Score</th><th>Gap</th><th>X3</th><th>Pair?</th><th>Par Hidrofóbico</th><th>Score Par</th><th>Long</th><th>Secuencia</th>
-                            </tr>
-                        </thead>
-                        <tbody id="motif-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- SheetJS para exportar a XLSX -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<!-- py3Dmol para viewers 3D -->
-<script src="https://3dmol.org/build/3Dmol-min.js"></script>
-<script src="{{ url_for('static', filename='js/toxin_filter.js') }}"></script>
-<!-- Nuevo: lógica para dipolos de referencia y paginación -->
-<script src="{{ url_for('static', filename='js/motif_dipoles.js') }}"></script>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui-enhancements.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toxin_filter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/motif_dipoles.js') }}"></script>
 </body>
 </html>

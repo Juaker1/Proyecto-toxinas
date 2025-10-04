@@ -1,138 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Visualizador Mol*</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Proteínas | Proyecto Toxinas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de diseño -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer-page.css') }}">
+    
     <!-- Estilos de Mol* -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.css">
-    <!-- Dash components for graph visualization -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dash-core-components@2.0.0/dash_core_components.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dash-html-components@2.0.0/dash_html_components.min.css">
+    
     <!-- Plotly for visualization -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <!-- Add py3Dmol for molecular visualization -->
+    <!-- py3Dmol for molecular visualization -->
     <script src="https://cdn.jsdelivr.net/npm/3dmol@latest/build/3Dmol-min.js"></script>
-    <!-- Tus estilos personalizados -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer.css') }}">
 </head>
-<body>
-    <div class="row mb-4">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-            <h1 class="page-title">
-                <i class="icon-molecule"></i>Visualizador de Proteínas - Vista Integrada
-            </h1>
-            <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="btn btn-family-analysis">
-                <i class="icon-dna"></i>Análisis de Dipolo por Familia
+<body class="viewer-page">
+    <!-- NAVBAR -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="navbar-brand">
+                <div class="navbar-logo"><i class="fas fa-dna"></i></div>
+                <span class="navbar-title">Proyecto Toxinas</span>
             </a>
-            <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="btn btn-family-analysis">
-                <i class="icon-dna"></i>Filtro de toxinas
-            </a>
-        </div>
-    </div>
-
-    <!-- Controles superiores -->
-    <div class="controls-container">
-        <div class="control-group">
-            <label for="groupSelect">Grupo:</label>
-            <select id="groupSelect">
-                <option value="toxinas">Toxinas</option>
-                <option value="nav1_7">Nav1.7</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label for="proteinSelect">Proteína:</label>
-            <select id="proteinSelect"></select>
-        </div>
-        
-        <!-- Solo mostrar estado del dipolo, sin toda la información -->
-        <div class="control-group" id="dipole-status-container" style="display: none;">
-            <label>Estado del Dipolo:</label>
-            <div id="dipole-status" class="dipole-status">
-                <span id="dipole-status-text">Seleccione una proteína Nav1.7</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Layout principal: estructura 3D y grafo lado a lado -->
-    <div class="dual-view-container">
-        <!-- Panel izquierdo: Estructura 3D -->
-        <div class="structure-panel">
-            <div class="panel-header">
-                <h4>🧬 Estructura 3D</h4>
-                <div class="view-controls">
-                    <span id="current-structure-label" class="structure-label">Proteína del selector</span>
-                    <button id="switch-to-molstar" class="view-btn active">Proteína</button>
-                    <button id="switch-to-py3dmol" class="view-btn">Dipolo</button>
-                </div>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-microscope"></i></span>
+                        <span>Visualizador</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-flask"></i></span>
+                        <span>Familias</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-filter"></i></span>
+                        <span>Filtros</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="navbar-actions">
+                <button class="action-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Exportar</span>
+                </button>
             </div>
             
-            <div class="structure-container">
-                <!-- Mol* viewer -->
-                <div id="viewer" class="structure-viewer active"></div>
-                
-                <!-- py3Dmol viewer -->
-                <div id="py3dmol-dipole-viewer" class="structure-viewer" style="display: none;">
-                    <div id="py3dmol-container" style="width: 100%; height: 100%;"></div>
-                    <div class="viewer-info">
-                        <strong>Visualización Dipolo</strong><br>
-                        🔴 Flecha Roja: Vector del dipolo<br>
-                        🔵 Proteina: Representacion "Cartoon"
+            <button class="navbar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="viewer-container">
+        <!-- Header de la página -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title-wrapper">
+                    <div class="page-icon"><i class="fas fa-microscope"></i></div>
+                    <div class="page-title-text">
+                        <h1>Visualizador de Proteínas</h1>
+                        <p class="page-subtitle">Análisis estructural integrado con vista dual 3D y grafo molecular</p>
                     </div>
                 </div>
-                
-                <!-- Plotly viewer -->
-                <div id="plotly-dipole-viewer" class="structure-viewer" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- Panel derecho: Análisis de Grafo -->
-        <div class="graph-panel">
-            <div class="panel-header">
-                <h4>📊 Análisis de Grafo Molecular</h4>
-                <span class="graph-analysis-label">Analizando: <span id="graph-analysis-protein">-</span></span>
+        <!-- Controles de selección -->
+        <div class="controls-section">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label class="control-label">
+                        <i class="fas fa-layer-group control-icon"></i>
+                        Grupo de Proteínas
+                    </label>
+                    <select id="groupSelect" class="form-select">
+                        <option value="toxinas">Toxinas</option>
+                        <option value="nav1_7">Nav1.7</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <i class="fas fa-dna control-icon"></i>
+                        Seleccionar Proteína
+                    </label>
+                    <select id="proteinSelect" class="form-select">
+                        <option value="">Cargando proteínas...</option>
+                    </select>
+                </div>
+                
+                <div class="control-group" id="dipole-status-container" style="display: none;">
+                    <label class="control-label">
+                        <i class="fas fa-bolt control-icon"></i>
+                        Estado del Dipolo
+                    </label>
+                    <div class="dipole-status-box">
+                        <div class="dipole-indicator" id="dipole-indicator"></div>
+                        <span id="dipole-status-text">Esperando selección...</span>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Controles del grafo -->
-            <div class="graph-controls">
-                <div class="controls-row">
-                    <div class="control-group">
-                        <label for="long-input">Separación de secuencia:</label>
-                        <input id="long-input" type="number" value="5" min="0" step="1">
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="dist-input">Distancia umbral (Å):</label>
-                        <input id="dist-input" type="number" value="6.0" min="0" step="0.1">
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="granularity-toggle">Representación:</label>
-                        <div class="toggle-switch">
-                            <input type="checkbox" id="granularity-toggle" checked>
-                            <label for="granularity-toggle" class="slider">
-                                <span class="slider-text" data-on="Átomos" data-off="CA"></span>
-                            </label>
+        </div>
+
+        <!-- Vista Dual: Estructura 3D y Grafo -->
+        <div class="dual-view-wrapper">
+            <!-- Panel Estructura 3D -->
+            <div class="view-panel">
+                <div class="panel-header">
+                    <h4 class="panel-title">
+                        <i class="fas fa-cube"></i>
+                        <span>Estructura 3D</span>
+                    </h4>
+                    <div class="panel-controls">
+                        <div class="view-toggle">
+                            <button id="switch-to-molstar" class="view-toggle-btn active">Proteína</button>
+                            <button id="switch-to-py3dmol" class="view-toggle-btn">Dipolo</button>
                         </div>
                     </div>
                 </div>
+                
+                <div class="viewer-container-box">
+                    <!-- Mol* viewer -->
+                    <div id="viewer" class="viewer-canvas active"></div>
+                    
+                    <!-- py3Dmol viewer -->
+                    <div id="py3dmol-dipole-viewer" class="viewer-canvas">
+                        <div id="py3dmol-container" style="width: 100%; height: 100%;"></div>
+                    </div>
+                    
+                    <!-- Plotly viewer -->
+                    <div id="plotly-dipole-viewer" class="viewer-canvas"></div>
+                    
+                    <!-- Info overlay -->
+                    <div class="viewer-info-overlay">
+                        <strong><i class="fas fa-info-circle"></i> Información:</strong><br>
+                        <i class="fas fa-arrow-right" style="color: red;"></i> <strong>Flecha Roja:</strong> Vector del dipolo<br>
+                        <i class="fas fa-dna" style="color: blue;"></i> <strong>Estructura:</strong> Representación Cartoon
+                    </div>
+                    
+                    <!-- Loading state -->
+                    <div class="loading-state" id="structure-loading">
+                        <div class="spinner"></div>
+                        <p class="loading-text">Cargando estructura 3D...</p>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Visualización del grafo -->
-            <div class="graph-plot-container">
-                <div id="graph-plot"></div>
+
+            <!-- Panel Grafo Molecular -->
+            <div class="view-panel graph-panel">
+                <div class="panel-header">
+                    <h4 class="panel-title">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Análisis de Grafo</span>
+                    </h4>
+                    <div class="panel-controls">
+                        <span class="badge badge-primary" id="graph-analysis-protein">Esperando...</span>
+                    </div>
+                </div>
+                
+                <!-- Controles del grafo -->
+                <div class="graph-controls-section">
+                    <div class="graph-controls-grid">
+                        <div class="control-group">
+                            <label class="control-label">Separación de secuencia</label>
+                            <input id="long-input" type="number" class="form-control" value="5" min="0" step="1">
+                    </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Distancia umbral (Å)</label>
+                            <input id="dist-input" type="number" class="form-control" value="6.0" min="0" step="0.1">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Granularidad</label>
+                            <div class="granularity-toggle">
+                                <span class="toggle-label">Residuo</span>
+                                <div class="toggle-switch" id="granularity-toggle-wrapper">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                                <span class="toggle-label">Atómico</span>
+                                <input type="checkbox" id="granularity-toggle" checked style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visualización del grafo -->
+                <div class="graph-plot-wrapper">
+                    <div id="graph-plot"></div>
+                    
+                    <!-- Loading state -->
+                    <div class="loading-state" id="graph-loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p class="loading-text">Generando grafo molecular...</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Panel de análisis con botones para alternar entre grafo y dipolo -->
-    <div class="analysis-toggle">
+        <!-- Toggles de análisis -->
         <button id="toggle-analysis" class="analysis-toggle-btn">
-            📈 Mostrar Análisis Detallado <span class="toggle-icon">▼</span>
+            <i class="fas fa-chart-line"></i>
+            <span>Mostrar Análisis Detallado del Grafo</span>
+            <i class="fas fa-chevron-down toggle-icon"></i>
         </button>
-        <button id="toggle-dipole-analysis" class="analysis-toggle-btn dipole-toggle-btn" style="display: none;">
-            🧬 Mostrar Cálculos Dipolo <span class="toggle-icon">▼</span>
+        
+        <button id="toggle-dipole-analysis" class="analysis-toggle-btn btn-accent" style="display: none; margin-top: var(--space-4);">
+            <i class="fas fa-bolt"></i>
+            <span>Mostrar Cálculos del Dipolo</span>
+            <i class="fas fa-chevron-down toggle-icon"></i>
         </button>
-    </div>
 
     <!-- Contenedor para análisis detallado del grafo -->
     <div id="detailed-analysis" class="detailed-analysis-container" style="display: none;">
@@ -245,58 +335,73 @@
 
             <!-- Exportar Datos -->
             <div class="analysis-section">
-                <h5>Exportar Datos Completos</h5>
-                <div class="export-controls">
+                <div class="panel-header" style="border-radius: var(--radius-lg);">
+                    <h4 class="panel-title" style="margin:0;">
+                        <i class="fas fa-file-export"></i>
+                        <span>Exportar Datos Completos</span>
+                    </h4>
+                </div>
+                <div class="export-controls" style="margin-top: var(--space-5);">
                     <!-- Selector de tipo de exportación -->
                     <div class="export-type-selection">
-                        <label for="export-type-selector">Tipo de análisis para exportar:</label>
-                        <select id="export-type-selector" class="export-type-selector">
+                        <label for="export-type-selector" class="control-label">
+                            <i class="fas fa-sliders-h control-icon"></i>
+                            Tipo de análisis para exportar
+                        </label>
+                        <select id="export-type-selector" class="export-type-selector form-select">
                             <option value="residues">Análisis por Residuos</option>
-                            <option value="segments_atomicos">Segmentación Atómica </option>
+                            <option value="segments_atomicos">Segmentación Atómica</option>
                         </select>
-                        <div class="tooltip">
-                            <span class="tooltip-icon">ℹ</span>
+                        <div class="tooltip" aria-label="Información">
+                            <span class="tooltip-icon"><i class="fas fa-info"></i></span>
                             <span class="tooltip-text">Segmentación Atómica: agrupa átomos conectados en regiones lógicas del grafo (solo para Nav1.7 con granularidad atómica)</span>
                         </div>
                     </div>
-                    
+
                     <!-- Exportación individual -->
-                    <button id="export-csv-btn" class="export-button">
-                        <span class="button-text">📊 Descargar Excel de Residuos Individuales</span>
-                        <span class="loading-text" style="display: none;">⏳ Calculando...</span>
+                    <button id="export-csv-btn" class="btn btn-primary export-button">
+                        <i class="fas fa-table"></i>
+                        <span>Descargar Excel de Residuos Individuales</span>
+                        <span class="loading-text" style="display:none;">Calculando...</span>
                     </button>
-                    <p class="export-info">Descarga un archivo Excel con las métricas de centralidad de la toxina actual</p>
-                    
+                    <p class="export-info">Descarga un archivo Excel con las métricas de centralidad de la toxina actual.</p>
+
                     <!-- Exportación por familias -->
                     <div class="family-export-section">
-                        <h6>Análisis por Familias de Toxinas</h6>
-                        
-                        <!-- Selector de tipo de análisis para familias -->
+                        <h6 style="margin:0 0 var(--space-3) 0;">
+                            <i class="fas fa-layer-group"></i>
+                            Análisis por Familias de Toxinas
+                        </h6>
+
                         <div class="export-type-selection">
-                            <label for="family-export-type-selector">Tipo de análisis:</label>
-                            <select id="family-export-type-selector" class="export-type-selector">
+                            <label for="family-export-type-selector" class="control-label">
+                                <i class="fas fa-sliders-h control-icon"></i>
+                                Tipo de análisis
+                            </label>
+                            <select id="family-export-type-selector" class="export-type-selector form-select">
                                 <option value="residues">Análisis por Residuos</option>
-                                <option value="segments_atomicos">Segmentación Atómica </option>
+                                <option value="segments_atomicos">Segmentación Atómica</option>
                             </select>
                             <div class="tooltip">
-                                <span class="tooltip-icon">ℹ</span>
+                                <span class="tooltip-icon"><i class="fas fa-info"></i></span>
                                 <span class="tooltip-text">La segmentación atómica agrupa átomos por residuos con métricas estructurales completas. Requiere granularidad atómica.</span>
                             </div>
                         </div>
-                        
-                        <select id="family-selector" class="family-selector">
+
+                        <select id="family-selector" class="family-selector form-select">
                             <option value="">Seleccionar familia...</option>
                             <option value="μ-TRTX-Hh2a">μ-TRTX-Hh2a (Familia Hh2a)</option>
                             <option value="μ-TRTX-Hhn2b">μ-TRTX-Hhn2b (Familia Hhn2b)</option>
                             <option value="β-TRTX">β-TRTX (Familia Beta)</option>
                             <option value="ω-TRTX">ω-TRTX (Familia Omega)</option>
                         </select>
-                        
-                        <button id="export-family-csv-btn" class="export-button family-export-btn" disabled>
-                            <span class="button-text">📈 Descargar Dataset Excel Familia Completa + IC₅₀</span>
-                            <span class="loading-text" style="display: none;">⏳ Procesando familia...</span>
+
+                        <button id="export-family-csv-btn" class="btn btn-secondary export-button family-export-btn" disabled>
+                            <i class="fas fa-file-excel"></i>
+                            <span>Descargar Dataset Excel Familia Completa + IC₅₀</span>
+                            <span class="loading-text" style="display:none;">Procesando familia...</span>
                         </button>
-                        <p class="export-info">Descarga dataset completo en Excel con métricas topológicas y valores IC₅₀ para análisis estructura-actividad</p>
+                        <p class="export-info">Descarga dataset completo con métricas topológicas y valores IC₅₀ para análisis estructura‑actividad.</p>
                     </div>
                 </div>
             </div>
@@ -344,7 +449,7 @@
     <!-- Contenedor para cálculos del dipolo -->
     <div id="dipole-calculations" class="detailed-analysis-container" style="display: none;">
         <div class="analysis-panel">
-            <h4>🧬 Cálculos del Vector Dipolo</h4>
+            <h4><i class="fas fa-bolt"></i> Cálculos del Vector Dipolo</h4>
             
             <!-- Información del Dipolo -->
             <div class="analysis-section">
@@ -355,29 +460,29 @@
                     
                     <div class="dipole-properties-grid">
                         <div class="dipole-property">
-                            <span class="property-label">📏 Magnitud:</span>
+                            <span class="property-label"><i class="fas fa-ruler"></i> Magnitud:</span>
                             <span class="property-value" id="dipole-magnitude-detail">-</span>
                             <span class="property-unit">D</span>
                         </div>
                         
                         <div class="dipole-property">
-                            <span class="property-label">📐 Ángulo con eje Z:</span>
+                            <span class="property-label"><i class="fas fa-drafting-compass"></i> Ángulo con eje Z:</span>
                             <span class="property-value" id="dipole-angle-z-detail">-</span>
                             <span class="property-unit">°</span>
                         </div>
                         
                         <div class="dipole-property">
-                            <span class="property-label">🧭 Dirección normalizada:</span>
+                            <span class="property-label"><i class="fas fa-location-arrow"></i> Dirección normalizada:</span>
                             <span class="property-value direction-value" id="dipole-direction-detail">-</span>
                         </div>
                         
                         <div class="dipole-property">
-                            <span class="property-label">📍 Centro de masa:</span>
+                            <span class="property-label"><i class="fas fa-bullseye"></i> Centro de masa:</span>
                             <span class="property-value coordinates-value" id="dipole-center-detail">-</span>
                         </div>
                         
                         <div class="dipole-property">
-                            <span class="property-label">🎯 Punto final:</span>
+                            <span class="property-label"><i class="fas fa-crosshairs"></i> Punto final:</span>
                             <span class="property-value coordinates-value" id="dipole-endpoint-detail">-</span>
                         </div>
                     </div>
@@ -419,6 +524,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.js"></script>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui-enhancements.js') }}"></script>
     <script src="{{ url_for('static', filename='js/molstar_analyzer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/graph_viewer.js') }}"></script>

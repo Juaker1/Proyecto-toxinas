@@ -23,7 +23,7 @@ class ExportFeedbackManager {
             modal.className = 'export-modal';
             modal.innerHTML = `
                 <div class="modal-content">
-                    <div class="modal-icon" id="modal-icon">📊</div>
+                    <div class="modal-icon" id="modal-icon"><i class="fas fa-chart-bar"></i></div>
                     <div class="modal-title" id="modal-title">Generando archivo CSV</div>
                     <div class="modal-subtitle" id="modal-subtitle">Procesando datos de toxinas...</div>
                     <div class="modal-progress">
@@ -46,7 +46,7 @@ class ExportFeedbackManager {
         const modalDetails = document.getElementById('modal-details');
 
         // Configurar contenido del modal
-        modalIcon.textContent = config.icon || '📊';
+    modalIcon.innerHTML = `<i class="${config.iconClass || 'fas fa-chart-bar'}"></i>`;
         modalTitle.textContent = config.title || 'Generando archivo CSV';
         modalSubtitle.textContent = config.subtitle || 'Procesando datos de toxinas...';
         modalDetails.textContent = config.details || 'Calculando métricas de centralidad y propiedades topológicas';
@@ -78,10 +78,10 @@ class ExportFeedbackManager {
         const toastId = `toast-${this.toastCounter++}`;
         
         const iconMap = {
-            success: '✅',
-            error: '❌',
-            warning: '⚠️',
-            info: 'ℹ️'
+            success: 'fas fa-check-circle',
+            error: 'fas fa-times-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
         };
 
         const toast = document.createElement('div');
@@ -89,7 +89,7 @@ class ExportFeedbackManager {
         toast.className = `toast ${type}`;
         toast.innerHTML = `
             <div class="toast-header">
-                <span class="toast-icon">${iconMap[type] || 'ℹ️'}</span>
+                <span class="toast-icon"><i class="${iconMap[type] || 'fas fa-info-circle'}"></i></span>
                 <span class="toast-title">${title}</span>
                 <button class="toast-close" onclick="exportFeedback.hideToast('${toastId}')">&times;</button>
             </div>
@@ -129,7 +129,7 @@ class ExportFeedbackManager {
     // Métodos específicos para cada tipo de exportación
     startIndividualExport(toxinName) {
         return this.showExportModal({
-            icon: '🧬',
+            iconClass: 'fas fa-dna',
             title: 'Exportando Toxina Individual',
             subtitle: `Procesando: ${toxinName}`,
             details: 'Calculando centralidades de residuos individuales y propiedades estructurales'
@@ -138,7 +138,7 @@ class ExportFeedbackManager {
 
     startFamilyExport(familyName, toxinCount) {
         return this.showExportModal({
-            icon: '📈',
+            iconClass: 'fas fa-chart-line',
             title: 'Exportando Familia Completa',
             subtitle: `Procesando familia: ${familyName}`,
             details: `Analizando ${toxinCount} toxinas de la familia con métricas topológicas + IC₅₀`
@@ -147,7 +147,7 @@ class ExportFeedbackManager {
 
     startWTComparison(wtFamily) {
         return this.showExportModal({
-            icon: '🔬',
+            iconClass: 'fas fa-microscope',
             title: 'Comparación WT vs Referencia',
             subtitle: `Comparando: ${wtFamily} vs hwt4_Hh2a_WT`,
             details: 'Calculando diferencias topológicas entre toxina WT y estructura de referencia'
@@ -186,7 +186,7 @@ class ExportFeedbackManager {
     showError(errorMessage, context = '') {
         this.hideExportModal();
         
-        const title = '❌ Error en Exportación';
+    const title = 'Error en Exportación';
         const message = context 
             ? `Error ${context}: ${errorMessage}` 
             : `Se produjo un error durante la exportación: ${errorMessage}`;
@@ -195,12 +195,12 @@ class ExportFeedbackManager {
     }
 
     showWarning(warningMessage) {
-        const title = '⚠️ Advertencia';
+    const title = 'Advertencia';
         return this.showToast('warning', title, warningMessage, 5000);
     }
 
     showInfo(infoMessage) {
-        const title = 'ℹ️ Información';
+    const title = 'Información';
         return this.showToast('info', title, infoMessage, 4000);
     }
 }
