@@ -136,13 +136,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tblPageNum < maxPage) { tblPageNum++; renderTablePage(); }
   });
 
-  // Custom checkbox visuals
+      // Custom checkbox functionality - unified click handling
   const chkBoxWrap = document.getElementById('require-pair-box');
-  if (chkBoxWrap && requirePairEl) {
-    chkBoxWrap.addEventListener('click', () => {
+  const chkLabelWrap = chkBoxWrap?.closest('.checkbox-wrapper');
+  
+  // Function to update checkbox visual state
+  function updateCheckboxVisual() {
+    if (chkBoxWrap && requirePairEl) {
+      if (requirePairEl.checked) {
+        chkBoxWrap.classList.add('checked');
+      } else {
+        chkBoxWrap.classList.remove('checked');
+      }
+    }
+  }
+  
+  // Initialize checkbox visual state
+  updateCheckboxVisual();
+  
+  // Unified event listener - works for both checkbox and label
+  if (chkLabelWrap && requirePairEl) {
+    chkLabelWrap.addEventListener('click', () => {
       requirePairEl.checked = !requirePairEl.checked;
-      chkBoxWrap.classList.toggle('checked', requirePairEl.checked);
+      updateCheckboxVisual();
     });
   }
+
+  // Initial load
   fetchtoxin_filter();
 });

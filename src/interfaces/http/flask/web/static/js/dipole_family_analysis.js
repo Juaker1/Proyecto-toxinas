@@ -379,6 +379,9 @@ class DipoleFamilyAnalyzer {
                 // Mostrar áreas de visualización y estadísticas
                 this.visualizationArea.style.display = 'block';
                 this.statisticsArea.style.display = 'block';
+                
+                // Auto-scroll hacia la sección de visualización
+                this.scrollToVisualization();
             } else {
                 console.error('Error loading family dipoles:', data.error);
             }
@@ -386,6 +389,24 @@ class DipoleFamilyAnalyzer {
             console.error('Error visualizing family:', error);
         } finally {
             this.showLoading(false);
+        }
+    }
+
+    scrollToVisualization() {
+        // Scroll suave hacia la sección de visualización
+        if (this.visualizationArea) {
+            const element = this.visualizationArea;
+            const offset = 100; // Espacio adicional desde la parte superior
+            
+            // Calcular la posición del elemento
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+            
+            // Scroll suave hacia la posición
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
         }
     }
 

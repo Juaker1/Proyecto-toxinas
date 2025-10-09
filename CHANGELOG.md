@@ -1,5 +1,64 @@
 # Changelog
 Todas las modificaciones significativas del proyecto se documentan aquí.  
+El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
+
+## [1.9.0] – 2025-10-09
+### Added
+- Rediseño completo del frontend con sistema de diseño profesional unificado:
+  - Sistema de variables CSS centralizadas (design-system.css) con escalas de color, espaciado, tipografía, sombras y transiciones.
+  - Componentes reutilizables (buttons, cards, forms, tables, alerts, badges) con diseño consistente.
+  - Navbar unificada responsive con toggle móvil y navegación coherente entre páginas.
+  - Iconografía con Font Awesome 6.4.0 en lugar de emojis para apariencia profesional.
+- Separación de contenedores en vista del visualizador:
+  - "Análisis Detallado del Grafo" y "Exportar Datos Completos" como secciones independientes con toggles individuales.
+  - Botones de toggle lado a lado para acceso directo sin necesidad de scroll extenso.
+  - Sistema de exclusión mutua: solo una sección visible a la vez para UI limpia.
+- Auto-scroll en visualización de familias:
+  - Scroll automático y suave hacia la sección de visualización al seleccionar "Visualizar los dipolos de las familias".
+  - Offset configurable (100px) para mejor posicionamiento visual.
+- Mejoras en página de filtros de toxinas:
+  - Checkbox personalizado funcional con animaciones checkPop y hover effects.
+  - Click unificado: funciona tanto en el cuadrado del checkbox como en el texto del label.
+  - Estados visuales claros con transiciones suaves y feedback inmediato.
+  - Mejoras en botones de exportación y toggle de tabla con gradientes y micro-interacciones.
+
+### Changed
+- Animaciones de botones mejoradas:
+  - Reemplazo de expansión circular por sliding horizontal para llenar botones completamente.
+  - Hover effects consistentes en todos los botones con translateY y box-shadow.
+  - Estados disabled con opacidad apropiada y cursor not-allowed.
+- Estructura HTML del apartado "Exportar Datos Completos":
+  - Uso de componentes card con card-header y card-body para consistencia visual.
+  - Selectores y controles con clases control-group y control-label estandarizadas.
+  - Tooltips con iconos Font Awesome y posicionamiento absoluto mejorado.
+  - Secciones de familia y comparación WT con diseño profesional y spacing uniforme.
+- Sistema de paginación de tabla en filtros:
+  - Paginación client-side (10 filas por página) sin cambios en backend.
+  - Controles de navegación con estados disabled apropiados.
+
+### Fixed
+- Funcionalidad del checkbox de pareja hidrofóbica en página de filtros:
+  - Eliminación de atributo for conflictivo en label HTML.
+  - Event listeners unificados para evitar doble-triggering.
+  - Sincronización correcta entre estado visual (CSS) y estado lógico (JavaScript).
+  - Inicialización adecuada del estado visual en page load.
+  - Restauración de estructura HTML requerida por JavaScript (.button-text span).
+  - Preservación de IDs y clases necesarias para event listeners.
+  - Compatibilidad mantenida con export_feedback.js y graph_viewer.js.
+- Problemas de UI/UX y redundancias:
+  - Eliminación de botones duplicados en análisis del visualizador.
+  - Remoción de símbolos extraños (?) en labels de toggle.
+  - Corrección de posicionamiento de botones (dipolo aparecía sobre navbar).
+  - Limpieza de console.log innecesarios en producción.
+
+### Removed
+- Emojis en interfaz de usuario reemplazados por Font Awesome icons.
+- Código duplicado de manejo de checkbox en toxin_filter.js.
+
+---
+
+## [1.8.0] – 2025-10-03
+Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en “versiones” retrospectivas según hitos de desarrollo.
 
 ## [1.8.0] – 2025-10-03
