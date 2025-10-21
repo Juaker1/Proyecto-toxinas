@@ -157,3 +157,6 @@ zope.event==5.0
 zope.interface==7.2
 zstandard==0.23.0
 pytest==8.3.3
+
+# Needed for Excel export via pandas/openpyxl
+openpyxl==3.1.5

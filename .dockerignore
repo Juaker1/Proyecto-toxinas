@@ -1,0 +1,44 @@
+# Ignore Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+
+# Git & editor
+.git/
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+*.swp
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Build, dist, coverage
+build/
+dist/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large or generated data not needed for image build (adjust as needed)
+# If you need them in the container, remove from here
+/data/
+/tests/
+/tools/*_test*
+/docs/
+
+# Docker artifacts
+Dockerfile*

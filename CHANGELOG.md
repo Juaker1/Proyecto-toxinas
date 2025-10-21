@@ -2,6 +2,19 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.3.0] – 2025-10-20
+### Added
+- **Dockerización local completa del proyecto**:
+  - Se creó un `Dockerfile` de producción que incluye la base de datos, archivos PDB, PSF y carpeta filtered, permitiendo levantar la app Flask y acceder a la UI y API desde el navegador.
+  - Se añadió `.dockerignore` para acelerar los builds y reducir el tamaño de la imagen.
+  - Se agregó `docker-compose.yml` con dos servicios:
+    - `app`: modo producción con gunicorn.
+    - `dev`: modo desarrollo con Flask y autoreload, permitiendo edición en caliente y visualización completa de la página.
+  - Se configuraron variables de entorno y healthcheck para facilitar el despliegue y diagnóstico.
+
+### Notes
+- Por ahora la dockerización es solo local; no se ha publicado la imagen en ningún registro ni automatizado el despliegue en servidores externos.
+
 ## [2.2.0] – 2025-10-20
 ### Added
 - **Optimización integral de rendimiento Lighthouse**: Sistema completo de carga diferida y cacheado:

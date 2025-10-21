@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    image: toxinas:v2
+    container_name: toxinas_app
+    environment:
+      - PROJECT_ROOT=/app
+      - HOST=0.0.0.0
+      - PORT=5001
+      - DEBUG=0
+      # - LEGACY_ALIASES_ENABLED=1
+      # - USE_MINIFIED_ASSETS=1
+      # - TOXINS_DB_PATH=/app/database/toxins.db
+      # - PDB_DIR=/app/pdbs
+      # - PSF_DIR=/app/psfs
+      # - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
+      # - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
+    ports:
+      - "5001:5001"
+    # volumes:
+    #   - ./database:/app/database
+    #   - ./pdbs:/app/pdbs
+    #   - ./psfs:/app/psfs
+    #   - ./tools/filtered:/app/tools/filtered
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5001/v2/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  dev:
+    build: .
+    image: toxinas:v2
+    container_name: toxinas_dev
+    environment:
+      - PROJECT_ROOT=/app
+      - HOST=0.0.0.0
+      - PORT=5001
+      - DEBUG=1
+      - LEGACY_ALIASES_ENABLED=1
+      # Ajusta si quieres usar rutas custom dentro del contenedor
+      - TOXINS_DB_PATH=/app/database/toxins.db
+      - PDB_DIR=/app/pdbs
+      - PSF_DIR=/app/psfs
+      - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
+      - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
+    command: ["python", "run_v2.py"]
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./:/app
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5001/v2/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
