@@ -221,6 +221,33 @@ def create_app_v2() -> Flask:
 
     app.add_url_rule('/v2/health', 'health_v2', health_v2, methods=['GET'])
 
+    # DB check endpoint to verify sqlite file visibility and basic tables
+    def db_check_v2():
+        import sqlite3
+        result = {"ok": False, "db_path": app.config.get("APP_CONFIG", {}).get("db_path")}
+        try:
+            db_path = result["db_path"]
+            if not db_path or not os.path.exists(db_path):
+                result.update({"error": "db_path not found"})
+                return jsonify(result), 500
+            conn = sqlite3.connect(db_path)
+            cur = conn.cursor()
+            counts = {}
+            for table in ("Peptides", "Nav1_7_InhibitorPeptides"):
+                try:
+                    cur.execute(f"SELECT COUNT(1) FROM {table}")
+                    counts[table] = cur.fetchone()[0]
+                except Exception as ex:
+                    counts[table] = f"error: {ex}"
+            conn.close()
+            result.update({"ok": True, "counts": counts})
+            return jsonify(result)
+        except Exception as ex:
+            result.update({"error": str(ex)})
+            return jsonify(result), 500
+
+    app.add_url_rule('/v2/db_check', 'db_check_v2', db_check_v2, methods=['GET'])
+
     
     # Gzip compression for response bodies
     try:

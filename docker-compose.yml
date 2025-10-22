@@ -10,6 +10,12 @@ services:
       - HOST=0.0.0.0
       - PORT=5001
       - DEBUG=1
+      # Rutas explícitas de datos dentro del contenedor
+      - TOXINS_DB_PATH=/app/database/toxins.db
+      - PDB_DIR=/app/pdbs
+      - PSF_DIR=/app/psfs
+      - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
+      - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
       # - LEGACY_ALIASES_ENABLED=1
       # - USE_MINIFIED_ASSETS=1
       # - TOXINS_DB_PATH=/app/database/toxins.db
@@ -20,11 +26,11 @@ services:
     ports:
       # Puerto publicado del host (estándar NPM: IP pública + 8087)
       - "8087:5001"
-    # volumes:
-    #   - ./database:/app/database
-    #   - ./pdbs:/app/pdbs
-    #   - ./psfs:/app/psfs
-    #   - ./tools/filtered:/app/tools/filtered
+    volumes:
+      - ./database:/app/database
+      - ./pdbs:/app/pdbs
+      - ./psfs:/app/psfs
+      - ./tools/filtered:/app/tools/filtered
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:5001/v2/health"]
       interval: 30s
