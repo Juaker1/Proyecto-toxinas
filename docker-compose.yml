@@ -9,7 +9,7 @@ services:
       - PROJECT_ROOT=/app
       - HOST=0.0.0.0
       - PORT=5001
-      - DEBUG=0
+      - DEBUG=1
       # - LEGACY_ALIASES_ENABLED=1
       # - USE_MINIFIED_ASSETS=1
       # - TOXINS_DB_PATH=/app/database/toxins.db
