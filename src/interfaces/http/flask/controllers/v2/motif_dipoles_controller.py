@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
+import io
+import zipfile
 import math
 import os
 import sqlite3
@@ -23,6 +25,7 @@ _REFERENCE_OPTIONS_CACHE: Optional[List[Dict[str, Any]]] = None
 
 _AXES = ("x", "y", "z")
 _DEFAULT_DB_REFERENCE_CODE = "μ-TRTX-Cg4a"
+_REFERENCE_WT_SEQUENCE = "ECLEIFKACNPSNDQCCKSSKLVCSRKTRWCAYQI"
 
 
 def configure_motif_dipoles_dependencies(
@@ -284,6 +287,7 @@ def _load_reference_from_files() -> Optional[Dict[str, Any]]:
             "pdb_path": str(_REFERENCE_PDB),
             "psf_path": str(_REFERENCE_PSF),
             "peptide_code": "WT",
+            "sequence": _REFERENCE_WT_SEQUENCE,
             "display_name": "Proteína WT",
             "normalized_ic50": None,
             "ic50_value": None,
@@ -348,6 +352,23 @@ def _load_reference_from_db(peptide_code: str = "μ-TRTX-Cg4a") -> Optional[Dict
         "ic50_value_nm": _convert_ic50_to_nm(ic50_value, ic50_unit) if ic50_value is not None else None,
         "display_name": code,
     }
+    # intentar recuperar secuencia asociada al peptide_code desde la tabla Peptides
+    try:
+        conn = sqlite3.connect(_DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT sequence FROM Peptides WHERE accession_number = ?", (code,))
+        prow = cur.fetchone()
+        if prow and "sequence" in prow.keys():
+            cache["sequence"] = prow["sequence"]
+    except Exception:
+        # no crítico; la secuencia puede no estar disponible
+        pass
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
     vec = _get_normalized_vector(cache.get("dipole"))
     if vec:
         cache["normalized_vector"] = vec
@@ -404,6 +425,7 @@ def motif_reference():
             "pdb_path": ref.get("pdb_path"),
             "psf_path": ref.get("psf_path"),
             "selected_reference_code": selected_code,
+            "sequence": ref.get("sequence"),
         }
         angles = ref.get("angles_deg")
         if not angles:
@@ -429,6 +451,111 @@ def motif_reference():
             })
         response["reference_options"] = _get_reference_options()
         return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@motif_dipoles_v2.get("/v2/motif_dipoles/item/download")
+def motif_item_download():
+    """Descarga PDB y PSF para una toxina filtrada dada su accession (desde _FILTERED_DIR).
+    Devuelve un zip con <accession>.pdb y <accession>.psf si existen.
+    """
+    try:
+        accession = (request.args.get("accession") or "").strip()
+        if not accession:
+            return jsonify({"error": "Parámetro 'accession' requerido"}), 400
+
+        pdb_path = _FILTERED_DIR / f"{accession}.pdb"
+        psf_path = _FILTERED_DIR / f"{accession}.psf"
+
+        if not pdb_path.exists() and not psf_path.exists():
+            return jsonify({"error": "Archivos PDB/PSF no encontrados para el accession solicitado"}), 404
+
+        pdb_bytes = pdb_path.read_bytes() if pdb_path.exists() else None
+        psf_bytes = psf_path.read_bytes() if psf_path.exists() else None
+
+        zip_io = io.BytesIO()
+        with zipfile.ZipFile(zip_io, 'w', zipfile.ZIP_DEFLATED) as zf:
+            if pdb_bytes:
+                zf.writestr(f"{accession}.pdb", pdb_bytes)
+            if psf_bytes:
+                zf.writestr(f"{accession}.psf", psf_bytes)
+        zip_io.seek(0)
+
+        return send_file(
+            zip_io,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=f"{accession}_files.zip",
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@motif_dipoles_v2.get("/v2/motif_dipoles/reference/download")
+def motif_reference_download():
+    """Devuelve un zip con PDB y PSF de la referencia seleccionada.
+    Si la referencia es 'WT' y está en filesystem usa las rutas; si está en DB
+    lee los blobs y empaqueta ambos archivos en un zip en memoria.
+    """
+    try:
+        requested_code = request.args.get("peptide_code")
+        ref, selected_code = _get_reference_data(requested_code)
+        if not ref:
+            return jsonify({"error": "Referencia no encontrada"}), 404
+
+        pdb_bytes = None
+        psf_bytes = None
+
+        # Intentar leer desde rutas si están disponibles
+        pdb_path = ref.get("pdb_path")
+        psf_path = ref.get("psf_path")
+        if pdb_path:
+            p = Path(pdb_path)
+            if p.exists():
+                pdb_bytes = p.read_bytes()
+        if psf_path:
+            p2 = Path(psf_path)
+            if p2.exists():
+                psf_bytes = p2.read_bytes()
+
+        # Si no hay bytes, intentar obtener desde objetos en memoria
+        if not pdb_bytes and ref.get("pdb_text"):
+            pdb_bytes = str(ref.get("pdb_text")).encode("utf-8")
+
+        # Si todavía falta alguno y tenemos pid, consultar DB para blobs
+        if (not pdb_bytes or not psf_bytes) and ref.get("pid"):
+            row = _fetch_reference_row(_DB_PATH, peptide_code=selected_code)
+            if row:
+                # row layout: id, peptide_code, pdb_blob, psf_blob, ic50_value, ic50_unit
+                try:
+                    pdb_blob = row[2]
+                    psf_blob = row[3]
+                except Exception:
+                    pdb_blob = None
+                    psf_blob = None
+                if pdb_blob and not pdb_bytes:
+                    pdb_bytes = pdb_blob if isinstance(pdb_blob, (bytes, bytearray)) else str(pdb_blob).encode("utf-8")
+                if psf_blob and not psf_bytes:
+                    psf_bytes = psf_blob if isinstance(psf_blob, (bytes, bytearray)) else str(psf_blob).encode("utf-8")
+
+        if not pdb_bytes and not psf_bytes:
+            return jsonify({"error": "Archivos PDB/PSF no disponibles para la referencia"}), 404
+
+        zip_io = io.BytesIO()
+        with zipfile.ZipFile(zip_io, 'w', zipfile.ZIP_DEFLATED) as zf:
+            if pdb_bytes:
+                zf.writestr(f"{selected_code}.pdb", pdb_bytes)
+            if psf_bytes:
+                zf.writestr(f"{selected_code}.psf", psf_bytes)
+        zip_io.seek(0)
+
+        return send_file(
+            zip_io,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=f"{selected_code}_reference_files.zip",
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

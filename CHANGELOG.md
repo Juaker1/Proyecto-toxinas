@@ -2,6 +2,33 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.4.0] – 2025-10-24
+### Added
+- Botón de descarga para la referencia del dipolo en la vista de filtros (UI + endpoint GET /v2/motif_dipoles/reference/download).
+- Botón de descarga por toxina en cada visualizador (UI + endpoint GET /v2/motif_dipoles/item/download?accession=...).
+- Panel de búsqueda por accession en la tabla de resultados:
+  - Input de búsqueda y botón "Limpiar" en la cabecera de la tabla que permiten filtrar las filas cargadas por accession (búsqueda por substring, case-insensitive).
+  - El filtrado es client-side sobre los resultados ya descargados; la paginación y el contador de hits se actualizan según el conjunto filtrado.
+
+### Changed
+- Se reemplazaron las métricas en la esquina superior derecha de cada tarjeta por el botón de descarga ubicado en el header (nombre + accession), evitando solapamiento con el canvas 3D.
+- Frontend: listeners de descarga ligados tras el renderizado de tarjetas para soportar paginación/refresh y mejorar feedback (spinner/errores).
+- Header de los visualizadores de toxinas: el accession pasa a ser un enlace a UniProt (https://www.uniprot.org/uniprotkb/{accession}/entry), la secuencia de la toxina se muestra directamente bajo el nombre, y nombre/accession/secuencia usan un tamaño de fuente uniforme y aumentado; el botón de descarga se ubica en el header reemplazando las métricas previas.
+- En el panel de referencia, la secuencia de la referencia se muestra a la derecha del selector.
+
+### Removed
+- Eliminado el modo de visualización "Ambos"; solo quedan los modos "Vectores Dipolares" y "Puentes S–S".
+
+### Fixed
+- Corrección de la visualización de puentes disulfuro: detección basada en átomos SG de residuos CYS (umbral de distancia) y renderizado adecuado (cilindros) en el viewer.
+- Problemas de interacción resueltos (botones clickeables, z-index y registro de handlers).
+
+### Notes
+- Las descargas se generan en memoria (ZIP) y requieren acceso a los PDB/PSF correspondientes en disco o en la fuente de datos configurada.
+- Si se requiere, se puede restaurar la visualización de métricas en otro lugar (tooltip/leyenda) sin afectar la descarga.
+
+---
+
 ## [2.2.1] – 2025-10-20
 ### Added
 - **Dockerización local completa del proyecto**:
@@ -14,6 +41,8 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 
 ### Notes
 - Por ahora la dockerización es solo local; no se ha publicado la imagen en ningún registro ni automatizado el despliegue en servidores externos.
+
+---
 
 ## [2.2.0] – 2025-10-20
 ### Added

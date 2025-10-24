@@ -145,11 +145,53 @@ document.addEventListener('DOMContentLoaded', () => {
             // Necesitamos la secuencia - asumimos que viene en it.sequence
             const sequence = it.sequence || '';
             renderDisulfideView(viewer, it.pdb_text, sequence, el);
-          } else if (viewMode === 'both') {
-            const sequence = it.sequence || '';
-            renderBothView(viewer, it.pdb_text, it, sequence, el);
           }
         });
+
+        // Adjuntar listeners de descarga para cada tarjeta renderizada
+        (function attachDownloadHandlers() {
+          const downloadButtons = grid.querySelectorAll('.card-download-btn');
+          downloadButtons.forEach((btn) => {
+            if (btn._hasHandler) return; // evitar doble bind
+            btn._hasHandler = true;
+            btn.addEventListener('click', async (ev) => {
+              ev.preventDefault();
+              const accession = btn.dataset.accession;
+              if (!accession) return alert('Accession no disponible');
+              const original = btn.innerHTML;
+              btn.disabled = true;
+              btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
+              try {
+                const url = `/v2/motif_dipoles/item/download?accession=${encodeURIComponent(accession)}`;
+                const res = await fetch(url);
+                if (!res.ok) {
+                  let msg = `HTTP ${res.status}`;
+                  try { const txt = await res.text(); if (txt) msg += ` - ${txt}`; } catch(e) {}
+                  throw new Error(msg);
+                }
+                const blob = await res.blob();
+                const disposition = res.headers.get('Content-Disposition') || '';
+                let filename = `${accession}_files.zip`;
+                const m = /filename="?([^";]+)"?/.exec(disposition);
+                if (m && m[1]) filename = m[1];
+                const urlBlob = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = urlBlob;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(urlBlob);
+              } catch (err) {
+                console.error('Error descargando archivo de item:', err);
+                alert('No se pudo descargar: ' + (err && err.message ? err.message : 'error desconocido'));
+              } finally {
+                btn.disabled = false;
+                btn.innerHTML = original;
+              }
+            });
+          });
+        })();
       } catch (e) {
         grid.innerHTML = `<div class="alert alert-danger" style="grid-column:1/-1;">Error: ${e.message}</div>`;
       }
@@ -491,6 +533,56 @@ document.addEventListener('DOMContentLoaded', () => {
     overlayDisulfideInfo(container, bonds, sequence);
   }
 
+  // Detectar puentes disulfuro a partir del modelo 3D (busca átomos SG en residuos CYS)
+  function detectDisulfideBondsFromPDB(model) {
+    try {
+      // Obtener todos los átomos del modelo
+      const atoms = typeof model.selectedAtoms === 'function' ? model.selectedAtoms({}) : (model.atoms || []);
+      if (!Array.isArray(atoms)) return [];
+
+      // Filtrar átomos SG de CYS
+      const sgAtoms = atoms.filter(a => {
+        try {
+          const resn = (a.resn || '').toString().toUpperCase();
+          const atomName = (a.atom || '').toString().trim().toUpperCase();
+          const elem = (a.elem || '').toString().toUpperCase();
+          return resn === 'CYS' && (atomName === 'SG' || elem === 'S');
+        } catch (e) {
+          return false;
+        }
+      });
+
+      const bonds = [];
+      const thresholdMax = 2.6; // Å - umbral generoso
+      const thresholdMin = 1.6; // Å - evitar coincidencias triviales
+
+      for (let i = 0; i < sgAtoms.length; i++) {
+        for (let j = i + 1; j < sgAtoms.length; j++) {
+          const a = sgAtoms[i];
+          const b = sgAtoms[j];
+          if (a.x == null || a.y == null || a.z == null || b.x == null || b.y == null || b.z == null) continue;
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dz = a.z - b.z;
+          const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if (d >= thresholdMin && d <= thresholdMax) {
+            bonds.push({
+              atom1: { x: a.x, y: a.y, z: a.z },
+              atom2: { x: b.x, y: b.y, z: b.z },
+              resi1: a.resi, chain1: a.chain, resn1: a.resn,
+              resi2: b.resi, chain2: b.chain, resn2: b.resn,
+              distance: d,
+            });
+          }
+        }
+      }
+      return bonds;
+    } catch (e) {
+      console.error('detectDisulfideBondsFromPDB error', e);
+      return [];
+    }
+  }
+
   function renderBothView(viewer, pdbText, subject, sequence, container, options = {}) {
     const dipole = subject && subject.dipole ? subject.dipole : subject;
     viewer.clear();
@@ -663,6 +755,18 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedReferenceCode = data.selected_reference_code || desiredCode || 'WT';
       referenceDisplayName = data.display_name || (selectedReferenceCode === 'WT' ? 'Proteína WT' : selectedReferenceCode);
 
+      // Mostrar la secuencia de la referencia junto al selector si existe el elemento
+      try {
+        const seqEl = document.getElementById('reference-sequence');
+        if (seqEl) {
+          const seqText = (data && data.sequence) ? String(data.sequence) : '-';
+          seqEl.textContent = seqText || '-';
+          seqEl.title = (data && data.sequence) ? String(data.sequence) : '';
+        }
+      } catch (e) {
+        // no crítico
+      }
+
       const candidateAngles = data.angles_deg || computeAxisAnglesFromDipole(data) || computeAxisAnglesFromDipole(data.dipole);
       const normalizedAngles = normalizeAngles(candidateAngles);
       if (normalizedAngles) {
@@ -718,9 +822,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const deltaZ = formatDegWithSuffix(metrics.deltaZ);
     return `
       <div class="dipole-visualization-card">
-        <div class="dipole-card-header">
-          <h6 class="dipole-card-title"><i class="fas fa-dna"></i>${title}</h6>
-          <small class="dipole-card-subtitle">Mag=${magnitude !== null ? magnitude.toFixed(2) : '-'} D · ∠Z=${angleZ} · Δori=${deltaOrient} · ΔZ=${deltaZ}</small>
+        <div class="dipole-card-header" style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
+            <h6 class="dipole-card-title" style="margin:0;font-size:16px;line-height:1.1;">
+              <i class="fas fa-dna"></i>
+              <span class="title-text" style="font-size:16px;font-weight:600;">${item.name || ''}</span>
+              <a class="accession-link" href="https://www.uniprot.org/uniprotkb/${item.accession_number}/entry" target="_blank" rel="noopener noreferrer" style="margin-left:6px;color:var(--link-color,#1e88e5);font-weight:600;font-size:16px;">(${item.accession_number})</a>
+            </h6>
+            <span class="dipole-sequence" style="color:#374151;font-family:monospace;font-size:16px;line-height:1.2;">${item.sequence || '-'}</span>
+          </div>
+          <div>
+            <button class="card-download-btn btn btn-sm btn-secondary" data-accession="${item.accession_number}" style="z-index:1000;">
+              <i class="fas fa-download"></i>
+              <span class="btn-label">Descargar</span>
+            </button>
+          </div>
         </div>
         <div id="${id}" class="dipole-viewer" style="position:relative;"></div>
       </div>
@@ -742,6 +858,48 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       await renderPage();
+        });
+
+        
+  }
+
+  // Botón para descargar PDB y PSF de la referencia seleccionada (zip)
+  const downloadRefBtn = document.getElementById('download-reference-btn');
+  if (downloadRefBtn) {
+    downloadRefBtn.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const code = selectedReferenceCode || 'WT';
+      downloadRefBtn.disabled = true;
+      const originalHtml = downloadRefBtn.innerHTML;
+      downloadRefBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
+      try {
+        const url = `/v2/motif_dipoles/reference/download?peptide_code=${encodeURIComponent(code)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+          let msg = `HTTP ${res.status}`;
+          try { const txt = await res.text(); if (txt) msg += ` - ${txt}`; } catch(e) {}
+          throw new Error(msg);
+        }
+        const blob = await res.blob();
+        const disposition = res.headers.get('Content-Disposition') || '';
+        let filename = `${code}_reference_files.zip`;
+        const m = /filename="?([^";]+)"?/.exec(disposition);
+        if (m && m[1]) filename = m[1];
+        const urlBlob = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = urlBlob;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(urlBlob);
+      } catch (err) {
+        console.error('Error descargando referencia:', err);
+        alert('No se pudo descargar la referencia: ' + (err && err.message ? err.message : 'error desconocido'));
+      } finally {
+        downloadRefBtn.disabled = false;
+        downloadRefBtn.innerHTML = originalHtml;
+      }
     });
   }
 
@@ -769,9 +927,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (viewMode === 'disulfide') {
         const sequence = it.sequence || '';
         renderDisulfideView(viewer, it.pdb_text, sequence, el);
-      } else if (viewMode === 'both') {
-        const sequence = it.sequence || '';
-        renderBothView(viewer, it.pdb_text, it, sequence, el);
       }
     });
   }
@@ -787,10 +942,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const dipoleBtn = document.getElementById('showDipoleBtn');
   const disulfideBtn = document.getElementById('showDisulfideBtn');
-  const bothBtn = document.getElementById('showBothBtn');
   
   function setActiveButton(activeBtn) {
-    [dipoleBtn, disulfideBtn, bothBtn].forEach(btn => {
+    [dipoleBtn, disulfideBtn].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
     if (activeBtn) activeBtn.classList.add('active');
@@ -812,13 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  if (bothBtn) {
-    bothBtn.addEventListener('click', () => {
-      viewMode = 'both';
-      setActiveButton(bothBtn);
-      reRenderCurrentPage();
-    });
-  }
+  // 'Both' mode removed - no handler
 
   // Sincronizar con filtros inferiores si existen
   const gapMinEl = document.getElementById('gap-min');

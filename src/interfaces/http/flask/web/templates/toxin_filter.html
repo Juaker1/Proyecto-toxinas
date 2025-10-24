@@ -144,13 +144,21 @@
         <!-- NUEVO: Dipolo de referencia + grilla paginada de filtrados -->
         <div class="visualization-section" style="display:block;">
             <div class="visualization-card">
-                <div class="card-header">
-                    <h2 class="section-title reference-section-title" style="margin:0;">
-                        <i class="fas fa-star"></i> Dipolo de Referencia:
+                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                    <h2 class="section-title reference-section-title" style="margin:0;display:flex;align-items:center;gap:0.75rem;">
+                        <i class="fas fa-star"></i>
+                        <span>Dipolo de Referencia:</span>
                         <select id="reference-selector" class="reference-selector-dropdown">
                             <option value="WT" selected>Proteína WT</option>
                         </select>
+                        <code id="reference-sequence" class="reference-sequence" style="margin-left:8px;font-family:monospace;font-size:0.95rem;color:#374151;">-</code>
                     </h2>
+                    <div class="header-actions" style="display:flex;gap:0.5rem;align-items:center;">
+                        <button id="download-reference-btn" class="btn btn-secondary" title="Descargar PDB y PSF de la referencia">
+                            <i class="fas fa-download"></i>
+                            <span>Descargar</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
@@ -180,9 +188,7 @@
                     <button id="showDisulfideBtn" class="btn-view-mode" data-mode="disulfide">
                         <i class="fas fa-link"></i> Puentes Disulfuro
                     </button>
-                    <button id="showBothBtn" class="btn-view-mode" data-mode="both">
-                        <i class="fas fa-layer-group"></i> Ambos
-                    </button>
+                    <!-- 'Both' visualization removed per UI update -->
                 </div>
                 
                 <div class="card-body">
@@ -254,6 +260,10 @@
                         <span class="results-count" id="hit-count">0</span>
                     </h2>
                 </div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <input id="accession-search" type="search" placeholder="Buscar por accession" aria-label="Buscar por accession" style="padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;">
+                        <button id="accession-clear" class="btn btn-sm btn-secondary" title="Limpiar búsqueda" style="padding:6px 8px;">Limpiar</button>
+                    </div>
                 <button id="toggle-results" class="toggle-table-btn" aria-expanded="true" aria-controls="results-body">
                     <i class="fas fa-eye"></i>
                     <span>Mostrar/Ocultar</span>

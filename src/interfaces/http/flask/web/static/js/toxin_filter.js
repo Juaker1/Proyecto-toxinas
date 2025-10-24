@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let tblPageNum = 1;
   const tblPageSize = 10;
   let tblRows = [];
+  let tableSearchQuery = '';
 
   async function fetchtoxin_filter() {
     const gapMin = gapMinEl.value || 3;
@@ -43,11 +44,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTablePage() {
-    const total = tblRows.length;
+    // Apply accession search filter (client-side). Matches accession_number, peptide_id or name.
+    const q = (tableSearchQuery || '').toString().trim().toLowerCase();
+    const filtered = q ? tblRows.filter(r => {
+      const acc = (r.accession_number || '').toString().toLowerCase();
+      const pid = (r.peptide_id || '').toString().toLowerCase();
+      const name = (r.name || '').toString().toLowerCase();
+      return acc.includes(q) || pid.includes(q) || name.includes(q);
+    }) : tblRows.slice();
+
+    const total = filtered.length;
     const maxPage = Math.max(1, Math.ceil(total / tblPageSize));
     tblPageNum = Math.min(Math.max(1, tblPageNum), maxPage);
     const start = (tblPageNum - 1) * tblPageSize;
-    const pageRows = tblRows.slice(start, start + tblPageSize);
+    const pageRows = filtered.slice(start, start + tblPageSize);
     bodyEl.innerHTML = pageRows.map(r => {
       const seqHtml = highlightSequence(r.sequence, r);
       return `<tr>
@@ -66,6 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tblPage) tblPage.textContent = `Página ${tblPageNum}`;
     if (tblPrev) tblPrev.disabled = tblPageNum <= 1;
     if (tblNext) tblNext.disabled = tblPageNum >= maxPage;
+
+    // Update visible hit count to reflect filtered rows
+    const hitCountEl = document.getElementById('hit-count');
+    if (hitCountEl) hitCountEl.textContent = total;
   }
 
   function highlightSequence(seq, meta) {
@@ -115,6 +129,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   runBtn.addEventListener('click', fetchtoxin_filter);
   exportBtn.addEventListener('click', exportXlsx);
+  // Accession search UI
+  const accessionSearchEl = document.getElementById('accession-search');
+  const accessionClearBtn = document.getElementById('accession-clear');
+  if (accessionSearchEl) {
+    accessionSearchEl.addEventListener('input', (ev) => {
+      tableSearchQuery = ev.target.value || '';
+      tblPageNum = 1;
+      renderTablePage();
+    });
+    accessionSearchEl.addEventListener('keypress', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        tableSearchQuery = accessionSearchEl.value || '';
+        tblPageNum = 1;
+        renderTablePage();
+      }
+    });
+  }
+  if (accessionClearBtn) {
+    accessionClearBtn.addEventListener('click', () => {
+      tableSearchQuery = '';
+      if (accessionSearchEl) accessionSearchEl.value = '';
+      tblPageNum = 1;
+      renderTablePage();
+    });
+  }
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
       const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
