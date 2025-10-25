@@ -169,8 +169,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function updateBasicStructuralInfo(properties, granularity) {
         if (!properties) return;
         
-        const toxinName = `${currentProteinGroup.toUpperCase()}_${currentProteinId}`;
-        updateElementText('toxin-name', toxinName);
+        // Get the actual toxin name from the metadata endpoint
+        getToxinName(currentProteinGroup, currentProteinId).then(toxinName => {
+            updateElementText('toxin-name', toxinName);
+        }).catch(() => {
+            // Fallback to the old format if API fails
+            const fallbackName = `${currentProteinGroup.toUpperCase()}_${currentProteinId}`;
+            updateElementText('toxin-name', fallbackName);
+        });
         
         // Actualizar datos básicos del grafo
         updateElementText('num-nodes', properties.num_nodes || '-');
@@ -200,8 +206,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const analysis = await window.molstarAnalyzer.analyzeCurrentStructure();
             
             if (analysis) {
-                // Actualizar datos complementarios y métricas avanzadas
-                updateAdvancedMetrics(analysis);
+                // Solo actualizar datos complementarios que no provengan del endpoint del grafo
+                // No llamar updateAdvancedMetrics aquí porque ya se hizo con los datos del grafo
                 
                 // Actualizar puentes disulfuro si no se actualizaron antes
                 const disulfideBridgesElement = document.getElementById('disulfide-bridges');
@@ -215,8 +221,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     function updateAdvancedMetrics(analysis) {
+        console.log('updateAdvancedMetrics called with:', analysis);
+        
         // Métricas de centralidad 
         const metrics = analysis.summary_statistics;
+        console.log('summary_statistics:', metrics);
+        
         if (metrics) {
             // Degree Centrality
             updateElementText('degree-min', metrics.degree_centrality?.min?.toFixed(4) || '-');
@@ -241,15 +251,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             updateElementText('clustering-max', metrics.clustering_coefficient?.max?.toFixed(4) || '-');
             updateElementText('clustering-mean', metrics.clustering_coefficient?.mean?.toFixed(4) || '-');
             updateElementText('clustering-top', metrics.clustering_coefficient?.top_residues || '-');
+        } else {
+            console.warn('No summary_statistics found in analysis data');
         }
 
         // Top 5 residuos
         const top5 = analysis.top_5_residues;
+        console.log('top_5_residues:', top5);
+        
         if (top5) {
             populateTop5List('top-degree-list', top5.degree_centrality);
             populateTop5List('top-between-list', top5.betweenness_centrality);
             populateTop5List('top-closeness-list', top5.closeness_centrality);
             populateTop5List('top-clustering-list', top5.clustering_coefficient);
+        } else {
+            console.warn('No top_5_residues found in analysis data');
         }
     }
 
@@ -640,6 +656,18 @@ window.triggerGraphUpdate = function(group, id) {
         window.updateGraphVisualization();
     }
 };
+
+// Función para obtener el nombre real de la toxina desde el endpoint de metadata
+async function getToxinName(group, id) {
+    try {
+        const response = await fetch(`/v2/metadata/toxin_name/${group}/${id}`);
+        const data = await response.json();
+        return data.toxin_name || `${group.toUpperCase()}_${id}`;
+    } catch (error) {
+        console.warn('Error fetching toxin name:', error);
+        return `${group.toUpperCase()}_${id}`;
+    }
+}
 
 // Funciones auxiliares fuera del scope principal
 function updateAnalysisPanel(analysisData) {

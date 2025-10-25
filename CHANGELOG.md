@@ -2,7 +2,12 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
-## [2.4.1] – 2025-10-24
+## [2.4.1] – 2025-10-25
+### Fixed
+- Integración completa de graphein_graph_adapter.py con graph_analysis2D.py para cálculo de métricas de grafo.
+- Preparación automática de atributos de nodos requeridos (carga, hidrofobicidad, estructura secundaria) para compatibilidad con análisis de toxinas.
+
+---
 ### Changed
 - Rediseño completo del navbar con paleta de colores oscura profesional.
 - Eliminación de gradientes y transparencias, reemplazados por colores sólidos.
@@ -11,6 +16,8 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - Corrección de conflictos de CSS inline en páginas HTML que sobrescribían estilos del navbar.
 - Agregado del enlace "Inicio" al navbar en la vista de filtros para navegación consistente.
 
+### Deleted
+- Se eliminio graph_analysis3D.py debido a que era simplemente un PLOTLY que reidreccionaba a otra pagina
 ---
 
 ## [2.4.0] – 2025-10-24
