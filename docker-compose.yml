@@ -9,20 +9,14 @@ services:
       - PROJECT_ROOT=/app
       - HOST=0.0.0.0
       - PORT=5001
-      - DEBUG=1
+      - DEBUG=0
       # Rutas explícitas de datos dentro del contenedor
       - TOXINS_DB_PATH=/app/database/toxins.db
       - PDB_DIR=/app/pdbs
       - PSF_DIR=/app/psfs
       - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
       - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
-      # - LEGACY_ALIASES_ENABLED=1
-      # - USE_MINIFIED_ASSETS=1
-      # - TOXINS_DB_PATH=/app/database/toxins.db
-      # - PDB_DIR=/app/pdbs
-      # - PSF_DIR=/app/psfs
-      # - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
-      # - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
+
     ports:
       # Puerto publicado del host (estándar NPM: IP pública + 8087)
       - "8087:5001"
@@ -55,7 +49,7 @@ services:
       - PSF_DIR=/app/psfs
       - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
       - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
-    command: ["python", "run_v2.py"]
+    command: ["python", "wsgi_v2.py"]
     ports:
       - "5001:5001"
     volumes:
