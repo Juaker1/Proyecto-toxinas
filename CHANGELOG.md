@@ -2,6 +2,66 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.5.2] – 2025-10-29
+### Added
+- Overlay de carga con spinner al cambiar de pestaña IC50 (“Todos / Con IC50 / Sin IC50”) y al cambiar de página en el visualizador.
+- Bloqueo temporal de navegación “Anterior / Siguiente” mientras se cargan y renderizan los dipolos.
+
+### Changed
+- Diseños de los botones “Todos / Con IC50 / Sin IC50” con estilo pill, gradiente, sombras y estado activo; ubicados a la izquierda en el mismo contenedor que “Vectores Dipolares” y “Puentes Disulfuro”.
+
+### Technical Details
+- Frontend:
+  - motif_dipoles.js: helpers getIc50Overlay/showIc50Loading/hideIc50Loading; deshabilita botones IC50 y paginación durante renderPage(); re‑habilita en finally.
+  - toxin_filter.html: estilos para .ic50-filter-btn y clases del overlay (.ic50-loading-overlay, .ic50-loading-box, .ic50-spinner).
+- Comportamiento:
+  - Cambio de pestaña IC50: muestra overlay, resetea a página 1, aplica filtro (cliente) y re-renderiza; luego oculta overlay.
+  - Cambio de página: muestra overlay “Cargando página…”, desactiva Anterior/Siguiente, renderiza y restaura controles.
+
+---
+
+## [2.5.1] – 2025-10-29
+### Changed
+- Visualizador de dipolos (página de filtros): al cambiar de pestaña IC50 ahora se reinicia la paginación y se muestra el conjunto filtrado desde la primera página.
+  - Con IC50: se filtra el conjunto completo, se resetea a página 1 y se mantiene el orden original de los elementos.
+  - Sin IC50: igual que arriba, aplicado a los que no tienen IC50.
+  - Todos: restaura el orden y la paginación original del backend.
+
+### Technical Details
+- Frontend (motif_dipoles.js): se conserva el arreglo en orden original, se aplica filtrado client‑side sobre el agregado y se reinicia currentPage=1 al cambiar de pestaña.
+
+---
+
+
+## [2.5.0] - 2025-10-29
+
+Added
+- Exclusión de accessions en toda la app (backend, visualizadores y front-end) para: P83303, P84507, P0DL84, P84508, D2Y1X8, P0DL72, P0CH54. No aparecen en tablas, visualizadores ni descargas.
+- Detección y marcado de IC50 por péptido:
+  - Desde BD (Nav1_7_InhibitorPeptides) con conversión a nM.
+  - Desde archivo AI exportado exports/filtered_accessions_nav1_7_analysis.json (ai_analysis.ic50_values), soportando valores únicos y rangos (value_min/value_max).
+  - Campos añadidos en respuestas del backend y usados por la UI: nav1_7_has_ic50, nav1_7_ic50_value_nm (y derivados AI: min/avg/max cuando existan).
+- Nueva UI de filtros IC50 en el visualizador de dipolos de toxinas filtradas:
+  - Botones “Todos / Con IC50 / Sin IC50” ubicados a la izquierda dentro del mismo contenedor de “Vectores Dipolares” y “Puentes Disulfuro”.
+- Nuevo gráfico IC50:
+  - Botón “Gráfico IC50 (puntos)” a la derecha del mismo contenedor.
+  - Gráfico de puntos (eje Y log(nM)) con todos los péptidos que tienen IC50 (AI y/o BD), mostrando barras de error cuando hay rangos (min/max) y el promedio como punto central.
+  - Respeta exclusiones y filtros activos.
+- Script de exportación y análisis IA: tools/export_filtered_accessions_nav1_7.py
+  - Toma los accession de los dipolos filtrados, busca Proteins.description por accession y ejecuta el analizador IA.
+  - Genera exports/filtered_accessions_nav1_7_analysis.json con los resultados por péptido.
+  - Logging a consola y archivo (exports/process_log.txt): “Procesando: <accession>”, presencia de descripción, y respuesta del análisis (JSON o error).
+
+Improved
+- Procesamiento IA más robusto (tools/few_shot2.py): instrucciones para forzar salida JSON y extractor tolerante a texto extra (bloques ```json```, recorte por primeras/últimas llaves).
+- Normalización a nM en backend para facilitar comparaciones y graficado.
+
+Notes
+- El gráfico usa datos AI (value / value_min–value-max) y/o BD. Cuando existe rango AI, se plotea min, max y el promedio; si solo hay un valor (AI o BD), se plotea como punto único.
+- El archivo exports/filtered_accessions_nav1_7_analysis.json se carga y cachea en el backend para marcar presencia de IC50; refresca el servidor si regeneras el JSON.
+
+---
+
 ## [2.4.1] – 2025-10-25
 ### Fixed
 - Integración completa de graphein_graph_adapter.py con graph_analysis2D.py para cálculo de métricas de grafo.

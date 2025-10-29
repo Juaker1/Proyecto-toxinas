@@ -4,6 +4,7 @@ import zipfile
 import math
 import os
 import sqlite3
+import json
 from pathlib import Path
 from typing import Optional, Dict, Any, Iterable, Tuple, List
 
@@ -267,6 +268,111 @@ def _get_reference_options() -> List[Dict[str, Any]]:
     return [dict(opt) for opt in options]
 
 
+# Load AI-exported JSON map for ic50 detection (accession -> has_ic50)
+_EXPORTS_AI_PATH = os.path.join(os.getcwd(), "exports", "filtered_accessions_nav1_7_analysis.json")
+_AI_IC50_CACHE = None
+
+def _load_ai_ic50_map():
+    global _AI_IC50_CACHE
+    if _AI_IC50_CACHE is not None:
+        return _AI_IC50_CACHE
+    mapping = {}
+    try:
+        if os.path.exists(_EXPORTS_AI_PATH):
+            with open(_EXPORTS_AI_PATH, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
+            if isinstance(data, list):
+                for entry in data:
+                    acc = entry.get("accession") or entry.get("accession_number")
+                    if not acc:
+                        continue
+                    has_ic50 = False
+                    ai = entry.get("ai_analysis") or entry.get("analysis") or {}
+                    if isinstance(ai, dict):
+                        ic50_vals = ai.get("ic50_values") or []
+                        if isinstance(ic50_vals, list):
+                            for v in ic50_vals:
+                                if not isinstance(v, dict):
+                                    continue
+                                if v.get("value") is not None:
+                                    has_ic50 = True
+                                    break
+                                if v.get("value_min") is not None and v.get("value_max") is not None:
+                                    has_ic50 = True
+                                    break
+                    mapping[str(acc)] = has_ic50
+    except Exception:
+        mapping = {}
+    _AI_IC50_CACHE = mapping
+    return mapping
+
+
+def _convert_unit_to_nm(value: Any, unit: Optional[str]) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        return _convert_ic50_to_nm(value, unit)
+    except Exception:
+        return None
+
+
+def _load_ai_ic50_details_map():
+    """Return accession -> dict with keys:
+    {
+      'value_nm': Optional[float],
+      'min_nm': Optional[float],
+      'max_nm': Optional[float],
+      'avg_nm': Optional[float],
+    }
+    using the exported AI JSON (ai_analysis.ic50_values).
+    """
+    details: Dict[str, Dict[str, Optional[float]]] = {}
+    try:
+        if not os.path.exists(_EXPORTS_AI_PATH):
+            return details
+        with open(_EXPORTS_AI_PATH, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        if not isinstance(data, list):
+            return details
+        for entry in data:
+            acc = entry.get("accession") or entry.get("accession_number")
+            if not acc:
+                continue
+            ai = entry.get("ai_analysis") or entry.get("analysis") or {}
+            if not isinstance(ai, dict):
+                continue
+            ic50_vals = ai.get("ic50_values") or []
+            if not isinstance(ic50_vals, list):
+                continue
+            # init
+            rec = {"value_nm": None, "min_nm": None, "max_nm": None, "avg_nm": None}
+            for v in ic50_vals:
+                if not isinstance(v, dict):
+                    continue
+                # Single value
+                if rec["value_nm"] is None and v.get("value") is not None:
+                    val_nm = _convert_unit_to_nm(v.get("value"), v.get("unit"))
+                    if val_nm is not None:
+                        rec["value_nm"] = val_nm
+                # Range value
+                if rec["min_nm"] is None and rec["max_nm"] is None and (
+                    v.get("value_min") is not None and v.get("value_max") is not None
+                ):
+                    min_nm = _convert_unit_to_nm(v.get("value_min"), v.get("unit_min") or v.get("unit"))
+                    max_nm = _convert_unit_to_nm(v.get("value_max"), v.get("unit_max") or v.get("unit"))
+                    if min_nm is not None and max_nm is not None:
+                        rec["min_nm"] = float(min_nm)
+                        rec["max_nm"] = float(max_nm)
+                        rec["avg_nm"] = (rec["min_nm"] + rec["max_nm"]) / 2.0
+                # If we already have both single and range, we can stop early
+                if rec["value_nm"] is not None and rec["avg_nm"] is not None:
+                    break
+            details[str(acc)] = rec
+        return details
+    except Exception:
+        return details
+
+
 def _lookup_option_by_code(peptide_code: str) -> Optional[Dict[str, Any]]:
     for option in _get_reference_options():
         if option["value"] == peptide_code:
@@ -462,6 +568,10 @@ def motif_item_download():
     """
     try:
         accession = (request.args.get("accession") or "").strip()
+        # Excluded accessions - do not allow download or visualization
+        EXCLUDED_ACCESSIONS = {"P83303", "P84507", "P0DL84", "P84508", "D2Y1X8", "P0DL72", "P0CH54"}
+        if accession in EXCLUDED_ACCESSIONS:
+            return jsonify({"error": "Accession restringido"}), 403
         if not accession:
             return jsonify({"error": "Parámetro 'accession' requerido"}), 400
 
@@ -589,7 +699,11 @@ def motif_page():
         conn = sqlite3.connect(_DB_PATH)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        # Accessions to exclude from visualizers
+        EXCLUDED_ACCESSIONS = {"P83303", "P84507", "P0DL84", "P84508", "D2Y1X8", "P0DL72", "P0CH54"}
         items = []
+        # Preload AI details map once
+        ai_details_map = _load_ai_ic50_details_map()
         for h in hits:
             peptide_id = h.get("peptide_id") if isinstance(h, dict) else h
             cur.execute("SELECT accession_number, peptide_name, sequence FROM Peptides WHERE peptide_id = ?", (peptide_id,))
@@ -597,6 +711,9 @@ def motif_page():
             if not row:
                 continue
             acc = row["accession_number"]
+            # Skip explicitly excluded accessions even if files exist
+            if acc and acc in EXCLUDED_ACCESSIONS:
+                continue
             name = row["peptide_name"]
             sequence = row["sequence"] if "sequence" in row.keys() else ""
             pdb_path = _FILTERED_DIR / f"{acc}.pdb"
@@ -610,6 +727,52 @@ def motif_page():
             angles = _compute_axis_angles(vec) if vec else None
             metrics = _compute_orientation_metrics(vec, reference_vec, angles, reference_angles)
             item_angle_z = angles.get("z") if angles else _get_angle_from_dipole(dipole)
+            # Check Nav1.7 IC50 metadata (if present)
+            nav1_7_has_ic50 = False
+            nav1_7_ic50_value = None
+            nav1_7_ic50_unit = None
+            try:
+                cur.execute(
+                    "SELECT ic50_value, ic50_unit FROM Nav1_7_InhibitorPeptides WHERE accession_number = ? OR peptide_code = ? LIMIT 1",
+                    (acc, name),
+                )
+                nrow = cur.fetchone()
+                if nrow:
+                    nav1_7_ic50_value = nrow["ic50_value"]
+                    nav1_7_ic50_unit = nrow["ic50_unit"] if "ic50_unit" in nrow.keys() else None
+                    nav1_7_has_ic50 = nav1_7_ic50_value is not None
+            except Exception:
+                # non-critical: absence of metadata shouldn't break rendering
+                pass
+            # Also consult AI-exported JSON cache for ic50 detection
+            try:
+                ai_map = _load_ai_ic50_map()
+                if acc and ai_map.get(str(acc)):
+                    nav1_7_has_ic50 = True
+            except Exception:
+                pass
+            # Convert to nM for plotting when possible
+            nav1_7_ic50_value_nm = None
+            try:
+                if nav1_7_ic50_value is not None:
+                    nav1_7_ic50_value_nm = _convert_ic50_to_nm(nav1_7_ic50_value, nav1_7_ic50_unit)
+            except Exception:
+                nav1_7_ic50_value_nm = None
+
+            # AI-derived detailed values (single/range)
+            ai_value_nm = None
+            ai_min_nm = None
+            ai_max_nm = None
+            ai_avg_nm = None
+            if acc and acc in ai_details_map:
+                det = ai_details_map.get(acc) or {}
+                ai_value_nm = det.get("value_nm")
+                ai_min_nm = det.get("min_nm")
+                ai_max_nm = det.get("max_nm")
+                ai_avg_nm = det.get("avg_nm")
+                if any(v is not None for v in (ai_value_nm, ai_min_nm, ai_max_nm, ai_avg_nm)):
+                    nav1_7_has_ic50 = True
+            # (Already consulted ai_map above after DB read and before conversion)
 
             if metrics.get("angle_diff_vs_reference") is None and ref_angle_z is not None and item_angle_z is not None:
                 z_delta = abs(item_angle_z - ref_angle_z)
@@ -632,6 +795,16 @@ def motif_page():
                 "vector_angle_vs_reference_deg": metrics.get("vector_angle_vs_reference_deg"),
                 "angle_diff_l2_deg": metrics.get("angle_diff_l2_deg"),
                 "angle_diff_l1_deg": metrics.get("angle_diff_l1_deg"),
+                # Nav1.7 metadata
+                "nav1_7_has_ic50": nav1_7_has_ic50,
+                "nav1_7_ic50_value": nav1_7_ic50_value,
+                "nav1_7_ic50_unit": nav1_7_ic50_unit,
+                "nav1_7_ic50_value_nm": nav1_7_ic50_value_nm,
+                # AI-derived values
+                "ai_ic50_value_nm": ai_value_nm,
+                "ai_ic50_min_nm": ai_min_nm,
+                "ai_ic50_max_nm": ai_max_nm,
+                "ai_ic50_avg_nm": ai_avg_nm,
             })
         conn.close()
 

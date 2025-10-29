@@ -90,6 +90,68 @@
         .visualization-grid.mode-changing {
             animation: modeChange 0.3s ease;
         }
+
+        /* Botones IC50 (Todos / Con / Sin) */
+        .ic50-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: #334155;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
+        }
+        .ic50-filter-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, .12);
+            border-color: #cbd5e1;
+        }
+        .ic50-filter-btn .icon { font-size: 1rem; opacity: .85; }
+        .ic50-filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 18px rgba(102, 126, 234, .35);
+        }
+        .ic50-filter-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Overlay de carga sobre el grid de dipolos */
+        #filtered-dipoles-card .card-body { position: relative; }
+        .ic50-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .ic50-loading-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 8px 22px rgba(0,0,0,.12);
+            color: #334155;
+            font-weight: 600;
+        }
+        .ic50-spinner {
+            width: 18px; height: 18px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: ic50spin .9s linear infinite;
+        }
+        @keyframes ic50spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="filter-page">

@@ -1,0 +1,666 @@
+[1/50] Procesando: D2Y2I3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[2/50] Procesando: D2Y1Y3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[3/50] Procesando: D2Y2I6
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[4/50] Procesando: P84508
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 95.5,
+          "value_max": 230,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Nav1.7/SCN9A (IC(50)=95.5-230 nM)",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 95.5 a 230 nM."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 95.5-230 nM."
+    }
+[5/50] Procesando: P84510
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 20,
+          "value_max": 610,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Also weakly inhibits Nav1.7/SCN9A and Nav1.8/SCN10A (IC(50)=20-610 nM) (PubMed:16267209, PubMed:29703751).",
+          "type": "range",
+          "interpretation": "IC50 para Nav1.7/SCN9A está en el rango de 20 a 610 nM, indicando actividad débil frente a este canal."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 20-610 nM. No se mencionaron valores de Kd para este canal en el texto."
+    }
+[6/50] Procesando: D2Y1Z4
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[7/50] Procesando: D2Y1Z1
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[8/50] Procesando: B3EWN2
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores de Kd ni IC50 para Nav1.7 encontrados. El texto menciona IC50=1 µM para Nav1.3/SCN3A, pero no para Nav1.7."
+    }
+[9/50] Procesando: D2Y1Y0
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[10/50] Procesando: D2Y2D3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[11/50] Procesando: D2Y2I5
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[12/50] Procesando: D2Y2D2
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[13/50] Procesando: D2Y232
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 48.9,
+          "unit": "nM",
+          "context": "It shows low affinity for lipid bilayers (PubMed:29703751). It is active on Nav1.2/SCN2A (IC(50)=22.4 nM), Nav1.6/SCN8A (IC(50)=50.1 nM) and Nav1.7/SCN9A (IC(50)=48.9 nM) (PubMed:29703751).",
+          "type": "exact",
+          "compound": "Neurotoxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (48.9 nM) para Nav1.7/SCN9A. El compuesto también mostró actividad contra otros canales (Nav1.2, Nav1.6) con valores de IC50 menores o mayores, pero solo el valor para Nav1.7/SCN9A fue especificado."
+    }
+[14/50] Procesando: D2Y2D7
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 44.6,
+          "unit": "nM",
+          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+          "type": "exact",
+          "compound": "Neurotoxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, basado en la descripción de inhibición de canales tetrodotoxina-sensibles (Nav1.7)."
+    }
+[15/50] Procesando: P56676
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 25.1,
+          "value_max": 630,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Nav1.7/SCN9A (IC(50)=25.1-630 nM) (PubMed:17451655, PubMed:21731778, PubMed:31234412)",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 25.1 a 630 nM, indicando una amplia variabilidad en la actividad inhibidora."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 25.1-630 nM. El texto también menciona un IC50 de 55 nM para canales TTX-sensibles, pero no se relaciona directamente con Nav1.7/SCN9A."
+    }
+[16/50] Procesando: P0DL72
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 0.58,
+          "value_max": 10,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Potently inhibits the voltage-gated sodium channels Nav1.7/SCN9A (IC(50)=0.58-10 nM) (PubMed:25658507, PubMed:26999206).",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 0.58 a 10 nM, indicando alta potencia."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 0.58-10 nM, lo que demuestra una actividad potente contra este canal."
+    }
+[17/50] Procesando: P0DJA9
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 0.58,
+          "value_max": 10,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Potently inhibits the voltage-gated sodium channels Nav1.7/SCN9A (IC(50)=0.58-10 nM) (By similarity).",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 0.58 a 10 nM, indicando una alta potencia inhibidora."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 0.58-10 nM. El texto menciona actividad potente contra este canal, aunque también incluye valores para otros canales (Nav1.1, Nav1.2, etc.) que no son relevantes para el objetivo actual."
+    }
+[18/50] Procesando: D2Y1Y1
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[19/50] Procesando: D2Y1Z7
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[20/50] Procesando: D2Y1Z8
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[21/50] Procesando: D2Y235
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción selectiva del neurotoxina contra canales de sodio, pero no incluye datos numéricos."
+    }
+[22/50] Procesando: B3EWN3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no menciona Nav1.7/SCN9A. Se reportan valores para Nav1.3/SCN3A (IC50=80 nM en humano, 160 nM en ratón) y Kv11.1/KCNH2/ERG (25% a 175 µM), pero no para Nav1.7."
+    }
+[23/50] Procesando: P83303
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 9.6,
+          "value_max": 33,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "hNav1.7/SCN9A (IC(50)=9.6-33 nM)",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 9.6 a 33 nM, según los datos proporcionados."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 9.6-33 nM. No se mencionaron valores de Kd en el texto."
+    }
+[24/50] Procesando: D2Y1X9
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[25/50] Procesando: D2Y1Y9
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[26/50] Procesando: P0DQO3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 81,
+          "value_max": 301,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Inhibits Nav1.1/SCN1A, Nav1.2/SCN2A, Nav1.3/SCN3A, Nav1.6/SCN6A, Nav1.7/SCN9A and Cav3.1/CACNA1G sodium and calcium channels at nanomolar concentrations (IC(50)=81-301 nM).",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 81 a 301 nM, indicando una actividad moderada contra este canal."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 81-301 nM, lo que sugiere una actividad moderada contra este canal."
+    }
+[27/50] Procesando: D2Y233
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 44.6,
+          "unit": "nM",
+          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+          "type": "exact",
+          "compound": "Neurotoxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, basado en la descripción de inhibición de canales tetrodotoxina-sensibles (Nav1.7)."
+    }
+[28/50] Procesando: D2Y2D1
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[29/50] Procesando: P0DP95
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no contiene valores cuantitativos de Kd ni IC50 para Nav1.7/SCN9A. Solo describe el tipo de inhibidor sin especificar métricas."
+    }
+[30/50] Procesando: D2Y200
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[31/50] Procesando: D2Y1Y2
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    }
+[32/50] Procesando: P0DP93
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no contiene valores cuantitativos de Kd ni IC50 para Nav1.7/SCN9A. Solo describe el tipo de inhibidor sin especificar métricas."
+    }
+[33/50] Procesando: D2Y201
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[34/50] Procesando: P60975
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la inhibición selectiva de canales de sodio, pero no incluye datos numéricos para Nav1.7."
+    }
+[35/50] Procesando: A0A1S4NYE8
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 45,
+          "value_max": 8000,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "The relative rank order potency for Nav modulation is Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > Nav1.2 > Nav1.1 (inactivation) > Nav1.1 > Nav1.6 > Nav1.3 (IC(50)=8 uM).",
+          "type": "range",
+          "interpretation": "Nav1.7 está en un rango de potencia entre 45 nM (Nav1.3, más potente) y 8000 nM (8 µM, Nav1.3 con IC50, menos potente). El símbolo > indica que Nav1.7 es menos potente que Nav1.3 (45 nM) pero más potente que los canales posteriores en la serie."
+        }
+      ],
+      "summary": "Se infiere un rango de IC50 para Nav1.7/SCN9A basado en el orden relativo de potencia: entre 45 nM y 8000 nM (8 µM)."
+    }
+[36/50] Procesando: A0A0J9X1W9
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 111,
+          "unit": "nM",
+          "context": "Gating-modifier toxin that reversibly and voltage-independently inhibits human Nav1.1/SCN1A and Nav1.7/SCN9A (IC(50)=111 nM) (PubMed:25754331).",
+          "type": "exact",
+          "compound": "Gating-modifier toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (111 nM) para Nav1.7/SCN9A. El texto también menciona inhibición de otros canales, pero solo se extrajo el valor relevante para Nav1.7/SCN9A."
+    }
+[37/50] Procesando: P0DL84
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "error": "Error parseando JSON: No JSON found in model response: line 1 column 1 (char 0)",
+      "raw_response": "<think>\nOkay, let's tackle this query. The user wants me to extract Kd and IC50 values for Nav1.7/SCN9A from the provided text. First, I need to scan through the text to find any mentions of Nav1.7 or SCN9A. \n\nLooking at the text, there are several instances where IC50 values are mentioned. The first one is \"IC(50)=16 nM\" for hNav1.7/SCN9A. Then later, there's another mention: \"hNav1.7/SCN9A (IC(50)=3.34 uM)\". Also, there's a note about \"IC(50)=3.34 uM\" for Nav1.7/SCN9A. \n\nWait, the user specified to extract values for Nav1.7/SCN9A. The text mentions \"hNav1.7/SCN9A\" which is the human version, so that's acceptable. The IC50 values here are 16 nM, 3.34 uM, and another 3.34 uM. \n\nNow, checking the units: 16 nM is already in nM. The 3.34 uM needs to be converted to nM. Since 1 µM is 1000 nM, 3.34 µM is 3340 nM. But the text also mentions \"IC(50)=3.34 uM\" in the same sentence as \"hNav1.7/SCN9A (IC(50)=3.34 uM)\", so that's a direct value. \n\nAlso, there's a mention of \"IC(50)=3.34 uM\" again, so that's another entry. But wait, the user might be looking for all instances. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" and \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" again. So that's two entries, but maybe they are the same. \n\nAlso, the text mentions \"IC(50)=16 nM\" in patch-clamp assays, and \"IC(50)=3.34 uM\" in fluorimetric assays. The user might want both values. \n\nNow, for Kd values, the text doesn't mention any Kd values for Nav1.7/SCN9A. The only Kd mentioned is in the first sentence, but that's for hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp). Wait, the first sentence says \"Potent inhibitor of hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp), and modest inhibitor of Cav2.2/CACNA1B (IC(50)~3 uM on rat and human channel) (PubMed:28880874).\"\n\nSo the Kd is not mentioned here. The text only mentions IC50 values. Therefore, kd_values should be empty. \n\nNow, for the IC50 values, we have three entries: 16 nM, 3.34 uM (which is 3340 nM), and another 3.34 uM. Wait, but the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. So that's two instances. But maybe they are the same value. \n\nSo, the IC50 values would be:\n\n- 16 nM (exact)\n- 3.34 uM (converted to 3340 nM, approximate)\n- 3.34 uM (same as above)\n\nBut the user might want to extract all instances. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice, so that's two entries. But maybe they are the same. \n\nWait, the text says: \"It also seems to be potent on hNav1.7/SCN9A (IC(50)=3.34 uM) and hNav1.7/SCN9A (IC(50)=3.34 uM)\". So that's two instances. But the user might want to list them as separate entries. \n\nBut in the JSON structure, each entry is an object. So, for the first instance, 16 nM is exact. Then, the two instances of 3.34 uM would be two entries. However, the user might consider them as the same value. But according to the instructions, we need to extract all mentions. \n\nSo, the IC50_values would include:\n\n1. 16 nM (exact)\n2. 3.34 uM (approximate, converted to 3340 nM)\n3. 3.34 uM (same as above, but as a separate entry)\n\nBut the user might have a typo, but the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. So, two entries. \n\nBut the user's example in the previous interaction had a similar case where the same value was mentioned twice, but in that case, the user included both. \n\nSo, the JSON should have:\n\nic50_values: [\n  { value: 16, unit: nM, type: exact, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... }\n]\n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice, so that's two entries. \n\nBut the user might have a mistake here. However, according to the instructions, we need to extract all mentions. \n\nSo, the final JSON would have:\n\n- ic50_values with 16 nM (exact), and two entries of 3.34 uM (approximate, converted to 3340 nM). \n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. \n\nSo, the answer would include all three entries. \n\nBut the user's previous example had a similar case where the same value was mentioned twice, and the assistant included both. \n\nTherefore, the correct JSON would have:\n\nic50_values: [\n  { value: 16, unit: nM, type: exact, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... }\n]\n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. \n\nSo, the answer should include all three entries. \n\nBut the user might have made a mistake in the text, but according to the instructions, we need to extract all mentions. \n\nTherefore, the JSON would have the three entries. \n\nBut the user's example in the previous interaction had a similar case where the same value was mentioned twice, and the assistant included both. \n\nSo, the final answer would be:\n\n{\n  \"target\": \"Nav1.7\",\n  \"kd_values\": [],\n  \"ic50_values\": [\n    {\n      \"value\": 16,\n      \"unit\": \"nM\",\n      \"context\": \"Potent inhibitor of hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp), and modest inhibitor of Cav2.2/CACNA1B (IC(50)~3 uM on rat and human channel) (PubMed:28880874).\",\n      \"type\": \"exact\",\n      \"compound\": \"Compound\"\n    },\n    {\n      \"value_min\": 3340,\n      \"value_max\": null,\n      \"unit_min\": \"nM\",\n      \"unit_max\": null,\n      \"context\": \"hNav1.7/SCN9A (IC(50)=3.34 uM)\",\n      \"type\": \"approximate\",\n      \"interpretation\": \"3.34 µM = 3340 nM\",\n      \"compound\": \"Compound\"\n    },\n    {\n      \"value_min\": 3340,\n      \"value_max\": null,\n      \"unit_min\": \"nM\",\n      \"unit_max\": null,\n      \"context\": \"hNav1.7/SCN9A (IC(50)=3.34 uM)\",\n      \"type\": \"approximate\",\n      \"interpretation\": \"3.34 µM = 3340 nM\",\n      \"compound\": \""
+    }
+[38/50] Procesando: P84507
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 129.1,
+          "value_max": 5120,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Nav1.7/SCN9A (IC(50)=129.1-5120 nM)",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 129.1 a 5120 nM, indicando una amplia variabilidad en la actividad inhibidora."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 129.1-5120 nM. No se reportaron valores de Kd para este canal."
+    }
+[39/50] Procesando: P0CH54
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no contiene información cuantitativa sobre Kd o IC50 para Nav1.7. Solo menciona 'probable ion channel inhibitor' sin valores numéricos específicos."
+    }
+[40/50] Procesando: D2Y1Y7
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[41/50] Procesando: D2Y1Z3
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[42/50] Procesando: D2Y1Y6
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[43/50] Procesando: D2Y1Z5
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[44/50] Procesando: D2Y1Z0
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[45/50] Procesando: D2Y202
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[46/50] Procesando: D2Y1Y5
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[47/50] Procesando: D2Y1Y8
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[48/50] Procesando: D2Y1Y4
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[49/50] Procesando: D2Y1Z6
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
+[50/50] Procesando: D2Y1Z9
+  Descripción presente: True
+  AI response (JSON):
+    {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+    }
