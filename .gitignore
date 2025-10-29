@@ -35,3 +35,6 @@ __pycache__/
 
 *.xml
 *.json
+
+#Premitir Json de exports
+!exports/*.json
