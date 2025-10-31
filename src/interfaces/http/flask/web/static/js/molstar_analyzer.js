@@ -191,11 +191,15 @@ class MolstarProteinAnalyzer {
      */
     async performAnalysis(structureData) {
         try {
+            console.time('analysis-total');
+            
             // Verificar que hay datos válidos
             if (!structureData.residues || structureData.residues.length === 0) {
+                console.timeEnd('analysis-total');
                 return this.createEmptyAnalysis();
             }
             
+            console.time('analysis-init');
             const modelInfo = this.plugin.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data?.model?.modelNum || 1;
             const pdbId = this.plugin.managers.structure.hierarchy.current.structures[0]?.transform?.cell?.obj?.data?.id || 'Proteína_Actual';
             
@@ -206,8 +210,9 @@ class MolstarProteinAnalyzer {
                 top_5_residues: {},
                 key_residues: {}
             };
-    
+            console.timeEnd('analysis-init');
             
+            console.time('analysis-properties');
             analysis.graph_properties = {
                 nodes: structureData.residues.length,
                 edges: 0,
@@ -215,18 +220,27 @@ class MolstarProteinAnalyzer {
                 density: 0,
                 clustering_coefficient_avg: 0
             };
+            console.timeEnd('analysis-properties');
     
+            console.time('analysis-distances');
             // Calcular distancias entre residuos
             const distances = this.calculateDistances(structureData.atoms);
+            console.timeEnd('analysis-distances');
+            
+            console.time('analysis-connections');
             const connections = this.findConnections(distances, 8.0); // 8Å cutoff
+            console.timeEnd('analysis-connections');
             
             analysis.graph_properties.edges = connections.length;
             analysis.graph_properties.density = connections.length > 0 ? 
                 (2 * connections.length) / (structureData.residues.length * (structureData.residues.length - 1)) : 0;
     
+            console.time('analysis-centralities');
             // Calcular centralidades básicas
             const centralities = this.calculateCentralities(structureData.residues, connections);
+            console.timeEnd('analysis-centralities');
             
+            console.time('analysis-summary');
             analysis.summary_statistics = {
                 degree_centrality: this.getMetricStats(centralities.degree),
                 betweenness_centrality: this.getMetricStats(centralities.betweenness),
@@ -247,9 +261,12 @@ class MolstarProteinAnalyzer {
                 closeness_centrality: this.formatKeyResidue(centralities.closeness),
                 clustering_coefficient: this.formatKeyResidue(centralities.clustering)
             };
+            console.timeEnd('analysis-summary');
     
+            console.timeEnd('analysis-total');
             return analysis;
         } catch (error) {
+            console.timeEnd('analysis-total');
             return this.createEmptyAnalysis();
         }
     }

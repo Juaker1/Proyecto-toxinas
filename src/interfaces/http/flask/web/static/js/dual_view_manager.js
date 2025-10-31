@@ -176,7 +176,6 @@ class DualViewManager {
     switchStructureView(viewType) {
         // Solo permitir cambio a py3Dmol si el dipolo está calculado
         if (viewType === 'py3dmol' && !this.dipoleCalculated) {
-            console.log("Cannot switch to py3Dmol: dipole not calculated");
             return;
         }
 
@@ -211,7 +210,7 @@ class DualViewManager {
         }
 
         this.currentStructureView = viewType;
-        console.log(`Switched to ${viewType} view`);
+    
     }
 
     updatePy3DmolButtonState() {
@@ -375,7 +374,6 @@ class DualViewManager {
             this.toggleAnalysisView('dipole');
         }
         
-        console.log('Dipole calculated and UI updated:', dipoleData);
     }
 
     // Create py3Dmol visualization with dipole automatically
@@ -392,8 +390,7 @@ class DualViewManager {
             // Create py3Dmol visualization with dipole
             await window.molstarAnalyzer.showDipoleInPy3Dmol(this.currentDipoleData, pdbText);
             
-            console.log("py3Dmol visualization with dipole created automatically");
-            
+      
         } catch (error) {
             console.error("Error creating py3Dmol visualization:", error);
         }
@@ -410,7 +407,6 @@ class DualViewManager {
                 
                 // También actualizar la información mostrada
                 if (this.currentDipoleData.angle_with_z_axis) {
-                    console.log(`Dipole angle with Z-axis: ${this.currentDipoleData.angle_with_z_axis.degrees.toFixed(1)}°`);
                 }
                 
             } catch (error) {
@@ -425,7 +421,7 @@ class DualViewManager {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList' && mutation.target.id === 'graph-plot') {
                     // Graph has been updated
-                    console.log('Graph visualization updated');
+                   
                 }
             });
         });
@@ -456,7 +452,7 @@ class DualViewManager {
         this.structureLoadTime = null;
         this.graphLoadTime = null;
         
-        console.log(`⏱️ INICIANDO CARGA DE DATOS PARA: ${proteinName}`);
+     
         console.log(`📊 Componentes a cargar: [Vista 3D Mol*, Análisis de Grafo]`);
         
         // Obtener estadísticas del caché
@@ -554,16 +550,10 @@ Estado: ${this.structureLoaded && this.graphLoaded ? 'TODOS LOS DATOS CARGADOS' 
             
             if (data.cache_stats) {
                 const stats = data.cache_stats;
-                console.log(`💾 ESTADÍSTICAS DEL CACHÉ:
-• Grafos almacenados: ${stats.graphs}
-• Estructuras 3D: ${stats.structures}
-• Vistas previas: ${stats.previews}
-• Tamaño total: ${stats.total_size_mb} MB
 
-📈 Sistema de caché: ${data.cache_enabled ? 'ACTIVADO' : 'DESACTIVADO'}`);
             }
         } catch (error) {
-            console.log('💾 Sistema de caché: No disponible');
+            
         }
     }
 }
