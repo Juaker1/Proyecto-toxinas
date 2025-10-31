@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Ensure view-mode-controls exists and inject IC50 controls to the left of the view buttons
       const viewControls = document.querySelector('.view-mode-controls');
-      if (viewControls && !viewControls._ic50Injected) {
+  if (viewControls && !viewControls._ic50Injected) {
         // create left group for IC50 filter buttons
         const leftGroup = document.createElement('div');
         leftGroup.className = 'ic50-filter-group';
@@ -182,30 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="ic50-filter-btn" data-mode="with_ic50" title="Mostrar solo con IC50">Con IC50</button>
           <button class="ic50-filter-btn" data-mode="without_ic50" title="Mostrar sin IC50">Sin IC50</button>
         `;
-        // insert leftGroup before existing first child to keep it on the left
+    // insert leftGroup before existing first child to keep it on the left
         viewControls.insertBefore(leftGroup, viewControls.firstChild);
-
-  // Create chart button and place it at the right end
-        const chartBtn = document.createElement('button');
-        chartBtn.id = 'ic50-chart-btn';
-        chartBtn.className = 'btn-view-mode';
-        chartBtn.style.marginLeft = 'auto';
-  chartBtn.title = 'Mostrar gráfico IC50 (puntos, todos)';
-  chartBtn.innerHTML = '<i class="fas fa-chart-line"></i> Gráfico IC50 (puntos)';
-        viewControls.appendChild(chartBtn);
-
-        // small container for chart (insert after card body)
-        const cardBody = document.querySelector('#filtered-dipoles-card .card-body');
-        let chartContainer = document.getElementById('ic50-chart-container');
-        if (!chartContainer && cardBody) {
-          chartContainer = document.createElement('div');
-          chartContainer.id = 'ic50-chart-container';
-          chartContainer.style.width = '100%';
-          chartContainer.style.height = '420px';
-          chartContainer.style.marginTop = '12px';
-          chartContainer.style.display = 'none';
-          cardBody.appendChild(chartContainer);
-        }
 
         // Wire filter buttons
         leftGroup.addEventListener('click', async (ev) => {
@@ -224,22 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
           leftGroup.querySelectorAll('.ic50-filter-btn').forEach(b => { b.disabled = true; });
           try {
             await renderPage();
+            // Actualizar gráficos tras recalcular
+            await updateChartsWithAllItems();
           } finally {
             hideIc50Loading();
             leftGroup.querySelectorAll('.ic50-filter-btn').forEach(b => { b.disabled = false; });
-          }
-        });
-
-        // Wire chart button
-        chartBtn.addEventListener('click', (ev) => {
-          ev.preventDefault();
-          // Toggle chart visibility
-          if (!chartContainer) return;
-          if (chartContainer.style.display === 'none') {
-            chartContainer.style.display = '';
-            renderIc50ScatterAll();
-          } else {
-            chartContainer.style.display = 'none';
           }
         });
 
@@ -323,6 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { hideIc50Loading(); } catch(e) {}
       if (prevBtn) prevBtn.disabled = false;
       if (nextBtn) nextBtn.disabled = false;
+      // Refrescar los gráficos fijos
+      try { await updateChartsWithAllItems(); } catch(e) { console.warn('Charts update failed:', e); }
     }
   }
 
@@ -522,6 +491,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // Construye etiqueta X: accession + (ori=..°)
+  function buildLabelWithOri(item) {
+    const acc = item.accession_number || item.accession || item.name || item.peptide_id || 'NA';
+    let ori = null;
+    // Preferimos un campo directo si existe
+    if (typeof item.orientation_score_deg === 'number' && Number.isFinite(item.orientation_score_deg)) {
+      ori = item.orientation_score_deg;
+    } else {
+      const m = getOrientationMetrics(item);
+      if (m && typeof m.orientationScore === 'number' && Number.isFinite(m.orientationScore)) {
+        ori = m.orientationScore;
+      } else if (m && typeof m.deltaZ === 'number' && Number.isFinite(m.deltaZ)) {
+        // Fallback si no hay score L2: usar ΔZ
+        ori = m.deltaZ;
+      }
+    }
+    const oriText = (ori !== null) ? ` (ori=${ori.toFixed(1)}°)` : '';
+    return `${acc}${oriText}`;
+  }
+
   function buildDipoleInfoHTML(subject, options = {}) {
     const { includeTitle = true, isReference = false, extraLines = [] } = options;
     const dipole = subject && subject.dipole ? subject.dipole : subject;
@@ -661,13 +650,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return all;
   }
 
-  // Render scatter plot with all accessions that have IC50 (AI or DB), log scale
-  async function renderIc50ScatterAll() {
-    const container = document.getElementById('ic50-chart-container');
+  // Render scatter plot with all accessions that have IC50 (AI or DB), log scale, always-visible container
+  async function renderIc50ScatterAll(prefetchedItems) {
+    const container = document.getElementById('ic50-scatter-all');
     if (!container) return;
-    container.innerHTML = '<div class="alert alert-info">Cargando datos de IC50...</div>';
+    if (!prefetchedItems) {
+      container.innerHTML = '<div class="alert alert-info">Cargando datos de IC50...</div>';
+    }
     try {
-      const allItems = await fetchAllItemsWithCurrentParams();
+      const allItems = Array.isArray(prefetchedItems) ? prefetchedItems : await fetchAllItemsWithCurrentParams();
       // Pick those with any IC50 available
       const hasIc50 = (it) => {
         return (
@@ -705,12 +696,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return 0;
       };
 
-      const labelsAI = aiRows.map((r, i) => `${i + 1}. ${r.accession_number || r.accession || r.name || r.peptide_id}`);
+      const labelsAI = aiRows.map((r) => buildLabelWithOri(r));
       const centersAI = aiRows.map(r => makeCenterValue(r));
       const errPlusAI = aiRows.map((r, idx) => makeErrPlus(r, centersAI[idx]));
       const errMinusAI = aiRows.map((r, idx) => makeErrMinus(r, centersAI[idx]));
 
-      const labelsDB = dbRows.map((r, i) => `${i + 1 + labelsAI.length}. ${r.accession_number || r.accession || r.name || r.peptide_id}`);
+      const labelsDB = dbRows.map((r) => buildLabelWithOri(r));
       const centersDB = dbRows.map(r => makeCenterValue(r));
 
       // Build traces: AI with error bars, DB without
@@ -741,8 +732,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       const layout = {
-        title: 'IC50 (nM) - Todos los accesiones con valor',
-        xaxis: { title: 'Índice · Accession', automargin: true, tickangle: -45 },
+        title: 'IC50 (nM) - Accession (ori=Δori°)',
+        xaxis: { title: 'Accession (con Δori)', automargin: true, tickangle: -45, type: 'category' },
         yaxis: { title: 'IC50 (nM)', type: 'log' },
         margin: { t: 40, l: 60, r: 20, b: 160 },
         legend: { orientation: 'h', y: -0.2 },
@@ -751,6 +742,78 @@ document.addEventListener('DOMContentLoaded', () => {
       Plotly.newPlot(container, [traceAI, traceDB], layout, { responsive: true });
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Error al renderizar gráfico: ${e.message}</div>`;
+    }
+  }
+
+  // Renderiza gráfico de orientación (solo items sin IC50), Y lineal en grados
+  async function renderOriNoIc50Chart(prefetchedItems) {
+    const container = document.getElementById('ori-no-ic50-chart');
+    if (!container) return;
+    if (!prefetchedItems) {
+      container.innerHTML = '<div class="alert alert-info">Cargando datos…</div>';
+    }
+    try {
+      const allItems = Array.isArray(prefetchedItems) ? prefetchedItems : await fetchAllItemsWithCurrentParams();
+      const noIc50 = allItems.filter(it => {
+        const hasDb = (it.nav1_7_ic50_value_nm != null);
+        const hasAi = (it.ai_ic50_avg_nm != null) || (it.ai_ic50_value_nm != null) || (it.ai_ic50_min_nm != null) || (it.ai_ic50_max_nm != null);
+        return !hasDb && !hasAi;
+      });
+      if (!noIc50.length) {
+        container.innerHTML = '<div class="alert alert-info">No hay accesiones sin IC50.</div>';
+        return;
+      }
+      const labels = [];
+      const values = [];
+      for (const it of noIc50) {
+        const m = getOrientationMetrics(it);
+        let ori = null;
+        if (m && typeof m.orientationScore === 'number' && Number.isFinite(m.orientationScore)) {
+          ori = m.orientationScore;
+        } else if (m && typeof m.deltaZ === 'number' && Number.isFinite(m.deltaZ)) {
+          ori = m.deltaZ;
+        }
+        if (ori !== null) {
+          const acc = it.accession_number || it.accession || it.name || it.peptide_id || 'NA';
+          labels.push(String(acc));
+          values.push(ori);
+        }
+      }
+      if (!values.length) {
+        container.innerHTML = '<div class="alert alert-info">No hay valores de orientación para mostrar.</div>';
+        return;
+      }
+      const trace = {
+        x: labels,
+        y: values,
+        name: 'Δori (°) sin IC50',
+        type: 'scatter',
+        mode: 'markers',
+        marker: { color: '#ef6c00', size: 8, opacity: 0.9 },
+      };
+      const layout = {
+        title: 'Orientación Δori (°) - Solo accesiones sin IC50',
+        xaxis: { title: 'Accession (con Δori)', automargin: true, tickangle: -45, type: 'category' },
+        yaxis: { title: 'Δori (°)', type: 'linear', rangemode: 'tozero', range: [0, 180] },
+        margin: { t: 40, l: 60, r: 20, b: 160 },
+        legend: { orientation: 'h', y: -0.2 },
+      };
+      Plotly.newPlot(container, [trace], layout, { responsive: true });
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Error al renderizar gráfico: ${e.message}</div>`;
+    }
+  }
+
+  // Actualiza ambos gráficos usando los parámetros actuales, reutilizando datos si es posible
+  async function updateChartsWithAllItems() {
+    try {
+      const items = await fetchAllItemsWithCurrentParams();
+      await Promise.all([
+        renderIc50ScatterAll(items),
+        renderOriNoIc50Chart(items)
+      ]);
+    } catch (e) {
+      console.error('Error actualizando gráficos:', e);
     }
   }
 
@@ -1179,6 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       await renderPage();
+      await updateChartsWithAllItems();
         });
 
         

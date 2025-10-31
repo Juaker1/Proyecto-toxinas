@@ -260,6 +260,23 @@
                     <div id="filtered-grid" class="visualization-grid"></div>
                 </div>
             </div>
+
+            <!-- Tarjeta fija de Gráficos -->
+            <div class="visualization-card" id="charts-card">
+                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                    <h2 class="section-title" style="margin:0;"><i class="fas fa-chart-line"></i> Gráficos</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-block" style="width:100%;height:420px;">
+                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">IC50 (todas las páginas)</h3>
+                        <div id="ic50-scatter-all" style="width:100%;height:380px;"></div>
+                    </div>
+                    <div class="chart-block" style="width:100%;height:380px;margin-top:16px;">
+                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">Orientación (sin IC50)</h3>
+                        <div id="ori-no-ic50-chart" style="width:100%;height:340px;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sección de Filtros pulida -->

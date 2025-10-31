@@ -2,6 +2,32 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.5.4] – 2025-10-30
+### Added
+- Tarjeta fija “Gráficos” siempre visible en la página de filtros con dos visualizaciones:
+  - IC50 (puntos, eje Y log(nM)) para todos los péptidos con IC50 (BD y/o IA).
+  - Δori (°) únicamente para accesiones sin IC50.
+- Actualización automática de ambos gráficos al cambiar filtros, referencia y paginación.
+
+### Changed
+- El gráfico IC50 pasa a renderizarse sin botón, siempre presente; las etiquetas del eje X ahora muestran “ACCESSION (ori=…°)”.
+- El nuevo gráfico de Δori usa en el eje X solo el ACCESSION (sin “(ori=…)”) y en el eje Y el Δori en grados.
+
+### Removed
+- Botón “Gráfico IC50 (puntos)” y su contenedor dinámico.
+
+### Technical Details
+- Frontend (motif_dipoles.js):
+  - Nuevas funciones: buildLabelWithOri, renderIc50ScatterAllFixed, renderOriNoIc50Chart y updateChartsWithAllItems.
+  - Hooks a eventos existentes: onReferenceChanged, applyFiltersAndRender y onPaginationChange para refrescar gráficos.
+  - IC50: usa campos normalizados a nM (nav1_7_ic50_value_nm y ai_ic50_*_nm); AI con barras de error (min/max) y punto central (avg o value).
+  - Δori: usa orientation_score_deg del backend o cálculo cliente como fallback; eje Y lineal [0, 180].
+  - Manejo seguro de instancias (destroy/recreate) para evitar duplicados y fugas.
+- HTML (toxin_filter.html):
+  - Nueva tarjeta “Gráficos” con contenedores fijos: ic50-scatter-all y ori-no-ic50-chart.
+
+---
+
 ## [2.5.3] – 2025-10-30
 
 ### Changed
