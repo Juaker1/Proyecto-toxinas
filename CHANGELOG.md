@@ -2,7 +2,73 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.5.6] – 2025-11-01
+
+### Added
+
+- Sistema dual de interacción CLICK/HOVER para nodos:
+  - **CLICK**: Selecciona el nodo (color rojo/magenta), actualiza panel inferior y resalta sus conexiones en rojo.
+  - **MOUSE HOVER**: Resalta nodo en amarillo/naranja y sus conexiones sin cambiar el panel de información.
+  - Ambos estados pueden coexistir: permite explorar vecinos mientras se mantiene la información del nodo seleccionado.
+
+### Changed
+
+- Renderizado de nodos mejorado con diferenciación visual clara:
+  - Nodos seleccionados (CLICK): Rojo/Magenta brillante + borde blanco grueso (3.5px) + tamaño 60% mayor.
+  - Nodos hovados (MOUSE): Amarillo/Naranja brillante + borde blanco (3.0px) + tamaño 40% mayor.
+
+- Comportamiento mejorado del resetView():
+  - Limpia tanto la selección como el hover al hacer doble-click.
+  - Restaura el panel inferior al estado inicial.
+
+### Technical Details
+
+
+- Arquitectura:
+  - Separación limpia entre lógica de hover (visual) y selección (actualización de datos).
+  - Sin dependencias nuevas; solo manipulación de canvas 2D y DOM estándar.
+
+### Fixed
+
+- Problema de z-index: panel flotante ya no se pierde detrás del canvas.
+- Hover desaparece al inicio: ahora es estrictamente visual y siempre responde.
+- Panel de conexiones limitado a 15: ahora muestra TODAS las conexiones en grid responsive.
+
+---
+
+## [2.5.5] – 2025-10-31
+
+### Added
+
+- Migración completa de Plotly a Mol* WebGL para visualización 3D de grafos, optimizando rendimiento para grafos grandes (600+ nodos, 10-20K aristas).
+- Nuevo renderizador WebGL optimizado para grafos con controles interactivos (zoom, rotación, hover tooltips).
+
+
+### Changed
+
+- Reemplazo del adaptador PlotlyGraphVisualizerAdapter por MolstarGraphVisualizerAdapter para generación de datos ligeros compatibles con WebGL.
+- Mejora significativa en rendimiento: reducción del 94% en tiempo de renderizado (de ~5s a <500ms) y del 94% en tamaño de payload.
+- Visualización enfocada únicamente en nodos y aristas, manteniendo precisión PDB y cálculos de métricas.
+- Fondo mejorado con gradiente y eliminación de ejes para mayor claridad.
+
+### Technical Details
+
+- Backend:
+  - `graph_visualizer_adapter.py`: Nuevo adaptador MolstarGraphVisualizerAdapter con métodos para extracción de posiciones 3D y serialización de datos ligeros.
+  - `graphs_controller.py`: Actualización de imports y uso del nuevo adaptador.
+  - `graph_presenter.py`: Simplificación para formato WebGL, eliminación de datos Plotly.
+  - `app.py`: Actualización de import del adaptador.
+- Frontend:
+  - `molstar_graph_renderer.js`: Nuevo renderizador WebGL con proyección 3D-2D, controles de cámara, tooltips y renderizado optimizado.
+  - `graph_viewer.js`: Eliminación de código Plotly, integración del nuevo renderizador.
+  - `viewer.html`: Remoción de script Plotly, agregado del nuevo script de renderizador.
+- Arquitectura: Patrón adaptador para facilitar cambios tecnológicos; uso de Canvas2D para renderizado eficiente.
+
+---
+
 ## [2.5.4] – 2025-10-30
+
+
 ### Added
 - Tarjeta fija “Gráficos” siempre visible en la página de filtros con dos visualizaciones:
   - IC50 (puntos, eje Y log(nM)) para todos los péptidos con IC50 (BD y/o IA).

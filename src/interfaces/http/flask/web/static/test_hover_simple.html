@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Hover Popup</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #container { width: 100%; height: 100vh; position: relative; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script src="molstar_graph_renderer.js"></script>
+    <script>
+        // Crear un gráfico de prueba simple
+        const container = document.getElementById('container');
+        const renderer = new MolstarGraphRenderer(container);
+
+        // Datos de prueba
+        const testData = {
+            nodes: [
+                { x: -10, y: -10, z: 0, label: 'Nodo A', element: 'C' },
+                { x: 10, y: -10, z: 0, label: 'Nodo B', element: 'N' },
+                { x: 0, y: 10, z: 0, label: 'Nodo C', element: 'O' },
+                { x: -5, y: 0, z: 5, label: 'Nodo D', element: 'S' },
+                { x: 5, y: 0, z: 5, label: 'Nodo E', element: 'P' }
+            ],
+            edges: [
+                [0, 1],
+                [1, 2],
+                [2, 0],
+                [0, 3],
+                [1, 4],
+                [2, 3],
+                [3, 4]
+            ],
+            graphMetadata: {
+                bbox: {
+                    min: [-10, -10, 0],
+                    max: [10, 10, 5],
+                    center: [0, 0, 2.5]
+                }
+            }
+        };
+
+        renderer.loadGraph(testData);
+
+        // Exponer para consola
+        window.renderer = renderer;
+        
+        console.log('✓ Renderer cargado en window.renderer');
+        console.log('✓ Pasa el mouse sobre los nodos para ver el panel de información');
+        console.log('  Busca el panel blanco/naranja en la esquina superior izquierda');
+    </script>
+</body>
+</html>

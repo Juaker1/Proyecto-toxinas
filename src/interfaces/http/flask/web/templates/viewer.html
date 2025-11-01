@@ -35,15 +35,6 @@
         #graph-plot {
             position: relative;
             min-height: 500px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .graph-plot-wrapper {
-            position: relative;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -239,6 +230,21 @@
                     <div class="loading-state" id="graph-loading" style="display: none;">
                         <div class="spinner"></div>
                         <p class="loading-text">Generando grafo molecular...</p>
+                    </div>
+                </div>
+
+                <!-- Panel de información de nodos (blanco, debajo del gráfico) -->
+                <div id="graph-info-panel" style="
+                    background: #f8f9fa;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 16px;
+                    margin-top: 12px;
+                    min-height: 60px;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                ">
+                    <div style="color: #666; font-size: 13px; text-align: center;">
+                        Pasa el cursor sobre un nodo para ver sus conexiones
                     </div>
                 </div>
             </div>

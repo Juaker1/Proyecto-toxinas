@@ -47,6 +47,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize WebGL graph renderer
     graphRenderer = new MolstarGraphRenderer(graphPlotElement);
     
+    // Exponer globalmente para debugging
+    window.graphRenderer = graphRenderer;
+    
     // Show initial message
     const initialMsg = document.createElement('div');
     initialMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 18px; text-align: center;';

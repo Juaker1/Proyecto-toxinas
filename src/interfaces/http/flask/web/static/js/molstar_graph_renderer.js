@@ -10,6 +10,9 @@ class MolstarGraphRenderer {
         this.canvas = null;
         this.ctx = null;
         this.graphData = null;
+        // Node state: selectedNode (CLICK), hoveredNode (MOUSE OVER)
+        this.selectedNode = null; // nodo seleccionado con CLICK (muestra conexiones en panel)
+        this.hoveredNode = null; // nodo bajo el cursor (solo resalta colores)
         this.camera = {
             rotation: { x: 0.3, y: 0.3 },
             zoom: 1,
@@ -20,6 +23,9 @@ class MolstarGraphRenderer {
         this.lastMouse = { x: 0, y: 0 };
         this.initialZoom = 1;
         this.initialDistance = 150;
+        this.baselineDistance = 150; // CONSTANTE: referencia para calcular zoom real
+        // Constant focal length for perspective (tuned on resize)
+        this.focalLength = 800;
         
         this.initCanvas();
         this.setupInteraction();
@@ -38,32 +44,40 @@ class MolstarGraphRenderer {
         this.canvas.style.height = '100%';
         this.canvas.style.display = 'block';
         this.canvas.style.cursor = 'grab';
+        this.canvas.style.position = 'absolute';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.zIndex = '1';
         
         this.container.appendChild(this.canvas);
         
-        // Get 2D context with antialiasing
+    // Get 2D context with antialiasing
         this.ctx = this.canvas.getContext('2d', { alpha: false, willReadFrequently: false });
         
         // Create zoom controls UI
         this.createZoomControls();
         
-        // Create hover tooltip
-        this.createTooltip();
+        // Find the info panel (created in HTML) where we'll display node info
+        this.infoPanelElement = document.getElementById('graph-info-panel');
         
         // Handle resizing
         window.addEventListener('resize', () => this.handleResize());
+        // Calibrate focal length now that canvas size is known
+        this.updateFocalByCanvas();
     }
     
     createZoomControls() {
-        const controlsDiv = document.createElement('div');
-        controlsDiv.style.cssText = `
+        this.controlsDiv = document.createElement('div');
+        this.controlsDiv.className = 'graph-zoom-controls';
+        this.controlsDiv.style.cssText = `
             position: absolute;
             top: 10px;
             right: 10px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            z-index: 1000;
+            z-index: 10000;
+            pointer-events: auto;
         `;
         
         const buttonStyle = `
@@ -106,44 +120,22 @@ class MolstarGraphRenderer {
         resetBtn.onmouseout = () => resetBtn.style.background = 'rgba(30, 30, 50, 0.9)';
         resetBtn.onclick = () => this.resetView();
         
-        controlsDiv.appendChild(zoomInBtn);
-        controlsDiv.appendChild(zoomOutBtn);
-        controlsDiv.appendChild(resetBtn);
+        this.controlsDiv.appendChild(zoomInBtn);
+        this.controlsDiv.appendChild(zoomOutBtn);
+        this.controlsDiv.appendChild(resetBtn);
         
-        this.container.appendChild(controlsDiv);
-    }
-    
-    createTooltip() {
-        this.tooltip = document.createElement('div');
-        this.tooltip.style.cssText = `
-            position: absolute;
-            display: none;
-            background: rgba(20, 20, 40, 0.95);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            pointer-events: none;
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(100, 150, 255, 0.3);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            white-space: nowrap;
-        `;
-        this.container.appendChild(this.tooltip);
-        this.hoveredNode = null;
+        this.container.appendChild(this.controlsDiv);
     }
     
     zoomIn() {
-        this.camera.distance *= 0.8;
-        this.camera.distance = Math.max(20, this.camera.distance);
+        this.camera.distance *= 0.85;
+        this.camera.distance = Math.max(10, this.camera.distance);
         this.render();
     }
     
     zoomOut() {
-        this.camera.distance *= 1.2;
-        this.camera.distance = Math.min(1000, this.camera.distance);
+        this.camera.distance *= 1.18;
+        this.camera.distance = Math.min(2000, this.camera.distance);
         this.render();
     }
     
@@ -170,9 +162,21 @@ class MolstarGraphRenderer {
                 this.lastMouse = { x: e.clientX, y: e.clientY };
                 this.render();
             } else {
-                // Check for hover over nodes
+                // Check for hover over nodes (visual only, no panel update)
                 this.checkNodeHover(mouseX, mouseY);
             }
+        });
+        
+        // Click to select a node
+        this.canvas.addEventListener('click', (e) => {
+            // Ignore clicks while dragging
+            if (this.isDragging) return;
+            
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            this.selectNodeByClick(mouseX, mouseY);
         });
         
         this.canvas.addEventListener('mouseup', () => {
@@ -183,19 +187,21 @@ class MolstarGraphRenderer {
         this.canvas.addEventListener('mouseleave', () => {
             this.isDragging = false;
             this.canvas.style.cursor = 'grab';
-            this.hideTooltip();
+            // Reset hover visual (but keep selected panel if exists)
+            this.hoveredNode = null;
+            this.render();
         });
         
-        // Mouse wheel for zoom - FUNCIONAL
+        // Mouse wheel for zoom - ensure preventDefault is respected
         this.canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? 1.15 : 0.87;
             this.camera.distance *= delta;
-            this.camera.distance = Math.max(20, Math.min(1000, this.camera.distance));
+            this.camera.distance = Math.max(10, Math.min(2000, this.camera.distance));
             this.render();
-        });
+        }, { passive: false });
         
-        // Double-click to reset view
+        // Double-click to reset view and clear selection
         this.canvas.addEventListener('dblclick', () => {
             this.resetView();
         });
@@ -203,73 +209,153 @@ class MolstarGraphRenderer {
     
     checkNodeHover(mouseX, mouseY) {
         if (!this.graphData || !this.projectedNodes) {
-            this.hideTooltip();
+            this.hoveredNode = null;
+            this.render();
             return;
         }
         
         let foundNode = null;
         let foundIndex = -1;
+        let minDistance = Infinity;
         
-        // Check each node for hover (reverse order to match rendering)
-        for (let i = this.projectedNodes.length - 1; i >= 0; i--) {
+        // Check each node for hover - find the closest one within range
+        for (let i = 0; i < this.projectedNodes.length; i++) {
             const p = this.projectedNodes[i];
             if (!p) continue;
             
             const baseSizeScale = p.scale / this.camera.zoom * 0.015;
-            const size = Math.max(3, 8 * baseSizeScale);
+            const size = Math.max(5, 10 * baseSizeScale);
             
             const dx = mouseX - p.x;
             const dy = mouseY - p.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance <= size + 5) {
-                foundNode = this.graphData.nodes[i];
+            // Aumentar el área de detección
+            const hitRadius = size + 15;
+            
+            if (distance <= hitRadius && distance < minDistance) {
                 foundIndex = i;
-                break;
+                minDistance = distance;
             }
         }
         
-        if (foundNode) {
-            this.showTooltip(foundNode, foundIndex, mouseX, mouseY);
-        } else {
-            this.hideTooltip();
-        }
-    }
-    
-    showTooltip(node, index, mouseX, mouseY) {
-        this.hoveredNode = index;
-        
-        const rect = this.canvas.getBoundingClientRect();
-        const tooltipX = rect.left + mouseX + 15;
-        const tooltipY = rect.top + mouseY - 10;
-        
-        this.tooltip.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 6px; color: #4fc3f7;">
-                ${node.label}
-            </div>
-            <div style="font-size: 11px; color: rgba(255,255,255,0.8);">
-                <div>x: ${node.x.toFixed(2)}</div>
-                <div>y: ${node.y.toFixed(2)}</div>
-                <div>z: ${node.z.toFixed(2)}</div>
-                <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.2);">
-                    Nodo #${index}
-                </div>
-            </div>
-        `;
-        
-        this.tooltip.style.left = tooltipX + 'px';
-        this.tooltip.style.top = tooltipY + 'px';
-        this.tooltip.style.display = 'block';
-        
-        this.render(); // Re-render to highlight hovered node
-    }
-    
-    hideTooltip() {
-        if (this.hoveredNode !== null) {
+        // Update hovered node (visual feedback only)
+        if (foundIndex >= 0 && foundIndex !== this.hoveredNode) {
+            this.hoveredNode = foundIndex;
+            this.render();
+        } else if (foundIndex === -1 && this.hoveredNode !== null) {
             this.hoveredNode = null;
             this.render();
         }
-        this.tooltip.style.display = 'none';
+    }
+
+    /**
+     * Detecta si se hace click sobre un nodo y lo selecciona.
+     * Actualiza el panel de información con sus conexiones.
+     */
+    selectNodeByClick(mouseX, mouseY) {
+        if (!this.graphData || !this.projectedNodes) {
+            return;
+        }
+        
+        let foundIndex = -1;
+        let minDistance = Infinity;
+        
+        // Check each node for click
+        for (let i = 0; i < this.projectedNodes.length; i++) {
+            const p = this.projectedNodes[i];
+            if (!p) continue;
+            
+            const baseSizeScale = p.scale / this.camera.zoom * 0.015;
+            const size = Math.max(5, 10 * baseSizeScale);
+            
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            const hitRadius = size + 15;
+            
+            if (distance <= hitRadius && distance < minDistance) {
+                foundIndex = i;
+                minDistance = distance;
+            }
+        }
+        
+        // Si encontramos un nodo, lo seleccionamos y actualizamos el panel
+        if (foundIndex >= 0) {
+            this.selectedNode = foundIndex;
+            const node = this.graphData.nodes[foundIndex];
+            this.updateInfoPanel(node, foundIndex);
+            this.render();
+        }
+    }
+
+    /**
+     * Actualiza el panel de información blanco abajo del gráfico.
+     * Se llama solo cuando se hace CLICK en un nodo.
+     */
+    updateInfoPanel(node, index) {
+        if (!this.infoPanelElement) return;
+        
+        // Obtener conexiones del nodo
+        const connections = this.adj && this.adj.get(index) ? Array.from(this.adj.get(index)) : [];
+        const connectionLabels = connections.map(i => {
+            const connectedNode = this.graphData.nodes[i];
+            return connectedNode ? (connectedNode.label || `Nodo ${i}`) : `Nodo ${i}`;
+        });
+
+        const coords = `x: ${node.x.toFixed(2)} | y: ${node.y.toFixed(2)} | z: ${node.z.toFixed(2)}`;
+
+        let html = `
+            <div style="margin-bottom: 12px;">
+                <div style="font-weight: 700; font-size: 14px; color: #000; margin-bottom: 6px;">
+                    📍 ${node.label || 'Sin nombre'}
+                </div>
+                <div style="font-size: 12px; color: #555; margin-bottom: 10px;">
+                    ${coords}
+                </div>
+            </div>
+        `;
+
+        if (connections.length > 0) {
+            html += `
+                <div>
+                    <div style="font-weight: 700; font-size: 12px; color: #000; margin-bottom: 8px;">
+                        🔗 Conexiones (${connections.length}):
+                    </div>
+                    <div style="
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                        gap: 8px;
+                        max-height: 200px;
+                        overflow-y: auto;
+                        padding-right: 8px;
+                    ">
+                        ${connectionLabels.map((label, idx) => `
+                            <div style="
+                                background: #fff0e6;
+                                border-left: 3px solid #FF6600;
+                                padding: 6px 8px;
+                                border-radius: 4px;
+                                font-size: 11px;
+                                color: #333;
+                                word-break: break-word;
+                            ">
+                                ${label}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div style="font-size: 12px; color: #999; font-style: italic;">
+                    Este nodo no tiene conexiones.
+                </div>
+            `;
+        }
+
+        this.infoPanelElement.innerHTML = html;
     }
     
     /**
@@ -279,16 +365,27 @@ class MolstarGraphRenderer {
         this.camera.rotation = { x: 0.2, y: 0.2 };
         this.camera.distance = this.initialDistance;
         this.camera.zoom = this.initialZoom;
-        this.hideTooltip();
+        // Reset the info panel and selection
+        this.selectedNode = null;
+        this.hoveredNode = null;
+        if (this.infoPanelElement) {
+            this.infoPanelElement.innerHTML = '<div style="color: #666; font-size: 13px; text-align: center;">Pasa el cursor sobre un nodo para ver sus conexiones</div>';
+        }
         this.render();
     }
     
     handleResize() {
         this.canvas.width = this.container.clientWidth;
         this.canvas.height = this.container.clientHeight;
+        this.updateFocalByCanvas();
         if (this.graphData) {
             this.render();
         }
+    }
+    
+    updateFocalByCanvas() {
+        // Keep focal length sensible relative to viewport
+        this.focalLength = Math.max(300, Math.min(this.canvas.width, this.canvas.height) * 0.9);
     }
     
     /**
@@ -300,6 +397,18 @@ class MolstarGraphRenderer {
      */
     loadGraph(data) {
         this.graphData = data;
+        // Build simple adjacency list to highlight neighbour edges/nodes on hover
+        if (data && Array.isArray(data.edges)) {
+            this.adj = new Map();
+            for (const [a, b] of data.edges) {
+                if (!this.adj.has(a)) this.adj.set(a, new Set());
+                if (!this.adj.has(b)) this.adj.set(b, new Set());
+                this.adj.get(a).add(b);
+                this.adj.get(b).add(a);
+            }
+        } else {
+            this.adj = new Map();
+        }
         
         // Set camera to center of bounding box
         if (data.graphMetadata && data.graphMetadata.bbox) {
@@ -319,6 +428,8 @@ class MolstarGraphRenderer {
             this.initialDistance = this.camera.distance;
             this.camera.zoom = Math.min(this.canvas.width, this.canvas.height) / (size * 1.5);
             this.initialZoom = this.camera.zoom;
+            // Update focal length relative to viewport for sensible scaling
+            this.focalLength = Math.min(this.canvas.width, this.canvas.height) * 0.9;
         }
         
         // Reset rotation for better initial view
@@ -331,7 +442,7 @@ class MolstarGraphRenderer {
      * Project 3D point to 2D screen coordinates
      */
     project3D(x, y, z) {
-        // Simple perspective projection
+    // Simple perspective projection using constant focal length
         const cx = this.camera.target.x;
         const cy = this.camera.target.y;
         const cz = this.camera.target.z;
@@ -359,8 +470,10 @@ class MolstarGraphRenderer {
         py = ty;
         pz = tz;
         
-        // Perspective projection with improved depth
-        const scale = this.camera.zoom * this.camera.distance / (this.camera.distance + pz);
+    // Perspective projection with improved depth
+    // Keep focal length constant; decreasing distance increases scale properly
+    const denom = Math.max(1e-3, (this.camera.distance + pz));
+    const scale = this.camera.zoom * this.focalLength / denom;
         
         const screenX = this.canvas.width / 2 + px * scale;
         const screenY = this.canvas.height / 2 - py * scale;
@@ -410,7 +523,7 @@ class MolstarGraphRenderer {
         // Project all nodes to 2D and store for hover detection
         this.projectedNodes = nodes.map(node => {
             const p = this.project3D(node.x, node.y, node.z);
-            return { ...p, label: node.label };
+            return { ...p, label: node.label, color: this.nodeColor(node) };
         });
         
         // Sort by depth (z) for proper rendering order
@@ -433,19 +546,37 @@ class MolstarGraphRenderer {
         
         edgesWithDepth.sort((a, b) => a.avgZ - b.avgZ);
         
-        // Draw ALL edges with consistent high visibility
+        // Draw ALL edges with highlighting for selected/hovered nodes
         for (const edge of edgesWithDepth) {
             const { p1, p2, avgZ } = edge;
             
             // Depth factor for subtle 3D effect
             const depthFactor = Math.max(0.3, Math.min(1, (avgZ + 150) / 300));
             
-            // TODAS las aristas visibles con buen grosor y opacidad
-            const lineWidth = 2.0 + (depthFactor * 0.8);
-            const opacity = 0.5 + depthFactor * 0.3;
+            // Detectar si esta arista está conectada al nodo seleccionado o hovado
+            const isSelectedEdge = this.selectedNode !== null && (edge.i === this.selectedNode || edge.j === this.selectedNode);
+            const isHoveredEdge = this.hoveredNode !== null && (edge.i === this.hoveredNode || edge.j === this.hoveredNode);
             
-            // Color cyan/azul brillante como Plotly
-            ctx.strokeStyle = `rgba(99, 179, 237, ${opacity})`;
+            let lineWidth, opacity, color;
+            
+            if (isSelectedEdge) {
+                // Rojo/magenta para aristas del nodo seleccionado (MÁS VISIBLE)
+                lineWidth = 4.0 + (depthFactor * 0.8);
+                opacity = 0.95;
+                color = `rgba(255, 100, 150, ${opacity})`;
+            } else if (isHoveredEdge) {
+                // Amarillo/naranja para aristas del nodo hovado
+                lineWidth = 3.0 + (depthFactor * 0.8);
+                opacity = 0.9;
+                color = `rgba(255, 220, 100, ${opacity})`;
+            } else {
+                // Cyan/azul por defecto
+                lineWidth = 2.0 + (depthFactor * 0.8);
+                opacity = 0.5 + depthFactor * 0.3;
+                color = `rgba(99, 179, 237, ${opacity})`;
+            }
+            
+            ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
@@ -453,7 +584,7 @@ class MolstarGraphRenderer {
             ctx.stroke();
         }
         
-        // Draw nodes - SIMILAR A PLOTLY CON HOVER HIGHLIGHT
+        // Draw nodes - SIMILAR A PLOTLY CON HOVER + SELECTION HIGHLIGHT
         for (const idx of sortedIndices) {
             const p = this.projectedNodes[idx];
             if (!p) continue;
@@ -462,9 +593,15 @@ class MolstarGraphRenderer {
             const baseSizeScale = p.scale / this.camera.zoom * 0.015;
             const size = Math.max(4, 9 * baseSizeScale);
             
+            const isSelected = (this.selectedNode === idx);
             const isHovered = (this.hoveredNode === idx);
-            const hoverScale = isHovered ? 1.5 : 1.0;
-            const finalSize = size * hoverScale;
+            const isNeighborOfSelected = this.selectedNode !== null && this.adj && this.adj.get(this.selectedNode) && this.adj.get(this.selectedNode).has(idx);
+            const isNeighborOfHovered = this.hoveredNode !== null && this.adj && this.adj.get(this.hoveredNode) && this.adj.get(this.hoveredNode).has(idx);
+            
+            const selectedScale = isSelected ? 1.6 : 1.0;
+            const hoverScale = isHovered ? 1.4 : 1.0;
+            const neighbourScale = (isNeighborOfSelected || isNeighborOfHovered) ? 1.2 : 1.0;
+            const finalSize = size * selectedScale * hoverScale * neighbourScale;
             
             // Depth factor for color
             const depthFactor = Math.max(0.3, Math.min(1, (p.z + 150) / 300));
@@ -475,20 +612,23 @@ class MolstarGraphRenderer {
                 p.x, p.y, finalSize
             );
             
-            if (isHovered) {
-                // Highlighted node - amarillo/naranja brillante
+            if (isSelected) {
+                // Selected node - rojo/magenta brillante (CLICK)
+                gradient.addColorStop(0, 'rgba(255, 100, 150, 1)');
+                gradient.addColorStop(0.6, 'rgba(255, 80, 120, 0.95)');
+                gradient.addColorStop(1, 'rgba(220, 50, 100, 0.8)');
+            } else if (isHovered) {
+                // Hovered node - amarillo/naranja brillante (MOUSE)
                 gradient.addColorStop(0, 'rgba(255, 220, 100, 1)');
                 gradient.addColorStop(0.6, 'rgba(255, 180, 50, 0.95)');
                 gradient.addColorStop(1, 'rgba(230, 140, 30, 0.8)');
             } else {
-                // Normal nodes - esquema rosa/magenta/morado como Plotly
-                const r = Math.floor(200 + 55 * depthFactor);
-                const g = Math.floor(100 + 80 * depthFactor);
-                const b = Math.floor(200 + 55 * depthFactor);
-                
+                // Color por clasificación (átomo/residuo)
+                const base = this.projectedNodes[idx].color;
+                const [r, g, b] = base;
                 gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.95)`);
-                gradient.addColorStop(0.7, `rgba(${r - 30}, ${g - 20}, ${b - 30}, 0.9)`);
-                gradient.addColorStop(1, `rgba(${r - 60}, ${g - 40}, ${b - 60}, 0.75)`);
+                gradient.addColorStop(0.7, `rgba(${Math.max(0,r-30)}, ${Math.max(0,g-20)}, ${Math.max(0,b-30)}, 0.9)`);
+                gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
             }
             
             // Draw node
@@ -497,12 +637,25 @@ class MolstarGraphRenderer {
             ctx.arc(p.x, p.y, finalSize, 0, Math.PI * 2);
             ctx.fill();
             
-            // Border - más grueso si está en hover
-            ctx.strokeStyle = isHovered 
-                ? 'rgba(255, 255, 255, 1)' 
-                : `rgba(255, 255, 255, ${0.5 + depthFactor * 0.3})`;
-            ctx.lineWidth = isHovered ? 2.5 : 1.5;
+            // Border - grueso si está seleccionado o hovado
+            let borderWidth = 1.5;
+            let borderColor = `rgba(255, 255, 255, ${0.5 + depthFactor * 0.3})`;
+            
+            if (isSelected) {
+                borderWidth = 3.5;
+                borderColor = 'rgba(255, 255, 255, 1)';
+            } else if (isHovered) {
+                borderWidth = 3.0;
+                borderColor = 'rgba(255, 255, 255, 1)';
+            } else if (isNeighborOfSelected || isNeighborOfHovered) {
+                borderWidth = 2.0;
+                borderColor = 'rgba(255, 220, 100, 0.9)';
+            }
+            
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
             ctx.stroke();
+
             
             // Inner glow sutil
             if (!isHovered) {
@@ -535,8 +688,11 @@ class MolstarGraphRenderer {
         ctx.fillText(`📊 Nodos: ${nodes.length} | Aristas: ${edges.length}`, padding + 6, padding + lineHeight);
         
         ctx.font = '13px "Segoe UI", Arial, sans-serif';
-        const distPercent = ((this.initialDistance / this.camera.distance) * 100).toFixed(0);
-        ctx.fillText(`🔍 Zoom: ${distPercent}%`, padding + 6, padding + lineHeight * 2);
+        // Calcular zoom de manera inversamente proporcional a la distancia
+        // Usar baselineDistance como referencia CONSTANTE
+        const zoomPercent = Math.round((this.baselineDistance / this.camera.distance) * 100);
+        const displayZoom = Math.max(10, Math.min(1000, zoomPercent));
+        ctx.fillText(`🔍 Zoom: ${displayZoom}%`, padding + 6, padding + lineHeight * 2);
         
         ctx.fillStyle = 'rgba(180, 220, 255, 0.85)';
         ctx.font = '12px "Segoe UI", Arial, sans-serif';
@@ -558,20 +714,70 @@ class MolstarGraphRenderer {
      */
     destroy() {
         window.removeEventListener('resize', this.handleResize);
-        this.hideTooltip();
         
         if (this.canvas && this.canvas.parentNode) {
             this.canvas.parentNode.removeChild(this.canvas);
-        }
-        if (this.tooltip && this.tooltip.parentNode) {
-            this.tooltip.parentNode.removeChild(this.tooltip);
         }
         
         this.canvas = null;
         this.ctx = null;
         this.graphData = null;
         this.projectedNodes = null;
-        this.tooltip = null;
+        this.infoPanelElement = null;
+        this.adj = null;
+    }
+
+    // === Utility: color mapping based on atom/residue classification ===
+    nodeColor(node) {
+        const type = node.element || node.type || null;
+        const label = node.label || '';
+        // Intenta extraer el nombre de residuo del label tipo "A:HIS:28:CA"
+        let residue = null;
+        const parts = typeof label === 'string' ? label.split(':') : [];
+        if (parts.length >= 2) residue = parts[1];
+        const atomName = parts.length >= 4 ? parts[3] : null;
+
+        // Paleta CPK mínima por elemento
+        const cpk = {
+            H: [255, 255, 255],
+            C: [80, 80, 80],
+            N: [48, 80, 248],
+            O: [255, 13, 13],
+            S: [255, 200, 50],
+            P: [255, 165, 0]
+        };
+        if (type && cpk[type]) return cpk[type];
+
+        // Colores por residuo (HIS amarillo como se solicitó)
+        const residueMap = {
+            HIS: [255, 220, 100],
+            PHE: [180, 120, 200],
+            TYR: [200, 160, 60],
+            TRP: [120, 60, 200],
+            LYS: [0, 102, 255],
+            ARG: [0, 150, 255],
+            ASP: [255, 80, 80],
+            GLU: [255, 100, 100],
+            SER: [220, 220, 255],
+            THR: [200, 220, 255],
+            GLY: [220, 220, 220],
+            ALA: [200, 200, 200],
+            CYS: [255, 230, 120],
+            MET: [255, 200, 80],
+            PRO: [170, 170, 170],
+            ASN: [120, 200, 255],
+            GLN: [120, 200, 255],
+            ILE: [200, 200, 0],
+            LEU: [200, 200, 0],
+            VAL: [200, 200, 0]
+        };
+        if (residue && residueMap[residue]) return residueMap[residue];
+
+        // Diferenciar CA en vista de residuos
+        if (atomName === 'CA') return [255, 105, 180];
+
+        // Fallback agradable púrpura
+        return [210, 120, 210];
     }
 }
 
