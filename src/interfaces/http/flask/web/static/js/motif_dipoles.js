@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextBtn = document.getElementById('next-page');
   const pageLbl = document.getElementById('page-indicator');
   const referenceSelector = document.getElementById('reference-selector');
+  const btnOpenVisuals = document.getElementById('btn-open-visuals');
+  const btnOpenCharts = document.getElementById('btn-open-charts');
 
   if (!refContainer || !grid) return; // not on this page
 
@@ -23,6 +25,89 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedReferenceCode = 'WT';
   let referenceOptions = [];
   let referenceDisplayName = 'Proteína WT';
+  let cardObserver = null; // IntersectionObserver para render perezoso de viewers
+
+  // Optimización: cache de resultados agregados para gráficos y actualización diferida
+  const ALL_ITEMS_CACHE = new Map(); // key -> array de items preparados
+  let chartsVisible = false;
+  let chartsUpdateScheduled = false;
+  let ic50Worker = null;
+  let visualsOpened = false; // evita inicialización prematura
+  let chartsOpened = false;  // evita inicialización prematura
+
+  // Inline SVG icons to remove Font Awesome dependency in JS-generated UI
+  function svgIcon(name, size = 16) {
+    const s = size;
+    switch (name) {
+      case 'dna':
+        return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2a1 1 0 0 0 0 2c2.21 0 4 1.79 4 4 0 1.86-1.28 3.43-3 3.87V14h2a1 1 0 1 1 0 2H8v2a1 1 0 1 1-2 0v-2H4a1 1 0 1 1 0-2h2v-2.13A5.996 5.996 0 0 1 7 2zm10 0a1 1 0 0 0-1 1v2h-2a1 1 0 1 0 0 2h2v2.13A5.996 5.996 0 0 0 17 22a1 1 0 1 0 0-2c-2.21 0-4-1.79-4-4 0-1.86 1.28-3.43 3-3.87V10h-2a1 1 0 1 0 0-2h2V6a1 1 0 1 0 2 0V3a1 1 0 0 0-1-1z"/></svg>`;
+      case 'download':
+        return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 20h14v-2H5v2zM12 2v12l4-4h-3V2h-2v8H8l4 4z"/></svg>`;
+      default:
+        return '';
+    }
+  }
+
+  function getCacheKey() {
+    return JSON.stringify({
+      gap_min: lastParams.gap_min,
+      gap_max: lastParams.gap_max,
+      require_pair: !!lastParams.require_pair,
+      ref: selectedReferenceCode || 'WT',
+    });
+  }
+
+  function scheduleChartsUpdate() {
+    if (!chartsVisible) return; // Aún no se muestran los gráficos
+    if (chartsUpdateScheduled) return;
+    chartsUpdateScheduled = true;
+    const runner = async () => {
+      chartsUpdateScheduled = false;
+      try { await updateChartsWithAllItems(); } catch (e) { console.warn('updateChartsWithAllItems failed:', e); }
+    };
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => runner(), { timeout: 1500 });
+    } else {
+      setTimeout(runner, 0);
+    }
+  }
+
+  async function loadPlotlyOnce() {
+    if (window.Plotly) return;
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.plot.ly/plotly-2.26.0.min.js';
+      s.defer = true;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  // Cargar 3Dmol solo cuando sea necesario (on-demand)
+  async function load3DmolOnce() {
+    if (window.$3Dmol) return;
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/3dmol@latest/build/3Dmol-min.js';
+      s.defer = true;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  function getIc50Worker() {
+    if (!ic50Worker) {
+      try {
+        ic50Worker = new Worker('/static/js/motif_dipoles.worker.js');
+      } catch (e) {
+        console.warn('No se pudo crear Web Worker, se continuará en el hilo principal.', e);
+        ic50Worker = null;
+      }
+    }
+    return ic50Worker;
+  }
 
   // ========== OVERLAY DE CARGA PARA FILTRADO IC50 ==========
   function getIc50Overlay() {
@@ -202,8 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
           leftGroup.querySelectorAll('.ic50-filter-btn').forEach(b => { b.disabled = true; });
           try {
             await renderPage();
-            // Actualizar gráficos tras recalcular
-            await updateChartsWithAllItems();
+            // Diferir actualización de gráficos
+            scheduleChartsUpdate();
           } finally {
             hideIc50Loading();
             leftGroup.querySelectorAll('.ic50-filter-btn').forEach(b => { b.disabled = false; });
@@ -224,20 +309,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
       grid.innerHTML = items.map((it, i) => cardHTML(i, it)).join('');
 
-      items.forEach((it, i) => {
-        const el = document.getElementById(`motif-v-${i}`);
-        el.style.position = 'relative';
-        const viewer = $3Dmol.createViewer(el, { backgroundColor: 'white' });
-
-        // Renderizar según el modo actual
-        if (viewMode === 'dipole') {
-          renderDipoleView(viewer, it.pdb_text, it, el);
-        } else if (viewMode === 'disulfide') {
-          // Necesitamos la secuencia - asumimos que viene en it.sequence
-          const sequence = it.sequence || '';
-          renderDisulfideView(viewer, it.pdb_text, sequence, el);
+      // Lazy render: observar cada viewer y renderizar cuando entre en viewport
+      if (cardObserver) {
+        try { cardObserver.disconnect(); } catch(e) {}
+      }
+      const setupLazy = () => {
+        const viewers = grid.querySelectorAll('.dipole-viewer');
+        if (!('IntersectionObserver' in window)) {
+          // Fallback simple: render inmediato (comportamiento previo)
+          (async () => {
+            try { await load3DmolOnce(); } catch(e) {}
+            viewers.forEach((el) => {
+              const idx = parseInt((el.id || '').split('-').pop(), 10);
+              const it = currentPageItems[idx];
+              if (!it) return;
+              ensureViewerRendered(el, it);
+            });
+          })();
+          return;
         }
-      });
+        cardObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const idx = parseInt((el.id || '').split('-').pop(), 10);
+            const it = currentPageItems[idx];
+            if (!it) return;
+            ensureViewerRendered(el, it);
+            // Una vez renderizado, podemos dejar de observar este elemento
+            try { cardObserver.unobserve(el); } catch(e) {}
+          });
+        }, { rootMargin: '0px 0px -20% 0px' });
+        viewers.forEach((el) => cardObserver.observe(el));
+      };
+      setupLazy();
 
       // Adjuntar listeners de descarga para cada tarjeta renderizada
       (function attachDownloadHandlers() {
@@ -251,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!accession) return alert('Accession no disponible');
             const original = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
+            btn.innerHTML = '⏳ Descargando...';
             try {
               const url = `/v2/motif_dipoles/item/download?accession=${encodeURIComponent(accession)}`;
               const res = await fetch(url);
@@ -290,8 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { hideIc50Loading(); } catch(e) {}
       if (prevBtn) prevBtn.disabled = false;
       if (nextBtn) nextBtn.disabled = false;
-      // Refrescar los gráficos fijos
-      try { await updateChartsWithAllItems(); } catch(e) { console.warn('Charts update failed:', e); }
+      // Refrescar los gráficos fijos en segundo plano (no bloquear render)
+      try { scheduleChartsUpdate(); } catch(e) { console.warn('Charts schedule failed:', e); }
     }
   }
 
@@ -610,6 +715,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fetch all pages with current params to include all accessions with IC50
   async function fetchAllItemsWithCurrentParams() {
+    const cacheKey = getCacheKey();
+    if (ALL_ITEMS_CACHE.has(cacheKey)) {
+      return ALL_ITEMS_CACHE.get(cacheKey).slice();
+    }
     const all = [];
     let localPage = 1;
     let total = null;
@@ -647,7 +756,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       localPage += 1;
     }
-    return all;
+    ALL_ITEMS_CACHE.set(cacheKey, all);
+    return all.slice();
   }
 
   // Render scatter plot with all accessions that have IC50 (AI or DB), log scale, always-visible container
@@ -804,16 +914,95 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Actualiza ambos gráficos usando los parámetros actuales, reutilizando datos si es posible
+  // Construye datasets en un Web Worker (si está disponible); fallback: main thread
+  async function buildChartDatasets(items) {
+    const worker = getIc50Worker();
+    if (!worker) {
+      // Fallback simple en el hilo principal
+      const hasIc50 = (it) => (
+        (it.ai_ic50_avg_nm != null) ||
+        (it.ai_ic50_value_nm != null) ||
+        (it.ai_ic50_min_nm != null && it.ai_ic50_max_nm != null) ||
+        (it.nav1_7_ic50_value_nm != null)
+      );
+      const rows = items.filter(hasIc50);
+      const aiRows = []; const dbRows = [];
+      for (const r of rows) {
+        const hasAI = (r.ai_ic50_avg_nm != null) || (r.ai_ic50_value_nm != null) || (r.ai_ic50_min_nm != null && r.ai_ic50_max_nm != null);
+        if (hasAI) aiRows.push(r); else dbRows.push(r);
+      }
+      const makeCenterValue = (r) => (r.ai_ic50_avg_nm ?? r.ai_ic50_value_nm ?? r.nav1_7_ic50_value_nm);
+      const centersAI = aiRows.map(r => Number(makeCenterValue(r)));
+      const labelsAI = aiRows.map((r) => buildLabelWithOri(r));
+      const errPlusAI = aiRows.map((r, idx) => (r.ai_ic50_max_nm != null ? Math.max(0, Number(r.ai_ic50_max_nm) - centersAI[idx]) : 0));
+      const errMinusAI = aiRows.map((r, idx) => (r.ai_ic50_min_nm != null ? Math.max(0, centersAI[idx] - Number(r.ai_ic50_min_nm)) : 0));
+      const centersDB = dbRows.map(r => Number(makeCenterValue(r)));
+      const labelsDB = dbRows.map((r) => buildLabelWithOri(r));
+
+      const ic50 = {
+        data: [
+          { x: labelsAI, y: centersAI, name: 'AI (prom/valor)', type: 'scatter', mode: 'markers', marker: { color: '#2563eb', size: 8, opacity: 0.9 },
+            error_y: { type: 'data', array: errPlusAI, arrayminus: errMinusAI, visible: true, thickness: 1.2, width: 2, color: '#2563eb' } },
+          { x: labelsDB, y: centersDB, name: 'DB', type: 'scatter', mode: 'markers', marker: { color: '#10b981', size: 8, opacity: 0.9 } }
+        ],
+        layout: { title: 'IC50 (nM) - Accession (ori=Δori°)', xaxis: { title: 'Accession (con Δori)', automargin: true, tickangle: -45, type: 'category' }, yaxis: { title: 'IC50 (nM)', type: 'log' }, margin: { t: 40, l: 60, r: 20, b: 160 }, legend: { orientation: 'h', y: -0.2 } }
+      };
+
+      const noIc50 = items.filter(it => {
+        const hasDb = (it.nav1_7_ic50_value_nm != null);
+        const hasAi = (it.ai_ic50_avg_nm != null) || (it.ai_ic50_value_nm != null) || (it.ai_ic50_min_nm != null) || (it.ai_ic50_max_nm != null);
+        return !hasDb && !hasAi;
+      });
+      const labels = []; const values = [];
+      for (const it of noIc50) {
+        const m = getOrientationMetrics(it);
+        let ori = null;
+        if (m && Number.isFinite(m.orientationScore)) ori = m.orientationScore;
+        else if (m && Number.isFinite(m.deltaZ)) ori = m.deltaZ;
+        if (ori != null) { labels.push(String(it.accession_number || it.accession || it.name || it.peptide_id || 'NA')); values.push(ori); }
+      }
+      const ori = {
+        data: [{ x: labels, y: values, name: 'Δori (°) sin IC50', type: 'scatter', mode: 'markers', marker: { color: '#ef6c00', size: 8, opacity: 0.9 } }],
+        layout: { title: 'Orientación Δori (°) - Solo accesiones sin IC50', xaxis: { title: 'Accession (con Δori)', automargin: true, tickangle: -45, type: 'category' }, yaxis: { title: 'Δori (°)', type: 'linear', rangemode: 'tozero', range: [0, 180] }, margin: { t: 40, l: 60, r: 20, b: 160 }, legend: { orientation: 'h', y: -0.2 } }
+      };
+      return { ic50, ori };
+    }
+
+    return await new Promise((resolve, reject) => {
+      const onMessage = (ev) => {
+        worker.removeEventListener('message', onMessage);
+        resolve(ev.data);
+      };
+      const onError = (e) => {
+        worker.removeEventListener('message', onMessage);
+        reject(e);
+      };
+      worker.addEventListener('message', onMessage);
+      worker.addEventListener('error', onError, { once: true });
+      worker.postMessage({ type: 'build-datasets', items, referenceAngles, referenceAngleDeg });
+    });
+  }
+
+  // Actualiza ambos gráficos usando los parámetros actuales con lazy-load y Plotly.react
   async function updateChartsWithAllItems() {
     try {
+      await loadPlotlyOnce();
       const items = await fetchAllItemsWithCurrentParams();
-      await Promise.all([
-        renderIc50ScatterAll(items),
-        renderOriNoIc50Chart(items)
-      ]);
+      const datasets = await buildChartDatasets(items);
+      const ic50El = document.getElementById('ic50-scatter-all');
+      if (ic50El) {
+        Plotly.react(ic50El, datasets.ic50.data, datasets.ic50.layout, { responsive: true });
+      }
+      const oriEl = document.getElementById('ori-no-ic50-chart');
+      if (oriEl) {
+        Plotly.react(oriEl, datasets.ori.data, datasets.ori.layout, { responsive: true });
+      }
     } catch (e) {
       console.error('Error actualizando gráficos:', e);
+      const ic50El = document.getElementById('ic50-scatter-all');
+      const oriEl = document.getElementById('ori-no-ic50-chart');
+      if (ic50El) ic50El.innerHTML = `<div class="alert alert-danger">Error al renderizar gráfico: ${e.message}</div>`;
+      if (oriEl) oriEl.innerHTML = `<div class="alert alert-danger">Error al renderizar gráfico: ${e.message}</div>`;
     }
   }
 
@@ -1014,6 +1203,30 @@ document.addEventListener('DOMContentLoaded', () => {
     overlayBothInfo(container, subject || dipole, bonds, options);
   }
 
+  // Renderizar (o re-renderizar) un viewer para una tarjeta si aún no está actualizado
+  async function ensureViewerRendered(el, item) {
+    try { el.style.position = el.style.position || 'relative'; } catch(e) {}
+    // Evitar renders repetidos para el mismo modo
+    if (el._renderedMode === viewMode && el._viewer) return;
+    await load3DmolOnce();
+    let viewer = el._viewer;
+    if (!viewer) {
+      // Limpiar cualquier contenido previo
+      try { el.innerHTML = ''; } catch(e) {}
+      viewer = $3Dmol.createViewer(el, { backgroundColor: 'white' });
+      el._viewer = viewer;
+    } else {
+      try { viewer.clear(); } catch(e) {}
+    }
+    if (viewMode === 'dipole') {
+      renderDipoleView(viewer, item.pdb_text, item, el);
+    } else if (viewMode === 'disulfide') {
+      const sequence = item.sequence || '';
+      renderDisulfideView(viewer, item.pdb_text, sequence, el);
+    }
+    el._renderedMode = viewMode;
+  }
+
   function overlayDisulfideInfo(container, bonds, sequence) {
     try { container.style.position = container.style.position || 'relative'; } catch(e) {}
     
@@ -1118,6 +1331,28 @@ document.addEventListener('DOMContentLoaded', () => {
     legend.innerHTML = buildDipoleInfoHTML(subject, options);
   }
 
+  // Pintar de forma temprana un placeholder para la leyenda de referencia
+  function ensureRefLegendPlaceholder() {
+    const ref = document.getElementById('reference-viewer');
+    if (!ref) return;
+    try { ref.style.position = ref.style.position || 'relative'; } catch(e) {}
+    if (ref.querySelector('.dipole-legend')) return;
+    const legend = document.createElement('div');
+    legend.className = 'dipole-legend';
+    legend.style.position = 'absolute';
+    legend.style.left = '8px';
+    legend.style.bottom = '8px';
+    legend.style.background = 'rgba(255,255,255,0.88)';
+    legend.style.border = '1px solid #ddd';
+    legend.style.borderRadius = '6px';
+    legend.style.padding = '6px 8px';
+    legend.style.fontSize = '12px';
+    legend.style.color = '#222';
+    legend.style.boxShadow = '0 1px 2px rgba(0,0,0,0.08)';
+    legend.innerHTML = '<strong>Dipolo Ref.</strong><br><span style="opacity:.7">Cargando referencia…</span>';
+    ref.appendChild(legend);
+  }
+
   async function loadReference(peptideCode = selectedReferenceCode) {
     const desiredCode = peptideCode || 'WT';
     const params = new URLSearchParams();
@@ -1186,8 +1421,9 @@ document.addEventListener('DOMContentLoaded', () => {
         extraLines.push(`IC50 norm: ${data.normalized_ic50.toFixed(3)}`);
       }
 
-      refContainer.innerHTML = '';
-      const viewer = $3Dmol.createViewer(refContainer, { backgroundColor: 'white' });
+  refContainer.innerHTML = '';
+  await load3DmolOnce();
+  const viewer = $3Dmol.createViewer(refContainer, { backgroundColor: 'white' });
       renderDipoleView(viewer, data.pdb_text, data, refContainer, { isReference: true, extraLines });
       return data;
     } catch (e) {
@@ -1209,7 +1445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="dipole-card-header" style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
           <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
             <h6 class="dipole-card-title" style="margin:0;font-size:16px;line-height:1.1;">
-              <i class="fas fa-dna"></i>
+              ${svgIcon('dna', 14)}
               <span class="title-text" style="font-size:16px;font-weight:600;">${item.name || ''}</span>
               <a class="accession-link" href="https://www.uniprot.org/uniprotkb/${item.accession_number}/entry" target="_blank" rel="noopener noreferrer" style="margin-left:6px;color:var(--link-color,#1e88e5);font-weight:600;font-size:16px;">(${item.accession_number})</a>
             </h6>
@@ -1217,7 +1453,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <button class="card-download-btn btn btn-sm btn-secondary" data-accession="${item.accession_number}" style="z-index:1000;">
-              <i class="fas fa-download"></i>
+              ${svgIcon('download', 12)}
               <span class="btn-label">Descargar</span>
             </button>
           </div>
@@ -1242,7 +1478,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       await renderPage();
-      await updateChartsWithAllItems();
+      scheduleChartsUpdate();
         });
 
         
@@ -1256,7 +1492,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const code = selectedReferenceCode || 'WT';
       downloadRefBtn.disabled = true;
       const originalHtml = downloadRefBtn.innerHTML;
-      downloadRefBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
+  downloadRefBtn.innerHTML = '⏳ Descargando...';
       try {
         const url = `/v2/motif_dipoles/reference/download?peptide_code=${encodeURIComponent(code)}`;
         const res = await fetch(url);
@@ -1289,31 +1525,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Función para re-renderizar la página actual con un modo diferente
-  function reRenderCurrentPage() {
+  async function reRenderCurrentPage() {
     if (!currentPageItems.length) return;
-    
+
     // Aplicar animación
     grid.classList.add('mode-changing');
     setTimeout(() => grid.classList.remove('mode-changing'), 300);
-    
+
+    // Marcar todos los viewers como no renderizados en el modo actual
+    currentPageItems.forEach((_, i) => {
+      const el = document.getElementById(`motif-v-${i}`);
+      if (!el) return;
+      el._renderedMode = null;
+    });
+
+    // Re-renderizar solo los visibles ahora; el resto se renderizará on-scroll
+    const vh = window.innerHeight || document.documentElement.clientHeight || 800;
     currentPageItems.forEach((it, i) => {
       const el = document.getElementById(`motif-v-${i}`);
       if (!el) return;
-      
-      // Limpiar viewer existente
-      el.innerHTML = '';
-      el.style.position = 'relative';
-      
-      const viewer = $3Dmol.createViewer(el, { backgroundColor: 'white' });
-      
-      // Renderizar según modo
-      if (viewMode === 'dipole') {
-        renderDipoleView(viewer, it.pdb_text, it, el);
-      } else if (viewMode === 'disulfide') {
-        const sequence = it.sequence || '';
-        renderDisulfideView(viewer, it.pdb_text, sequence, el);
-      }
+      const rect = el.getBoundingClientRect();
+      const visible = rect.bottom > 0 && rect.top < vh;
+      if (visible) ensureViewerRendered(el, it);
     });
+
+    // Reconfigurar el IntersectionObserver para esta página, de modo que tarjetas no visibles se rendericen al aparecer
+    if (cardObserver) {
+      try { cardObserver.disconnect(); } catch(e) {}
+    }
+    if ('IntersectionObserver' in window) {
+      cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const idx = parseInt((el.id || '').split('-').pop(), 10);
+          const it = currentPageItems[idx];
+          if (!it) return;
+          ensureViewerRendered(el, it);
+          try { cardObserver.unobserve(el); } catch(e) {}
+        });
+      }, { rootMargin: '0px 0px -20% 0px' });
+      grid.querySelectorAll('.dipole-viewer').forEach((el) => cardObserver.observe(el));
+    }
   }
 
   // Navegación
@@ -1336,18 +1589,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   if (dipoleBtn) {
-    dipoleBtn.addEventListener('click', () => {
+    dipoleBtn.addEventListener('click', async () => {
       viewMode = 'dipole';
       setActiveButton(dipoleBtn);
-      reRenderCurrentPage();
+      await reRenderCurrentPage();
     });
   }
   
   if (disulfideBtn) {
-    disulfideBtn.addEventListener('click', () => {
+    disulfideBtn.addEventListener('click', async () => {
       viewMode = 'disulfide';
       setActiveButton(disulfideBtn);
-      reRenderCurrentPage();
+      await reRenderCurrentPage();
     });
   }
   
@@ -1370,11 +1623,114 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  loadReference()
-    .catch((err) => {
-      console.error('No se pudo inicializar la referencia:', err);
-    })
-    .then(() => {
-      renderPage();
+  // Inicialización diferida para evitar bloquear el hilo principal en el arranque
+  function initReferenceAndPage() {
+    // Si la sección de visualizaciones está oculta, no inicializar aún.
+    const visSec = document.getElementById('visualizations-section');
+    if (visSec && visSec.hidden) {
+      return; // Esperar al clic de "Mostrar visualizaciones 3D"
+    }
+    // Pintar LCP temprano
+    ensureRefLegendPlaceholder();
+
+    const start = () => {
+      loadReference()
+        .catch((err) => {
+          console.error('No se pudo inicializar la referencia:', err);
+        })
+        .then(() => {
+          renderPage();
+        });
+    };
+
+    const refEl = document.getElementById('reference-viewer');
+    if (refEl && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          start();
+          io.disconnect();
+        }
+      }, { rootMargin: '0px 0px -20% 0px' });
+      io.observe(refEl);
+    } else {
+      start();
+    }
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initReferenceAndPage, { timeout: 1200 });
+  } else {
+    setTimeout(initReferenceAndPage, 0);
+  }
+
+  // Lazy-init: observar la tarjeta de gráficos y actualizar solo cuando sea visible
+  const chartsCard = document.getElementById('charts-card');
+  function enableChartsObserver() {
+    if (!(chartsCard && 'IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        chartsVisible = true;
+        scheduleChartsUpdate();
+        io.disconnect();
+      }
+    }, { rootMargin: '0px 0px -20% 0px' });
+    io.observe(chartsCard);
+  }
+  // Sólo configurar el observador si la tarjeta NO está oculta inicialmente
+  if (chartsCard && !chartsCard.hidden) {
+    enableChartsObserver();
+  }
+
+  // ========= Botones para abrir secciones on-demand =========
+  async function openVisualizations() {
+    if (visualsOpened) return;
+    visualsOpened = true;
+    const visSec = document.getElementById('visualizations-section');
+    if (visSec) {
+      try { visSec.hidden = false; visSec.inert = false; } catch(e) {}
+    }
+    try {
+      ensureRefLegendPlaceholder();
+      await loadReference();
+    } catch (e) {
+      console.error('Error cargando referencia al abrir visualizaciones:', e);
+    }
+    try {
+      await renderPage();
+    } catch (e) {
+      console.error('Error renderizando página al abrir visualizaciones:', e);
+    }
+  }
+
+  async function openCharts() {
+    if (chartsOpened) return;
+    chartsOpened = true;
+    if (chartsCard) {
+      try { chartsCard.hidden = false; chartsCard.inert = false; } catch(e) {}
+    }
+    try {
+      await loadPlotlyOnce();
+      chartsVisible = true;
+      scheduleChartsUpdate();
+      enableChartsObserver();
+    } catch (e) {
+      console.error('Error inicializando gráficos:', e);
+    }
+  }
+
+  if (btnOpenVisuals) {
+    btnOpenVisuals.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      btnOpenVisuals.disabled = true;
+      await openVisualizations();
     });
+  }
+  if (btnOpenCharts) {
+    btnOpenCharts.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      btnOpenCharts.disabled = true;
+      await openCharts();
+    });
+  }
+  // Señal para fallback de carga (minificado vs no minificado)
+  try { window.__MOTIF_JS_LOADED__ = true; } catch (e) {}
 });

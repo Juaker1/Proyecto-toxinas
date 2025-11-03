@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const requirePairEl = document.getElementById('require-pair');
   const runBtn = document.getElementById('run-filter');
   const exportBtn = document.getElementById('export-xlsx');
+  const navbarExportBtn = document.getElementById('navbar-export-xlsx');
   const bodyEl = document.getElementById('motif-body');
   const hitCountEl = document.getElementById('hit-count');
   const statusEl = document.getElementById('status-line');
@@ -20,6 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // UI and filtering state
   const EXCLUDED_ACCESSIONS = new Set(["P83303","P84507","P0DL84","P84508","D2Y1X8","P0DL72","P0CH54"]);
   let currentMode = 'all'; // modes: all, with_nav, without_nav, with_ic50, without_ic50
+
+  // SheetJS loader (on-demand)
+  let _sheetJsLoading = null;
+  async function loadSheetJsOnce() {
+    if (window.XLSX) return;
+    if (_sheetJsLoading) return _sheetJsLoading;
+    _sheetJsLoading = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      // Build mínima suficiente para utils y write
+      s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.core.min.js';
+      s.defer = true;
+      s.onload = () => resolve();
+      s.onerror = (e) => reject(e);
+      document.head.appendChild(s);
+    });
+    return _sheetJsLoading;
+  }
 
   // Inject simple tabs for filtering modes (keeps existing UI order)
   const resultsHeader = document.querySelector('.results-table-header');
@@ -158,9 +176,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  function exportXlsx() {
+  async function exportXlsx(triggerBtn) {
     try {
-      let rows = JSON.parse(exportBtn.dataset.rows || '[]');
+      if (triggerBtn) {
+        triggerBtn.disabled = true;
+        const original = triggerBtn.innerHTML || triggerBtn.textContent;
+        triggerBtn._original = original;
+        if (triggerBtn.tagName === 'BUTTON') {
+          triggerBtn.innerHTML = '⏳ Exportando...';
+        } else {
+          triggerBtn.textContent = 'Exportando...';
+        }
+      }
+
+      await loadSheetJsOnce();
+
+      const dataAttr = (exportBtn && exportBtn.dataset && exportBtn.dataset.rows) ? exportBtn.dataset.rows : '[]';
+      let rows = JSON.parse(dataAttr || '[]');
       // Apply same exclusions and mode filtering as table
       rows = rows.filter(r => {
         const acc = (r.accession_number || r.accession || '');
@@ -188,11 +220,21 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(a); a.click(); a.remove();
     } catch (e) {
       alert('Error exportando XLSX: '+ e.message);
+    } finally {
+      if (triggerBtn) {
+        triggerBtn.disabled = false;
+        if (triggerBtn._original != null) {
+          if (triggerBtn.tagName === 'BUTTON') triggerBtn.innerHTML = triggerBtn._original;
+          else triggerBtn.textContent = triggerBtn._original;
+          delete triggerBtn._original;
+        }
+      }
     }
   }
 
   runBtn.addEventListener('click', fetchtoxin_filter);
-  exportBtn.addEventListener('click', exportXlsx);
+  if (exportBtn) exportBtn.addEventListener('click', (e) => { e.preventDefault(); exportXlsx(exportBtn); });
+  if (navbarExportBtn) navbarExportBtn.addEventListener('click', (e) => { e.preventDefault(); exportXlsx(navbarExportBtn); });
   // Accession search UI
   const accessionSearchEl = document.getElementById('accession-search');
   const accessionClearBtn = document.getElementById('accession-clear');
@@ -268,4 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial load
   fetchtoxin_filter();
+
+  // Señal para fallback de carga (minificado vs no minificado)
+  try { window.__TOXIN_FILTER_JS_LOADED__ = true; } catch (e) {}
 });
