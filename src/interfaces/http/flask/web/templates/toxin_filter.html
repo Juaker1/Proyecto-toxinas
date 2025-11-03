@@ -241,52 +241,13 @@
 </head>
 <body class="filter-page">
     <!-- NAVBAR -->
-    <nav class="main-navbar">
-        <div class="navbar-container">
-                        <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="navbar-brand">
-                                <div class="navbar-logo" aria-hidden="true"><i class="fa-solid fa-dna"></i></div>
-                <span class="navbar-title">Proyecto Toxinas</span>
-            </a>
-            
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.home_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-microscope"></i></span>
-                        <span>Visualizador</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-flask"></i></span>
-                        <span>Familias</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link active">
-                        <span class="nav-icon" aria-hidden="true"><i class="fa-solid fa-filter"></i></span>
-                        <span>Filtros</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="navbar-actions">
-                <button class="action-btn" id="navbar-export-xlsx">
-                    <span aria-hidden="true"><i class="fa-solid fa-file-excel"></i></span>
-                    <span>Exportar</span>
-                </button>
-            </div>
-            
-            <button class="navbar-toggle" aria-label="Abrir menú">
-                <span aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
-            </button>
-        </div>
-    </nav>
+    {% set navbar_actions %}
+      <button class="action-btn" id="navbar-export-xlsx">
+        <span aria-hidden="true"><i class="fa-solid fa-file-excel"></i></span>
+        <span>Exportar</span>
+      </button>
+    {% endset %}
+    {% include 'partials/navbar.html' %}
 
     <!-- CONTENIDO PRINCIPAL -->
     <div class="filter-container">

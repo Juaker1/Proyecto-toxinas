@@ -8,8 +8,9 @@ class DipoleFamilyAnalyzer {
         this.loadFamilyDataBtn = document.getElementById('loadFamilyDataBtn');
         this.familyInfo = document.getElementById('familyInfo');
         this.familyInfoText = document.getElementById('familyInfoText');
+    this.familyHint = document.getElementById('familyHint');
         this.visualizationArea = document.getElementById('visualizationArea');
-        this.statisticsArea = document.getElementById('statisticsArea');
+    this.statisticsArea = document.getElementById('statisticsArea'); // puede no existir
         this.selectedFamilyTitle = document.getElementById('selectedFamilyTitle');
         this.loadingSpinner = document.getElementById('loadingSpinner');
         this.visualizationPlaceholder = document.getElementById('visualizationPlaceholder');
@@ -19,6 +20,8 @@ class DipoleFamilyAnalyzer {
         this.visualizationGrid = document.getElementById('visualizationGrid');
         
         this.currentFamilyData = null;
+        this.cardIndexByCode = {}; // mapa peptide_code -> índice de tarjeta
+        this.visualizationReady = false;
         
         this.loadFamilyOptions();
         this.initializeEventListeners();
@@ -31,6 +34,10 @@ class DipoleFamilyAnalyzer {
         });
         
         this.visualizeFamilyBtn.addEventListener('click', () => {
+            // Ocultar señal/aviso al iniciar la visualización
+            if (this.familyHint) {
+                this.familyHint.style.display = 'none';
+            }
             this.visualizeFamily();
         });
     }
@@ -83,6 +90,13 @@ class DipoleFamilyAnalyzer {
             // Mostrar información de la familia
             this.familyInfoText.textContent = `Familia seleccionada: ${selectedText}`;
             this.familyInfo.style.display = 'block';
+            if (this.familyHint) {
+                this.familyHint.style.display = 'block';
+            }
+            // Resetear estado de visualización y ocultar controles de resaltado
+            this.visualizationReady = false;
+            this.cardIndexByCode = {};
+            this.setHighlightControlsVisible(false);
             
             // Cargar péptidos de la familia
             await this.loadFamilyPeptides(selectedFamily);
@@ -96,6 +110,12 @@ class DipoleFamilyAnalyzer {
             this.familyInfo.style.display = 'none';
             this.peptideList.style.display = 'none';
             this.visualizeFamilyBtn.disabled = true;
+            if (this.familyHint) {
+                this.familyHint.style.display = 'none';
+            }
+            this.visualizationReady = false;
+            this.cardIndexByCode = {};
+            this.setHighlightControlsVisible(false);
         }
     }
 
@@ -148,6 +168,7 @@ class DipoleFamilyAnalyzer {
                                     <th>Código</th>
                                     <th>Secuencia</th>
                                     <th>IC50</th>
+                                    <th class="highlight-header" style="display:none">Resaltar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -168,6 +189,11 @@ class DipoleFamilyAnalyzer {
                             <span class="ic50-value">
                                 ${peptide.ic50_value} ${peptide.ic50_unit}
                             </span>
+                        </td>
+                        <td class="highlight-cell" style="display:none">
+                            <label class="highlight-label">
+                                <input type="checkbox" class="highlight-toggle" data-peptide-code="${peptide.peptide_code}"> Resaltar
+                            </label>
                         </td>
                     </tr>
                 `;
@@ -199,6 +225,7 @@ class DipoleFamilyAnalyzer {
                                         <th>Código</th>
                                         <th>Secuencia</th>
                                         <th>IC50</th>
+                                        <th class="highlight-header" style="display:none">Resaltar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -215,6 +242,11 @@ class DipoleFamilyAnalyzer {
                                             <span class="ic50-value">
                                                 ${original_peptide.ic50_value} ${original_peptide.ic50_unit}
                                             </span>
+                                        </td>
+                                        <td class="highlight-cell" style="display:none">
+                                            <label class="highlight-label">
+                                                <input type="checkbox" class="highlight-toggle" data-peptide-code="${original_peptide.peptide_code}"> Resaltar
+                                            </label>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -241,13 +273,27 @@ class DipoleFamilyAnalyzer {
                                         <th>Secuencia</th>
                                         <th>IC50</th>
                                         <th>Diferencias</th>
+                                        <th class="highlight-header" style="display:none">Resaltar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                 `;
                 
                 modified_peptides.forEach(peptide => {
-                    const differences = this.findSequenceDifferences(original_peptide.sequence, peptide.sequence);
+                    const mods = this.parseModificationsFromCode(peptide.peptide_code);
+                    // Preferimos tokens; si no hay tokens, resaltamos diferencias contra el original
+                    let highlightedSeq = '';
+                    if (mods && mods.length) {
+                        highlightedSeq = this.highlightSequence(peptide.sequence, mods);
+                    } else if (original_peptide && original_peptide.sequence) {
+                        highlightedSeq = this.highlightDiffs(original_peptide.sequence, peptide.sequence);
+                    } else {
+                        highlightedSeq = peptide.sequence || '';
+                    }
+
+                    const differences = (mods && mods.length)
+                        ? mods.map(m => m.token).join(', ')
+                        : this.findSequenceDifferences(original_peptide?.sequence, peptide.sequence);
                     
                     listHTML += `
                         <tr>
@@ -255,7 +301,9 @@ class DipoleFamilyAnalyzer {
                                 <span class="peptide-code">${peptide.peptide_code}</span>
                             </td>
                             <td>
-                                <code class="sequence-text-readonly">${peptide.sequence}</code>
+                                <div class="sequence-container">
+                                  <code class="sequence-text-readonly">${highlightedSeq}</code>
+                                </div>
                             </td>
                             <td>
                                 <span class="ic50-value">
@@ -264,6 +312,11 @@ class DipoleFamilyAnalyzer {
                             </td>
                             <td>
                                 ${differences ? `<span class="difference-badge">${differences}</span>` : '<span class="text-muted">-</span>'}
+                            </td>
+                            <td class="highlight-cell" style="display:none">
+                                <label class="highlight-label">
+                                    <input type="checkbox" class="highlight-toggle" data-peptide-code="${peptide.peptide_code}"> Resaltar
+                                </label>
                             </td>
                         </tr>
                     `;
@@ -285,6 +338,10 @@ class DipoleFamilyAnalyzer {
         
         this.peptideList.innerHTML = listHTML;
         this.peptideList.style.display = 'block';
+        // Si la visualización ya está lista, mostrar controles y enlazar eventos
+        if (this.visualizationReady) {
+            this.enableHighlightControls();
+        }
     }
 
     // ✨ NUEVO: Método para encontrar diferencias entre secuencias
@@ -306,6 +363,76 @@ class DipoleFamilyAnalyzer {
         }
         
         return modifications.length > 0 ? modifications.join(', ') : null;
+    }
+
+    // ✨ NUEVO: Parsear modificaciones a partir del código del péptido
+    // Formato esperado en el código: base + _T1X + _E4A + ... (uno o varios)
+    // Donde cada token es [A-Z][0-9]+[A-Z] con posiciones basadas en 1
+    parseModificationsFromCode(peptideCode) {
+        if (!peptideCode || typeof peptideCode !== 'string') return [];
+        const idx = peptideCode.indexOf('_');
+        if (idx === -1) return [];
+        const after = peptideCode.slice(idx + 1);
+        const tokens = after.split('_').filter(Boolean);
+        const mods = [];
+        const re = /^([A-Za-z])(\d+)([A-Za-z])$/;
+        for (const t of tokens) {
+            const m = t.match(re);
+            if (!m) continue;
+            const from = m[1].toUpperCase();
+            const pos = parseInt(m[2], 10);
+            const to = m[3].toUpperCase();
+            if (Number.isFinite(pos) && pos > 0) mods.push({ from, pos, to, token: `${from}${pos}${to}` });
+        }
+        return mods;
+    }
+
+    // ✨ NUEVO: Resaltar en la secuencia modificada los cambios indicados por mods
+    // Se toma la posición (1-based) y se envuelve el carácter en <span class="seq-change">…</span>
+    highlightSequence(sequence, mods) {
+        if (!sequence || !mods || mods.length === 0) return sequence || '';
+        const chars = Array.from(sequence);
+        // Crear un set de posiciones a resaltar para acceso O(1)
+        const byPos = new Map();
+        for (const m of mods) {
+            if (m.pos >= 1 && m.pos <= chars.length) {
+                byPos.set(m.pos, m);
+            }
+        }
+        const out = chars.map((ch, i) => {
+            const pos = i + 1; // 1-based
+            const mod = byPos.get(pos);
+            if (mod) {
+                const title = `${mod.from}${mod.pos}${mod.to}: ${mod.from}→${mod.to}`;
+                return `<span class="seq-change" data-pos="${pos}" title="${title}">${ch}</span>`;
+            }
+            return ch;
+        });
+        return out.join('');
+    }
+
+    // ✨ NUEVO: Resaltar diferencias entre dos secuencias (fallback cuando no hay tokens)
+    // Resalta en la secuencia modificada los caracteres que difieren del original
+    highlightDiffs(originalSeq, modifiedSeq) {
+        if (!modifiedSeq) return '';
+        if (!originalSeq) return modifiedSeq;
+        const a = Array.from(originalSeq);
+        const b = Array.from(modifiedSeq);
+        const L = Math.max(a.length, b.length);
+        const out = [];
+        for (let i = 0; i < L; i++) {
+            const ch = b[i] ?? '';
+            const base = a[i] ?? '';
+            if (!ch) continue;
+            if (base && ch === base) {
+                out.push(ch);
+            } else {
+                const pos = i + 1;
+                const title = base ? `${base}${pos}${ch}: ${base}→${ch}` : `+${ch} @${pos}`;
+                out.push(`<span class="seq-change" data-pos="${pos}" title="${title}">${ch}</span>`);
+            }
+        }
+        return out.join('');
     }
 
     async loadFamilyData() {
@@ -350,11 +477,19 @@ class DipoleFamilyAnalyzer {
 
                 this.currentFamilyData = data.data;
                 this.createDipoleGrid(data.data.dipole_results);
-                this.displayFamilyStats();
                 
-                // Mostrar áreas de visualización y estadísticas
+                // Mostrar área de visualización (estadísticas eliminadas)
                 this.visualizationArea.style.display = 'block';
-                this.statisticsArea.style.display = 'block';
+                if (this.statisticsArea) {
+                    this.statisticsArea.style.display = 'none';
+                }
+                // Asegurar que la señal quede oculta después de visualizar
+                if (this.familyHint) {
+                    this.familyHint.style.display = 'none';
+                }
+                // Visualización lista: habilitar controles de resaltado en tablas
+                this.visualizationReady = true;
+                this.enableHighlightControls();
                 
                 // Auto-scroll hacia la sección de visualización
                 this.scrollToVisualization();
@@ -392,15 +527,30 @@ class DipoleFamilyAnalyzer {
             return;
         }
 
+        // Priorizar el péptido original (sin "_") al inicio
+        try {
+            dipoleResults = [...dipoleResults].sort((a, b) => {
+                const aOrig = !String(a.peptide_code || '').includes('_');
+                const bOrig = !String(b.peptide_code || '').includes('_');
+                if (aOrig && !bOrig) return -1;
+                if (!aOrig && bOrig) return 1;
+                return String(a.peptide_code || '').localeCompare(String(b.peptide_code || ''), 'es');
+            });
+        } catch (e) { /* si falla, se usa el orden original */ }
+
         // ✅ CAMBIO: CSS Grid puro sin Bootstrap
         let gridHTML = '';
+        this.cardIndexByCode = {};
 
         dipoleResults.forEach((result, index) => {
             const dipoleData = result.dipole_data;
             const peptideCode = result.peptide_code;
+            this.cardIndexByCode[peptideCode] = index;
             
+            const angles = this.computeAxisAngles(dipoleData);
+
             gridHTML += `
-                <div class="dipole-visualization-card">
+                <div class="dipole-visualization-card" data-peptide-code="${peptideCode}">
                     <div class="dipole-card-header">
                         <h6 class="dipole-card-title">
                             <i class="fas fa-dna"></i>${peptideCode}
@@ -426,12 +576,16 @@ class DipoleFamilyAnalyzer {
                                     <div class="stat-value">${dipoleData.magnitude.toFixed(3)} D</div>
                                 </div>
                                 <div class="dipole-stat">
-                                    <div class="stat-label">Ángulo Z</div>
-                                    <div class="stat-value">${dipoleData.angle_with_z_axis.degrees.toFixed(1)}°</div>
+                                    <div class="stat-label">Ángulo X</div>
+                                    <div class="stat-value">${angles.x}°</div>
                                 </div>
                                 <div class="dipole-stat">
-                                    <div class="stat-label">Componentes</div>
-                                    <div class="stat-value">X,Y,Z</div>
+                                    <div class="stat-label">Ángulo Y</div>
+                                    <div class="stat-value">${angles.y}°</div>
+                                </div>
+                                <div class="dipole-stat">
+                                    <div class="stat-label">Ángulo Z</div>
+                                    <div class="stat-value">${angles.z}°</div>
                                 </div>
                             </div>
                             <div class="dipole-vector-info">
@@ -455,6 +609,37 @@ class DipoleFamilyAnalyzer {
 
         // Inicializar visualizadores py3Dmol para cada toxina
         this.initializeDipoleViewers(dipoleResults);
+    }
+
+    // Mostrar columna "Resaltar" y enlazar eventos
+    enableHighlightControls() {
+        this.setHighlightControlsVisible(true);
+        const toggles = this.peptideList.querySelectorAll('.highlight-toggle');
+        toggles.forEach(input => {
+            input.removeEventListener('change', this._onHighlightToggle);
+        });
+        this._onHighlightToggle = (e) => {
+            const code = e.target.dataset.peptideCode;
+            const on = e.target.checked;
+            this.toggleCardHighlight(code, on);
+        };
+        toggles.forEach(input => input.addEventListener('change', this._onHighlightToggle));
+    }
+
+    setHighlightControlsVisible(visible) {
+        const display = visible ? 'table-cell' : 'none';
+        this.peptideList.querySelectorAll('.highlight-header, .highlight-cell').forEach(el => {
+            el.style.display = display;
+        });
+    }
+
+    toggleCardHighlight(peptideCode, on) {
+        const index = this.cardIndexByCode[peptideCode];
+        const cards = Array.from(document.querySelectorAll('.dipole-visualization-card'));
+        const card = (index != null) ? cards[index] : cards.find(c => (c.dataset.peptideCode||'') === peptideCode);
+        if (!card) return;
+        card.classList.toggle('highlighted-card', !!on);
+        // No auto-scroll al activar, para permitir seleccionar múltiples a la vez
     }
 
     async initializeDipoleViewers(dipoleResults) {
@@ -501,7 +686,7 @@ class DipoleFamilyAnalyzer {
             }
         });
 
-        // Añadir vector dipolar
+    // Añadir vector dipolar
         this.addDipoleArrowToViewer(viewer, dipoleData);
 
         // Renderizar
@@ -532,8 +717,29 @@ class DipoleFamilyAnalyzer {
             opacity: 0.8
         });
 
+        // Eje X (verde), Y (naranja) y Z (azul) desde el centro de masa
+        const axisLen = 20;
+        const xAxisEnd = [start[0] + axisLen, start[1], start[2]];
+        const yAxisEnd = [start[0], start[1] + axisLen, start[2]];
+        const zAxisEnd = [start[0], start[1], start[2] + axisLen];
+
+        viewer.addArrow({
+            start: { x: start[0], y: start[1], z: start[2] },
+            end: { x: xAxisEnd[0], y: xAxisEnd[1], z: xAxisEnd[2] },
+            radius: 0.5,
+            color: 'green',
+            opacity: 0.6
+        });
+
+        viewer.addArrow({
+            start: { x: start[0], y: start[1], z: start[2] },
+            end: { x: yAxisEnd[0], y: yAxisEnd[1], z: yAxisEnd[2] },
+            radius: 0.5,
+            color: 'orange',
+            opacity: 0.6
+        });
+
         // Eje Z de referencia (azul)
-        const zAxisEnd = [start[0], start[1], start[2] + 20];
         viewer.addArrow({
             start: { x: start[0], y: start[1], z: start[2] },
             end: { x: zAxisEnd[0], y: zAxisEnd[1], z: zAxisEnd[2] },
@@ -543,46 +749,21 @@ class DipoleFamilyAnalyzer {
         });
     }
 
+    // Cálculo de ángulos con respecto a ejes X/Y/Z a partir del vector
+    computeAxisAngles(dipoleData) {
+        const v = dipoleData?.vector || [0,0,1];
+        const mag = Math.max(1e-8, dipoleData?.magnitude || Math.hypot(v[0], v[1], v[2]));
+        const clamp = (x) => Math.max(-1, Math.min(1, x));
+        const toDeg = (r) => (r * 180 / Math.PI);
+        const ax = toDeg(Math.acos(clamp(v[0] / mag)));
+        const ay = toDeg(Math.acos(clamp(v[1] / mag)));
+        const az = toDeg(Math.acos(clamp(v[2] / mag)));
+        return { x: ax.toFixed(1), y: ay.toFixed(1), z: az.toFixed(1) };
+    }
+
     displayFamilyStats() {
-        if (!this.currentFamilyData) return;
-        
-        const summary = this.currentFamilyData.summary;
-        const errors = this.currentFamilyData.errors || [];
-        
-        document.getElementById('magnitudeStats').innerHTML = `
-            <div class="row text-center">
-                <div class="col-4">
-                    <h6 class="text-muted">Péptidos</h6>
-                    <h5 class="text-info">${summary.total_proteins}</h5>
-                </div>
-                <div class="col-4">
-                    <h6 class="text-muted">Dipolo Promedio</h6>
-                    <h5 class="text-primary">${summary.avg_magnitude.toFixed(3)} D</h5>
-                </div>
-                <div class="col-4">
-                    <h6 class="text-muted">Rango</h6>
-                    <h5 class="text-success">${summary.min_magnitude.toFixed(2)} - ${summary.max_magnitude.toFixed(2)} D</h5>
-                </div>
-            </div>
-            ${errors.length > 0 ? `
-                <div class="alert alert-warning mt-3">
-                    <small><strong>Errores de cálculo:</strong> ${errors.length} péptidos</small>
-                </div>
-            ` : ''}
-        `;
-        
-        document.getElementById('orientationStats').innerHTML = `
-            <div class="text-center">
-                <h6 class="text-muted">Análisis de Orientación</h6>
-                <p class="text-muted">Comparación de ángulos con eje Z</p>
-                <div class="mt-2">
-                    <small class="text-info">
-                        Los vectores dipolar se muestran en rojo<br>
-                        El eje Z de referencia en azul
-                    </small>
-                </div>
-            </div>
-        `;
+        // Eliminado en la UI. Se conserva el método como no-op por compatibilidad.
+        return;
     }
 
     showLoading(show, message = 'Procesando datos...') {

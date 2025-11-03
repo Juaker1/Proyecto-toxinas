@@ -29,45 +29,7 @@
     <a href="#main-content" class="skip-to-main sr-only">Saltar al contenido principal</a>
 
     <!-- NAVBAR -->
-    <nav class="main-navbar home-navbar" role="navigation" aria-label="Navegación principal">
-        <div class="navbar-container">
-            <a href="{{ url_for('pages_v2.home_page_v2') }}" class="navbar-brand" aria-label="Proyecto Toxinas - Inicio">
-                <div class="navbar-logo" aria-hidden="true"><i class="fas fa-dna"></i></div>
-                <span class="navbar-title">Proyecto Toxinas</span>
-            </a>
-
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.home_page_v2') }}" class="nav-link active" aria-current="page">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-home"></i></span>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-microscope"></i></span>
-                        <span>Visualizador</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-flask"></i></span>
-                        <span>Familias</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><i class="fas fa-filter"></i></span>
-                        <span>Filtros</span>
-                    </a>
-                </li>
-            </ul>
-
-            <button class="navbar-toggle" aria-label="Abrir menú de navegación" aria-expanded="false">
-                <i class="fas fa-bars" aria-hidden="true"></i>
-            </button>
-        </div>
-    </nav>
+    {% include 'partials/navbar.html' %}
 
     <!-- HERO SECTION -->
     <main id="main-content">
@@ -274,19 +236,7 @@
         
     </main>
 
-    <!-- Navbar toggle script (crítico inline optimizado) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.querySelector('.navbar-toggle');
-            const nav = document.querySelector('.navbar-nav');
-            if (toggle && nav) {
-                toggle.addEventListener('click', function() {
-                    const expanded = this.getAttribute('aria-expanded') === 'true';
-                    this.setAttribute('aria-expanded', !expanded);
-                    nav.classList.toggle('active');
-                });
-            }
-        });
-    </script>
+    <!-- Navbar behavior -->
+    <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
 </body>
 </html>

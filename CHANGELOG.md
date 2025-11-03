@@ -2,6 +2,52 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.7.0] – 2025-11-03
+
+### Added
+- Navbar como componente reutilizable:
+  - Nuevo parcial `templates/partials/navbar.html` con “slot” para acciones por página (`navbar_actions`).
+- Página de Familias: aviso guiado que indica cómo visualizar los dipolos; aparece al seleccionar una familia, se oculta al visualizar y reaparece al cambiar la selección.
+- Leyenda global de flechas en la visualización de Familias (arriba del grid):
+  - Colores: Dipolo=rojo, Eje X=verde, Eje Y=naranja, Eje Z=azul.
+- Flechas de ejes X e Y añadidas en cada visualizador (además del eje Z existente).
+- Controles “Resaltar” por péptido en las tablas (original y modificados): permiten marcar visualizaciones 3D específicas sin abandonar la tabla.
+
+### Changed
+- Orden del menú actualizado en todas las vistas: Inicio → Familias → Visualizador → Filtros.
+- Plantillas `home.html`, `viewer.html`, `dipole_families.html` y `toxin_filter.html` ahora incluyen el parcial y, cuando aplica, inyectan sus acciones con `navbar_actions`.
+- La marca (logo/título) enlaza a Inicio de forma consistente.
+- Página de Familias (UX):
+  - Mayor contraste en “Familia de Toxinas” y “Familia seleccionada”.
+  - Reposicionamiento del aviso junto al cartel de “Familia seleccionada” con iconos claros.
+  - Más espacio vertical entre selector/botón, avisos y la lista de péptidos.
+  - Resaltado de cambios en secuencias: ahora se ve claramente (fondo blanco + borde acentuado) sobre el contenedor amarillo y aplica a todas las familias; si no hay tokens en el código del péptido, se usa un fallback por diferencias contra el original.
+  - Visualización 3D por familia: el péptido original (código sin "_") aparece primero en la grilla; el resto se ordena alfabéticamente por código.
+- En las tarjetas de visualización, se reemplaza “Componentes” por los ángulos respecto a los ejes X/Y/Z (en grados) junto a la Magnitud.
+- Estilos más visibles para IC50 (chip) y para el control “Resaltar” (pill con borde/fondo y negrita).
+- Color de resaltado de la tarjeta 3D cambiado a azul (borde/halo) para combinar con la paleta existente.
+- Al activar “Resaltar” ya no se hace auto‑scroll a la visualización (permite marcar varios a la vez).
+
+### Removed
+- Página de Familias: se eliminaron las tarjetas/estadísticas finales (magnitud, orientación, componentes) para simplificar la UI y evitar información redundante.
+- Página de Familias: se eliminaron los botones de exportación (acción del navbar y “Exportar Datos” en el header de la visualización).
+
+### Fixed
+- Eliminación de marcado duplicado del navbar entre plantillas, evitando desincronizaciones de iconos/orden/estados.
+- Estado activo y comportamiento móvil consistentes en todas las páginas al compartir un único marcado.
+- Señal de ayuda en Familias: ahora se oculta al iniciar la visualización y solo reaparece al cambiar de familia.
+
+### Technical Details
+- Integración vía `{% include 'partials/navbar.html' %}` y bloque inline `{% set navbar_actions %}…{% endset %}` cuando se requieren botones específicos por página.
+- Sin cambios en `static/js/navbar.js` ni en `static/css/navbar.css`; el comportamiento existente aplica al nuevo parcial.
+- Familias:
+  - `templates/dipole_families.html`: se removió la sección de estadísticas; se mantiene solo el área de visualización.
+  - `templates/dipole_families.html`: se quitaron las acciones de exportar del navbar y el botón “Exportar Datos” del header; se añadió la leyenda `.dipole-legend` sobre el área de visualización; columnas “Resaltar” agregadas a las tablas.
+  - `static/js/dipole_family_analysis.js`: `displayFamilyStats()` no‑op; ocultado de `statisticsArea`; orden "original primero"; resaltado de secuencias (`parseModificationsFromCode()` + `highlightDiffs()`); `computeAxisAngles()` para X/Y/Z; `addDipoleArrowToViewer()` dibuja X (verde), Y (naranja), Z (azul) y dipolo (rojo); nuevo vínculo tabla↔tarjetas con `cardIndexByCode`; controles “Resaltar” activan `.highlighted-card` y se eliminó el auto‑scroll al togglear.
+  - `static/css/families-page.css` y `.min.css`: estilos de `.seq-change` (alto contraste), `.dipole-legend`, chips de `IC50`, pills de `Resaltar` (accent azul) y `.highlighted-card` con borde/halo azul.
+
+---
+
 ## [2.6.1] – 2025-11-03
 
 ### Added
@@ -14,6 +60,7 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - Navbar: unificación de iconos en todas las plantillas para coherencia visual:
   - “Visualizador” → `fas fa-microscope`
   - “Familias” → `fas fa-flask`
+- Navbar: se componentiza el marcado en `templates/partials/navbar.html` y se actualiza el orden de los ítems a: Inicio → Familias → Visualizador → Filtros. Las plantillas `home.html`, `viewer.html`, `dipole_families.html` y `toxin_filter.html` ahora incluyen el parcial y, cuando aplica, inyectan sus acciones con `navbar_actions`.
 - `toxin_filter.html`: carga del script `motif_dipoles` vía `asset_path(...)` para respetar el modo minificado y mantener consistencia con el resto de assets.
 - Paginación de la tabla de resultados: flechas reemplazadas por Font Awesome (`fa-angle-left` / `fa-angle-right`) para uniformidad con el resto de iconografía.
 
