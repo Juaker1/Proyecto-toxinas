@@ -1,3 +1,29 @@
+## [2.5.7] – 2025-11-03
+
+### Added
+- Rediseño completo del apartado "Explora métricas y exporta resultado" en la página del visualizador con sistema de navegación moderno basado en cards horizontales.
+- Nuevo panel de conexiones del grafo con diseño tipo card grid responsive, mostrando conexiones como cards individuales con iconos, nombres y distancias calculadas.
+- Sistema de navegación horizontal con cards interactivas para acceso directo a secciones de análisis y exportación.
+- Estados de carga y feedback visual mejorado en botones de exportación con animaciones ripple.
+
+### Changed
+- Reestructuración completa del header del analysis hub con badge introductorio, título grande y navegación basada en cards en lugar de botones tradicionales.
+- Rediseño de panels de análisis y exportación con headers modernos que incluyen iconos grandes, badges temáticos y descripciones extendidas.
+- Transformación de las cards de exportación en un diseño de 3 capas (header, body, footer) con form groups estructurados, selects estilizados y botones con gradientes temáticos.
+- Actualización del sistema de grids para usar layouts modernos con mejor jerarquía visual y espaciado consistente.
+- Mejora del panel de información del grafo con nuevo diseño card grid para conexiones, reemplazando la lista simple por cards interactivas.
+
+### Fixed
+- Alineación y espaciado inconsistente en el apartado de métricas y exportación, ahora completamente uniforme con el sistema de diseño.
+- Problemas de UX/UI en las opciones de exportación, ahora con diseño profesional y navegación intuitiva.
+- Estados visuales de botones de exportación mejorados con feedback claro de carga y estados disabled apropiados.
+
+
+
+--- 
+
+## [2.5.7] – 2025-11-02
+
 # Changelog
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
@@ -49,6 +75,7 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
   - Sin cambios de API ni de funcionalidad visible para el usuario; mejoras transparentes de rendimiento.
   
 --- 
+
 
 
 ## [2.5.6] – 2025-11-01

@@ -310,71 +310,126 @@ class MolstarGraphRenderer {
     }
 
     /**
-     * Actualiza el panel de información blanco abajo del gráfico.
-     * Se llama solo cuando se hace CLICK en un nodo.
+     * Actualiza el panel de información con el nuevo diseño Card Grid.
+     * Se llama cuando se hace CLICK en un nodo del grafo.
      */
     updateInfoPanel(node, index) {
-        if (!this.infoPanelElement) return;
+        // Ocultar estado vacío y mostrar detalles
+        const emptyState = document.querySelector('.graph-info-empty');
+        const detailsDiv = document.getElementById('graph-info-details');
+        
+        if (emptyState) emptyState.style.display = 'none';
+        if (detailsDiv) detailsDiv.style.display = 'block';
+        
+        // Actualizar información básica del nodo
+        const nodeNameEl = document.getElementById('node-name');
+        const nodeTypeEl = document.getElementById('node-type');
+        
+        if (nodeNameEl) nodeNameEl.textContent = node.label || 'Nodo';
+        if (nodeTypeEl) nodeTypeEl.textContent = 'Residuo';
+        
+        // Actualizar métricas (si están disponibles en el nodo)
+        this.updateNodeMetrics(node);
+        
+        // Actualizar conexiones con el nuevo diseño
+        this.updateConnectionsGrid(node, index);
+    }
+    
+    /**
+     * Actualiza las métricas del nodo seleccionado
+     */
+    updateNodeMetrics(node) {
+        const degreeEl = document.getElementById('node-degree');
+        const betweennessEl = document.getElementById('node-betweenness');
+        const closenessEl = document.getElementById('node-closeness');
+        
+        if (degreeEl) degreeEl.textContent = (node.degree || 0).toFixed(3);
+        if (betweennessEl) betweennessEl.textContent = (node.betweenness || 0).toFixed(3);
+        if (closenessEl) closenessEl.textContent = (node.closeness || 0).toFixed(3);
+    }
+    
+    /**
+     * Genera el grid de conexiones con el nuevo diseño tipo card
+     */
+    updateConnectionsGrid(node, index) {
+        const connectionsGrid = document.getElementById('node-connected');
+        const connectionsBadge = document.getElementById('connections-badge');
+        
+        if (!connectionsGrid) return;
         
         // Obtener conexiones del nodo
         const connections = this.adj && this.adj.get(index) ? Array.from(this.adj.get(index)) : [];
-        const connectionLabels = connections.map(i => {
-            const connectedNode = this.graphData.nodes[i];
-            return connectedNode ? (connectedNode.label || `Nodo ${i}`) : `Nodo ${i}`;
-        });
-
-        const coords = `x: ${node.x.toFixed(2)} | y: ${node.y.toFixed(2)} | z: ${node.z.toFixed(2)}`;
-
-        let html = `
-            <div style="margin-bottom: 12px;">
-                <div style="font-weight: 700; font-size: 14px; color: #000; margin-bottom: 6px;">
-                    📍 ${node.label || 'Sin nombre'}
-                </div>
-                <div style="font-size: 12px; color: #555; margin-bottom: 10px;">
-                    ${coords}
-                </div>
-            </div>
-        `;
-
-        if (connections.length > 0) {
-            html += `
-                <div>
-                    <div style="font-weight: 700; font-size: 12px; color: #000; margin-bottom: 8px;">
-                        🔗 Conexiones (${connections.length}):
-                    </div>
-                    <div style="
-                        display: grid;
-                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                        gap: 8px;
-                        max-height: 200px;
-                        overflow-y: auto;
-                        padding-right: 8px;
-                    ">
-                        ${connectionLabels.map((label, idx) => `
-                            <div style="
-                                background: #fff0e6;
-                                border-left: 3px solid #FF6600;
-                                padding: 6px 8px;
-                                border-radius: 4px;
-                                font-size: 11px;
-                                color: #333;
-                                word-break: break-word;
-                            ">
-                                ${label}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        } else {
-            html += `
-                <div style="font-size: 12px; color: #999; font-style: italic;">
-                    Este nodo no tiene conexiones.
-                </div>
-            `;
+        
+        // Actualizar badge con el número de conexiones
+        if (connectionsBadge) {
+            connectionsBadge.textContent = connections.length;
         }
-
-        this.infoPanelElement.innerHTML = html;
+        
+        // Limpiar grid
+        connectionsGrid.innerHTML = '';
+        
+        // Si no hay conexiones, mostrar estado vacío
+        if (connections.length === 0) {
+            connectionsGrid.innerHTML = `
+                <div class="connections-empty">
+                    <i class="fas fa-unlink"></i>
+                    <span>Este nodo no tiene conexiones</span>
+                </div>
+            `;
+            return;
+        }
+        
+        // Generar cards para cada conexión
+        connections.forEach(connIndex => {
+            const connectedNode = this.graphData.nodes[connIndex];
+            if (!connectedNode) return;
+            
+            const card = document.createElement('div');
+            card.className = 'connection-card';
+            
+            // Calcular distancia si está disponible
+            const distance = this.calculateDistance(node, connectedNode);
+            const distanceStr = distance ? `${distance.toFixed(1)}Å` : '';
+            
+            card.innerHTML = `
+                <div class="connection-card-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="connection-card-name">${connectedNode.label || `Nodo ${connIndex}`}</div>
+                ${distanceStr ? `<div class="connection-card-distance">${distanceStr}</div>` : ''}
+            `;
+            
+            // Event listener para hacer click en una conexión
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.selectNodeByIndex(connIndex);
+            });
+            
+            connectionsGrid.appendChild(card);
+        });
+    }
+    
+    /**
+     * Calcula la distancia euclidiana entre dos nodos
+     */
+    calculateDistance(node1, node2) {
+        if (!node1 || !node2) return null;
+        const dx = node1.x - node2.x;
+        const dy = node1.y - node2.y;
+        const dz = node1.z - node2.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    
+    /**
+     * Selecciona un nodo por su índice (usado al hacer click en una conexión)
+     */
+    selectNodeByIndex(index) {
+        if (!this.graphData || !this.graphData.nodes[index]) return;
+        
+        this.selectedNode = index;
+        const node = this.graphData.nodes[index];
+        this.updateInfoPanel(node, index);
+        this.render();
     }
     
     /**

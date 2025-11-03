@@ -127,6 +127,32 @@
             </div>
         </div>
 
+        <!-- Guía de inicio rápido -->
+        <div class="quick-start-guide">
+            <div class="quick-start-header">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>¿Por dónde empiezo?</h3>
+            </div>
+            <div class="quick-start-steps">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">Selecciona un grupo de proteínas (Toxinas UniProt o del Papper Nav1.7)</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Elige una proteína específica de la lista</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Ajusta parámetros del grafo según tus necesidades</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span class="step-text">Analiza resultados y exporta datos si lo requieres</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Controles de selección -->
         <div class="controls-section">
             <div class="controls-grid">
@@ -134,21 +160,25 @@
                     <label class="control-label" for="groupSelect">
                         <i class="fas fa-layer-group control-icon"></i>
                         Grupo de Proteínas
+                        <span class="help-tooltip" title="Selecciona entre dos bases de datos: Toxinas variadas o específicamente Nav1.7"><i class="fas fa-question-circle"></i></span>
                     </label>
                     <select id="groupSelect" class="form-select">
-                        <option value="toxinas">Toxinas</option>
-                        <option value="nav1_7">Nav1.7</option>
+                        <option value="toxinas">Toxinas de UniProt</option>
+                        <option value="nav1_7">Papper Nav1.7</option>
                     </select>
+                    <span class="control-hint">Base de datos de proteínas</span>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for="proteinSelect">
                         <i class="fas fa-dna control-icon"></i>
                         Seleccionar Proteína
+                        <span class="help-tooltip" title="Elige una proteína para visualizar su estructura y analizar su grafo molecular"><i class="fas fa-question-circle"></i></span>
                     </label>
                     <select id="proteinSelect" class="form-select">
                         <option value="">Cargando proteínas...</option>
                     </select>
+                    <span class="control-hint">Proteína para análisis</span>
                 </div>
                 
                 <div class="control-group" id="dipole-status-container" style="display: none;">
@@ -160,6 +190,7 @@
                         <div class="dipole-indicator" id="dipole-indicator"></div>
                         <span id="dipole-status-text">Esperando selección...</span>
                     </div>
+                    <span class="control-hint">Vector electrostático detectado</span>
                 </div>
             </div>
         </div>
@@ -193,11 +224,11 @@
                     <!-- Plotly viewer -->
                     <div id="plotly-dipole-viewer" class="viewer-canvas"></div>
                     
-                    <!-- Info overlay -->
-                    <div class="viewer-info-overlay">
-                        <strong><i class="fas fa-info-circle"></i> Información:</strong><br>
-                        <i class="fas fa-arrow-right" style="color: red;"></i> <strong>Flecha Roja:</strong> Vector del dipolo<br>
-                        <i class="fas fa-dna" style="color: blue;"></i> <strong>Estructura:</strong> Representación Cartoon
+                    <!-- Info overlay  -->
+                    <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
+                        <strong><i class="fas fa-circle-info"></i></strong>
+                        <span class="legend-item"><i class="fas fa-arrow-right" style="color: #EF4444;"></i> Vector del dipolo</span>
+                        <span class="legend-item"><i class="fas fa-dna" style="color: #3B82F6;"></i> Representación eje Z</span>
                     </div>
                     
                     <!-- Loading state -->
@@ -222,19 +253,33 @@
                 
                 <!-- Controles del grafo -->
                 <div class="graph-controls-section">
+                    <div class="graph-controls-info">
+                        <p class="controls-hint"><i class="fas fa-lightbulb"></i> <strong>Consejo:</strong> Ajusta estos parámetros para refinar el análisis de conectividad entre residuos</p>
+                    </div>
                     <div class="graph-controls-grid">
                         <div class="control-group">
-                            <label class="control-label" for="long-input">Separación de secuencia</label>
+                            <label class="control-label" for="long-input">
+                                Separación de secuencia
+                                <span class="help-tooltip" title="Número mínimo de residuos en la secuencia primaria que deben separar dos residuos para considerar su conexión"><i class="fas fa-question-circle"></i></span>
+                            </label>
                             <input id="long-input" type="number" class="form-control" value="5" min="0" step="1">
+                            <span class="control-hint">Residuos (recomendado: 5)</span>
                         </div>
                         
                         <div class="control-group">
-                            <label class="control-label" for="dist-input">Distancia umbral (Å)</label>
+                            <label class="control-label" for="dist-input">
+                                Distancia umbral
+                                <span class="help-tooltip" title="Distancia máxima en Ångströms para considerar que dos átomos/residuos están conectados"><i class="fas fa-question-circle"></i></span>
+                            </label>
                             <input id="dist-input" type="number" class="form-control" value="6.0" min="0" step="0.1">
+                            <span class="control-hint">Ångströms (recomendado: 8.0)</span>
                         </div>
                         
                         <div class="control-group">
-                            <label class="control-label" for="granularity-toggle">Granularidad</label>
+                            <label class="control-label" for="granularity-toggle">
+                                Nivel de análisis
+                                <span class="help-tooltip" title="Cambiar entre analizar a nivel de residuos individuales o de todos los átomos"><i class="fas fa-question-circle"></i></span>
+                            </label>
                             <div class="granularity-toggle">
                                 <span class="toggle-label">Residuo</span>
                                 <div class="toggle-switch" id="granularity-toggle-wrapper">
@@ -258,10 +303,31 @@
                     </div>
                 </div>
 
-                <!-- Panel de información de nodos -->
+                <!-- Panel de información de nodos  -->
                 <div id="graph-info-panel" class="graph-info-panel">
-                    <div class="graph-info-hint">
-                       
+                    <div class="graph-info-content">
+                        <div class="graph-info-empty">
+                            <div class="graph-info-empty-icon"><i class="fas fa-mouse"></i></div>
+                            <p class="graph-info-empty-text">Haz clic en un nodo del grafo para ver sus detalles</p>
+                        </div>
+                        <div id="graph-info-details" class="graph-info-details" style="display: none;">
+                            <div class="node-header">
+                                <div class="node-icon"><i class="fas fa-dot-circle"></i></div>
+                                <div class="node-title">
+                                    <strong id="node-name">-</strong>
+                                    <span id="node-type">Residuo</span>
+                                </div>
+                            </div>
+                            
+                            <div class="node-connections-section">
+                                <div class="connections-title">
+                                    <i class="fas fa-project-diagram"></i>
+                                    <h4>Conexiones</h4>
+                                    <span class="badge-count" id="connections-badge">0</span>
+                                </div>
+                                <div id="node-connected" class="connections-grid"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -269,39 +335,72 @@
 
         <section class="analysis-hub" id="analysis-hub">
             <div class="analysis-hub-header">
+                <div class="analysis-hub-intro">
+                    <div class="intro-badge">
+                        <i class="fas fa-flask-vial"></i>
+                        <span>Análisis Avanzado</span>
+                    </div>
+                    <h2 class="intro-title">Explora métricas y exporta resultados</h2>
+                    <p class="intro-description">Realiza análisis detallados de conectividad molecular, identifica residuos críticos y descarga tus datos en múltiples formatos.</p>
+                </div>
        
-                <div class="analysis-hub-tabs">
-                    <button id="toggle-analysis" class="analysis-toggle-btn analysis-tab-btn">
-                        <span class="tab-icon"><i class="fas fa-chart-line"></i></span>
-                        <span class="tab-label">Ver análisis de grafo</span>
-                        <span class="tab-chevron"><i class="fas fa-chevron-down toggle-icon"></i></span>
+                <div class="analysis-hub-navigation">
+                    <button id="toggle-analysis" class="analysis-nav-btn" data-target="detailed-analysis">
+                        <div class="nav-btn-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="nav-btn-content">
+                            <span class="nav-btn-title">Análisis de Grafo</span>
+                            <span class="nav-btn-description">Métricas de centralidad</span>
+                        </div>
+                        <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
-                    <button id="toggle-export" class="analysis-toggle-btn analysis-tab-btn">
-                        <span class="tab-icon"><i class="fas fa-file-export"></i></span>
-                        <span class="tab-label">Ver opciones de exportación</span>
-                        <span class="tab-chevron"><i class="fas fa-chevron-down toggle-icon"></i></span>
+                    
+                    <button id="toggle-export" class="analysis-nav-btn" data-target="export-data-section">
+                        <div class="nav-btn-icon">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <div class="nav-btn-content">
+                            <span class="nav-btn-title">Opciones de Exportación</span>
+                            <span class="nav-btn-description">Descarga datasets</span>
+                        </div>
+                        <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
-                    <button id="toggle-dipole-analysis" class="analysis-toggle-btn analysis-tab-btn" style="display: none;">
-                        <span class="tab-icon"><i class="fas fa-bolt"></i></span>
-                        <span class="tab-label">Ver cálculos de dipolo</span>
-                        <span class="tab-chevron"><i class="fas fa-chevron-down toggle-icon"></i></span>
+                    
+                    <button id="toggle-dipole-analysis" class="analysis-nav-btn" data-target="dipole-calculations" style="display: none;">
+                        <div class="nav-btn-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="nav-btn-content">
+                            <span class="nav-btn-title">Cálculos de Dipolo</span>
+                            <span class="nav-btn-description">Propiedades vectoriales</span>
+                        </div>
+                        <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
                 </div>
             </div>
 
             <div class="analysis-panels">
-                <section id="detailed-analysis" class="analysis-panel-card" style="display: none;">
-                    <header class="analysis-panel-header">
-                        <div>
-                            <span class="panel-eyebrow"><i class="fas fa-project-diagram"></i> Grafo molecular</span>
-                            <h3>Análisis detallado</h3>
-                            <p>Sintetiza la conectividad global y los residuos críticos detectados en la estructura actual.</p>
+                <section id="detailed-analysis" class="analysis-panel" style="display: none;">
+                    <div class="panel-header-modern">
+                        <div class="panel-header-icon">
+                            <i class="fas fa-project-diagram"></i>
                         </div>
-                    </header>
-                    <div class="analysis-panel-body">
-                        <div class="analysis-section">
-                            <h4>Información estructural</h4>
-                            <div class="info-grid">
+                        <div class="panel-header-content">
+                            <div class="panel-header-badge">Grafo molecular</div>
+                            <h3 class="panel-header-title">Análisis detallado</h3>
+                            <p class="panel-header-description">Sintetiza la conectividad global y los residuos críticos detectados en la estructura actual.</p>
+                        </div>
+                    </div>
+                    <div class="panel-body-modern">
+                        <div class="section-block">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="fas fa-dna"></i>
+                                    Información estructural
+                                </h4>
+                            </div>
+                            <div class="info-grid-modern">
                                 <div class="info-item">
                                     <div class="info-icon"><i class="fas fa-dna"></i></div>
                                     <div class="info-content">
@@ -354,9 +453,14 @@
                             </div>
                         </div>
 
-                        <div class="analysis-section">
-                            <h4>Resumen de centralidad</h4>
-                            <div class="metrics-grid">
+                        <div class="section-block">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="fas fa-chart-network"></i>
+                                    Resumen de centralidad
+                                </h4>
+                            </div>
+                            <div class="metrics-grid-modern">
                                 <div class="metric-card">
                                     <div class="metric-header">
                                         <div class="metric-icon"><i class="fas fa-diagram-project"></i></div>
@@ -419,9 +523,14 @@
                             </div>
                         </div>
 
-                        <div class="analysis-section">
-                            <h4>Top 5 residuos por métrica</h4>
-                            <div class="top-residues-grid">
+                        <div class="section-block">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="fas fa-ranking-star"></i>
+                                    Top 5 residuos por métrica
+                                </h4>
+                            </div>
+                            <div class="top-residues-grid-modern">
                                 <div class="top-metric-column">
                                     <h5>Centralidad de grado</h5>
                                     <ul id="top-degree-list" class="residue-list"></ul>
@@ -443,141 +552,183 @@
                     </div>
                 </section>
 
-                <section id="export-data-section" class="analysis-panel-card" style="display: none;">
-                    <header class="analysis-panel-header">
-                        <div>
-                            <span class="panel-eyebrow"><i class="fas fa-file-export"></i> Exportaciones</span>
-                            <h3>Descarga y comparte resultados</h3>
-                            <p>Genera reportes en formato XLSX con las métricas estructurales calculadas.</p>
+                <section id="export-data-section" class="analysis-panel" style="display: none;">
+                    <div class="panel-header-modern">
+                        <div class="panel-header-icon" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">
+                            <i class="fas fa-file-export"></i>
                         </div>
-                    </header>
-                    <div class="analysis-panel-body">
-                        <div class="export-section-wrapper">
+                        <div class="panel-header-content">
+                            <div class="panel-header-badge" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">Exportaciones</div>
+                            <h3 class="panel-header-title">Descarga y comparte resultados</h3>
+                            <p class="panel-header-description">Genera reportes en formato XLSX con las métricas estructurales calculadas.</p>
+                        </div>
+                    </div>
+                    <div class="panel-body-modern">
+                        <div class="export-grid-modern">
                             <!-- Dataset Puntual Card -->
-                            <div class="export-card-compact">
-                                <div class="export-card-icon">
-                                    <i class="fas fa-table"></i>
-                                </div>
-                                <div class="export-card-main">
-                                    <div class="export-card-header">
-                                        <h4>Dataset puntual</h4>
-                                        <p>Métricas de centralidad</p>
+                            <div class="export-card-modern">
+                                <div class="export-card-header-modern">
+                                    <div class="export-card-icon-modern">
+                                        <i class="fas fa-table"></i>
                                     </div>
-                                    <div class="export-card-controls">
-                                        <select id="export-type-selector" class="form-select select-compact">
+                                    <div class="export-card-title-section">
+                                        <h4 class="export-card-title">Dataset puntual</h4>
+                                        <p class="export-card-subtitle">Métricas de centralidad</p>
+                                    </div>
+                                </div>
+                                <div class="export-card-body-modern">
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">
+                                            <i class="fas fa-sliders"></i>
+                                            Tipo de análisis
+                                        </label>
+                                        <select id="export-type-selector" class="form-select-modern">
                                             <option value="residues">Análisis por residuos</option>
                                             <option value="segments_atomicos">Segmentación atómica</option>
                                         </select>
-                                        <div class="tooltip" style="grid-column: 1; grid-row: 2;">
-                                            <span class="tooltip-icon"><i class="fas fa-info"></i></span>
-                                            <span class="tooltip-text">Agrupa átomos en regiones funcionales.</span>
-                                        </div>
-                                        <button id="export-csv-btn" class="btn btn-primary btn-compact" style="grid-column: 2; grid-row: 2; justify-self: end;">
-                                            <span class="button-text">
-                                                <i class="fas fa-download"></i>
-                                                <span>Descargar</span>
-                                            </span>
-                                            <span class="loading-text" style="display: none;">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                                <span>Procesando...</span>
-                                            </span>
-                                        </button>
+                                        <span class="form-hint-modern">
+                                            <i class="fas fa-info-circle"></i>
+                                            Agrupa átomos en regiones funcionales
+                                        </span>
                                     </div>
+                                </div>
+                                <div class="export-card-footer-modern">
+                                    <button id="export-csv-btn" class="btn-export-modern btn-primary-modern">
+                                        <span class="btn-content-modern">
+                                            <i class="fas fa-download"></i>
+                                            <span>Descargar Excel</span>
+                                        </span>
+                                        <span class="btn-loading-modern" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <span>Procesando...</span>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- Familias de Toxinas Card -->
-                            <div class="export-card-compact">
-                                <div class="export-card-icon" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(76, 175, 80, 0.08) 100%); color: #4CAF50;">
-                                    <i class="fas fa-layer-group"></i>
-                                </div>
-                                <div class="export-card-main">
-                                    <div class="export-card-header">
-                                        <h4>Familias de toxinas</h4>
-                                        <p>Análisis completo + IC₅₀</p>
+                            <div class="export-card-modern">
+                                <div class="export-card-header-modern">
+                                    <div class="export-card-icon-modern" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">
+                                        <i class="fas fa-layer-group"></i>
                                     </div>
-                                    <div class="export-card-controls">
-                                        <select id="family-export-type-selector" class="form-select select-compact">
+                                    <div class="export-card-title-section">
+                                        <h4 class="export-card-title">Familias de toxinas</h4>
+                                        <p class="export-card-subtitle">Análisis completo + IC₅₀</p>
+                                    </div>
+                                </div>
+                                <div class="export-card-body-modern">
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">
+                                            <i class="fas fa-sliders"></i>
+                                            Tipo de análisis
+                                        </label>
+                                        <select id="family-export-type-selector" class="form-select-modern">
                                             <option value="residues">Análisis por residuos</option>
                                             <option value="segments_atomicos">Segmentación atómica</option>
                                         </select>
-                                        <select id="family-selector" class="form-select select-compact" style="grid-column: 1 / -1;">
+                                        <span class="form-hint-modern">
+                                            <i class="fas fa-info-circle"></i>
+                                            A nivel subresiduo
+                                        </span>
+                                    </div>
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">
+                                            <i class="fas fa-dna"></i>
+                                            Familia de toxina
+                                        </label>
+                                        <select id="family-selector" class="form-select-modern">
                                             <option value="">Seleccionar familia...</option>
                                             <option value="μ-TRTX-Hh2a">μ-TRTX-Hh2a</option>
                                             <option value="μ-TRTX-Hhn2b">μ-TRTX-Hhn2b</option>
                                             <option value="β-TRTX">β-TRTX</option>
                                             <option value="ω-TRTX">ω-TRTX</option>
                                         </select>
-                                        <div class="tooltip" style="grid-column: 1; grid-row: 3;">
-                                            <span class="tooltip-icon"><i class="fas fa-info"></i></span>
-                                            <span class="tooltip-text">A nivel subresiduo.</span>
-                                        </div>
-                                        <button id="export-family-csv-btn" class="btn btn-secondary btn-compact" disabled style="grid-column: 2; grid-row: 3; justify-self: end;">
-                                            <span class="button-text">
-                                                <i class="fas fa-download"></i>
-                                                <span>Exportar</span>
-                                            </span>
-                                            <span class="loading-text" style="display: none;">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                                <span>Procesando...</span>
-                                            </span>
-                                        </button>
                                     </div>
+                                </div>
+                                <div class="export-card-footer-modern">
+                                    <button id="export-family-csv-btn" class="btn-export-modern btn-success-modern" disabled>
+                                        <span class="btn-content-modern">
+                                            <i class="fas fa-download"></i>
+                                            <span>Exportar familia</span>
+                                        </span>
+                                        <span class="btn-loading-modern" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <span>Procesando...</span>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- Comparación WT Card -->
-                            <div class="export-card-compact">
-                                <div class="export-card-icon" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.12) 0%, rgba(156, 39, 176, 0.08) 100%); color: #9C27B0;">
-                                    <i class="fas fa-balance-scale"></i>
-                                </div>
-                                <div class="export-card-main">
-                                    <div class="export-card-header">
-                                        <h4>Comparación WT</h4>
-                                        <p>vs referencia Nav1.7</p>
+                            <div class="export-card-modern">
+                                <div class="export-card-header-modern">
+                                    <div class="export-card-icon-modern" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.12), rgba(156, 39, 176, 0.08)); color: #9C27B0;">
+                                        <i class="fas fa-balance-scale"></i>
                                     </div>
-                                    <div class="export-card-controls">
-                                        <select id="wt-export-type-selector" class="form-select select-compact">
+                                    <div class="export-card-title-section">
+                                        <h4 class="export-card-title">Comparación WT</h4>
+                                        <p class="export-card-subtitle">vs referencia Nav1.7</p>
+                                    </div>
+                                </div>
+                                <div class="export-card-body-modern">
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">
+                                            <i class="fas fa-sliders"></i>
+                                            Tipo de análisis
+                                        </label>
+                                        <select id="wt-export-type-selector" class="form-select-modern">
                                             <option value="residues">Análisis por residuos</option>
                                             <option value="segments_atomicos">Segmentación atómica</option>
                                         </select>
-                                        <select id="wt-family-selector" class="form-select select-compact" style="grid-column: 1 / -1;">
+                                        <span class="form-hint-modern">
+                                            <i class="fas fa-info-circle"></i>
+                                            A nivel atómico
+                                        </span>
+                                    </div>
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">
+                                            <i class="fas fa-dna"></i>
+                                            Familia de toxina
+                                        </label>
+                                        <select id="wt-family-selector" class="form-select-modern">
                                             <option value="">Seleccionar familia...</option>
                                             <option value="μ-TRTX-Hh2a">μ-TRTX-Hh2a</option>
                                             <option value="μ-TRTX-Hhn2b">μ-TRTX-Hhn2b</option>
                                             <option value="β-TRTX-Cd1a">β-TRTX-Cd1a</option>
                                             <option value="ω-TRTX-Gr2a">ω-TRTX-Gr2a</option>
                                         </select>
-                                        <div class="tooltip" style="grid-column: 1; grid-row: 3;">
-                                            <span class="tooltip-icon"><i class="fas fa-info"></i></span>
-                                            <span class="tooltip-text">A nivel atómico.</span>
-                                        </div>
-                                        <button id="export-wt-comparison-btn" class="btn btn-accent btn-compact" disabled style="grid-column: 2; grid-row: 3; justify-self: end;">
-                                            <span class="button-text">
-                                                <i class="fas fa-download"></i>
-                                                <span>Comparar</span>
-                                            </span>
-                                            <span class="loading-text" style="display: none;">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                                <span>Analizando...</span>
-                                            </span>
-                                        </button>
                                     </div>
+                                </div>
+                                <div class="export-card-footer-modern">
+                                    <button id="export-wt-comparison-btn" class="btn-export-modern btn-accent-modern" disabled>
+                                        <span class="btn-content-modern">
+                                            <i class="fas fa-download"></i>
+                                            <span>Comparar con WT</span>
+                                        </span>
+                                        <span class="btn-loading-modern" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <span>Analizando...</span>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section id="dipole-calculations" class="analysis-panel-card" style="display: none;">
-                    <header class="analysis-panel-header">
-                        <div>
-                            <span class="panel-eyebrow"><i class="fas fa-bolt"></i> Vector dipolo</span>
-                            <h3>Cálculos electromagnéticos</h3>
-                            <p>Consulta propiedades vectoriales y parámetros de cálculo derivados del PSF procesado.</p>
+                <section id="dipole-calculations" class="analysis-panel" style="display: none;">
+                    <div class="panel-header-modern">
+                        <div class="panel-header-icon" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.08)); color: #FF9800;">
+                            <i class="fas fa-bolt"></i>
                         </div>
-                    </header>
-                    <div class="analysis-panel-body">
+                        <div class="panel-header-content">
+                            <div class="panel-header-badge" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.08)); color: #FF9800;">Vector dipolo</div>
+                            <h3 class="panel-header-title">Cálculos electromagnéticos</h3>
+                            <p class="panel-header-description">Consulta propiedades vectoriales y parámetros de cálculo derivados del PSF procesado.</p>
+                        </div>
+                    </div>
+                    <div class="panel-body-modern">
                         <div class="dipole-grid">
                             <div class="dipole-card">
                                 <span class="property-label">Magnitud</span>
