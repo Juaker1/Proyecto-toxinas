@@ -35,6 +35,7 @@ easydev==0.13.3
 et-xmlfile==1.1.0
 fastjsonschema==2.21.1
 Flask==3.0.3
+Flask-Compress==1.14
 fqdn==1.5.1
 frozenlist==1.6.0
 gevent==25.5.1

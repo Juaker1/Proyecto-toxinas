@@ -38,8 +38,22 @@ class MolstarGraphRenderer {
         
         // Create canvas element for rendering
         this.canvas = document.createElement('canvas');
-        this.canvas.width = this.container.clientWidth;
-        this.canvas.height = this.container.clientHeight;
+        
+        // Forzar dimensiones mínimas si el contenedor no tiene tamaño
+        let containerWidth = this.container.clientWidth;
+        let containerHeight = this.container.clientHeight;
+        
+        // Si las dimensiones son 0, usar valores por defecto y forzar al contenedor
+        if (containerWidth === 0 || containerHeight === 0) {
+            console.warn('Graph container has zero dimensions, applying defaults');
+            containerWidth = 800;
+            containerHeight = 600;
+            this.container.style.minWidth = '800px';
+            this.container.style.minHeight = '600px';
+        }
+        
+        this.canvas.width = containerWidth;
+        this.canvas.height = containerHeight;
         this.canvas.style.width = '100%';
         this.canvas.style.height = '100%';
         this.canvas.style.display = 'block';
@@ -51,8 +65,13 @@ class MolstarGraphRenderer {
         
         this.container.appendChild(this.canvas);
         
-    // Get 2D context with antialiasing
+        // Get 2D context with antialiasing
         this.ctx = this.canvas.getContext('2d', { alpha: false, willReadFrequently: false });
+        
+        if (!this.ctx) {
+            console.error('Failed to get 2D context for canvas');
+            return;
+        }
         
         // Create zoom controls UI
         this.createZoomControls();
@@ -485,38 +504,64 @@ class MolstarGraphRenderer {
      * Render the graph
      */
     render() {
-        if (!this.graphData || !this.ctx) return;
+        if (!this.graphData || !this.ctx) {
+            console.warn('Cannot render: graphData or ctx is null', {
+                hasGraphData: !!this.graphData,
+                hasCtx: !!this.ctx
+            });
+            return;
+        }
         
         const ctx = this.ctx;
         const { nodes, edges } = this.graphData;
+        
+        if (!nodes || !edges) {
+            console.warn('Cannot render: nodes or edges missing');
+            return;
+        }
+        
+        console.log('Rendering graph:', { nodeCount: nodes.length, edgeCount: edges.length });
         
         // Clear canvas
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Fondo estilo científico moderno (similar a Plotly oscuro)
-        const gradient = ctx.createRadialGradient(
-            this.canvas.width / 2, this.canvas.height / 2, 0,
-            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 1.5
-        );
-        gradient.addColorStop(0, '#1e1e2e');
-        gradient.addColorStop(0.5, '#181825');
-        gradient.addColorStop(1, '#0f0f1a');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Validar dimensiones del canvas antes de crear gradiente
+        const canvasWidth = this.canvas.width || 800;
+        const canvasHeight = this.canvas.height || 600;
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+        const radius = canvasWidth / 1.5;
+        
+        // Validar que todos los valores sean finitos
+        if (isFinite(centerX) && isFinite(centerY) && isFinite(radius) && radius > 0) {
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, radius
+            );
+            gradient.addColorStop(0, '#1e1e2e');
+            gradient.addColorStop(0.5, '#181825');
+            gradient.addColorStop(1, '#0f0f1a');
+            ctx.fillStyle = gradient;
+        } else {
+            // Fallback a color sólido si hay problema
+            ctx.fillStyle = '#1e1e2e';
+        }
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         
         // Optional: Add subtle grid pattern for depth
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
         ctx.lineWidth = 1;
-        for (let i = 0; i < this.canvas.width; i += 50) {
+        for (let i = 0; i < canvasWidth; i += 50) {
             ctx.beginPath();
             ctx.moveTo(i, 0);
-            ctx.lineTo(i, this.canvas.height);
+            ctx.lineTo(i, canvasHeight);
             ctx.stroke();
         }
-        for (let i = 0; i < this.canvas.height; i += 50) {
+        for (let i = 0; i < canvasHeight; i += 50) {
             ctx.beginPath();
             ctx.moveTo(0, i);
-            ctx.lineTo(this.canvas.width, i);
+            ctx.lineTo(canvasWidth, i);
             ctx.stroke();
         }
         
@@ -606,10 +651,15 @@ class MolstarGraphRenderer {
             // Depth factor for color
             const depthFactor = Math.max(0.3, Math.min(1, (p.z + 150) / 300));
             
+            // Validar que finalSize sea válido y finito
+            const validSize = (isFinite(finalSize) && finalSize > 0) ? finalSize : 5;
+            const validX = isFinite(p.x) ? p.x : 0;
+            const validY = isFinite(p.y) ? p.y : 0;
+            
             // Create radial gradient for 3D sphere effect
             const gradient = ctx.createRadialGradient(
-                p.x - finalSize * 0.3, p.y - finalSize * 0.3, 0,
-                p.x, p.y, finalSize
+                validX - validSize * 0.3, validY - validSize * 0.3, 0,
+                validX, validY, validSize
             );
             
             if (isSelected) {
@@ -631,10 +681,10 @@ class MolstarGraphRenderer {
                 gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
             }
             
-            // Draw node
+            // Draw node con valores validados
             ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, finalSize, 0, Math.PI * 2);
+            ctx.arc(validX, validY, validSize, 0, Math.PI * 2);
             ctx.fill();
             
             // Border - grueso si está seleccionado o hovado

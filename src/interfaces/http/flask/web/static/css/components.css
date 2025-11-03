@@ -295,23 +295,27 @@
 }
 
 .badge-primary {
-    background: var(--primary-100);
-    color: var(--primary-800);
+    background: var(--primary-600);
+    color: white;
+    font-weight: 700;
 }
 
 .badge-success {
-    background: var(--secondary-100);
-    color: var(--secondary-800);
+    background: var(--secondary-600);
+    color: white;
+    font-weight: 700;
 }
 
 .badge-warning {
-    background: var(--warning-50);
-    color: var(--warning-700);
+    background: var(--warning-600);
+    color: white;
+    font-weight: 700;
 }
 
 .badge-error {
-    background: var(--error-50);
-    color: var(--error-700);
+    background: var(--error-600);
+    color: white;
+    font-weight: 700;
 }
 
 /* === ALERTAS === */
