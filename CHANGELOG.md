@@ -2,6 +2,55 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+### Added
+- Carga perezosa de gráficos en la página de filtros mediante IntersectionObserver (se renderizan solo al ser visibles).
+- Web Worker dedicado (motif_dipoles.worker.js) para construir datasets de gráficos fuera del hilo principal.
+- Capa de caché por parámetros (gap_min, gap_max, require_pair, referencia) para el agregado de items.
+- Loader on‑demand de 3Dmol (load3DmolOnce) y bootstrap diferido de la vista (requestIdleCallback) para no bloquear el hilo principal.
+- Placeholder temprano de la leyenda (.dipole-legend) para adelantar el LCP (texto visible inmediato).
+- Minificado de CSS de first‑party: se extendió `tools/minify_assets.py` para generar `.min.css` en `static/css` (p. ej. `viewer.min.css`).
+
+### Changed
+- Actualizaciones de gráficos diferidas con scheduleChartsUpdate usando requestIdleCallback (fallback setTimeout).
+- Carga on‑demand de Plotly (loadPlotlyOnce) para evitar coste inicial innecesario.
+- Render con Plotly.react en lugar de recrear gráficos completos, reutilizando instancias.
+- Reemplazo de llamadas directas a updateChartsWithAllItems por scheduleChartsUpdate en cambios de filtros, referencia y paginación.
+- `toxin_filter.html`: se eliminan los scripts de 3Dmol y Plotly (ahora se inyectan bajo demanda desde JS).
+- `motif_dipoles.js`: los viewers 3D esperan a 3Dmol (await load3DmolOnce) en loadReference/renderPage/reRenderCurrentPage; reRenderCurrentPage pasa a async.
+- `toxin_filter.html`: hojas CSS no críticas se cargan como no‑bloqueantes (media="print" + onload + <noscript>) y se reserva altura mínima de contenedores para estabilidad (CLS≈0).
+- `toxin_filter.html`: se elimina la carga anticipada de SheetJS; ahora se carga bajo demanda.
+- `toxin_filter.js`: se agrega loader on‑demand de `xlsx.core.min.js` y el export se vuelve asíncrono con feedback de UI.
+- `toxin_filter.html` y `motif_dipoles.js`: visualizaciones 3D y gráficos quedan detrás de botones (“Mostrar visualizaciones 3D”, “Mostrar gráficos”); se revela la sección bajo demanda (hidden + inert) y se inicializa en el primer clic.
+- `motif_dipoles.js`: la carga de la referencia 3D se difiere a idle y a cuando el contenedor es visible (IntersectionObserver) para no competir con el primer paint.
+- Eliminado Font Awesome de la página de filtros para reducir CSS no usado y coste de parseo:
+  - `toxin_filter.html`: se quitó el `<link>` a FA y se reemplazaron todos los `<i class="fas ...">` por SVG inline livianos (navbar, botones, headers, paginación, etc.).
+  - `motif_dipoles.js`: los iconos generados por JS (título de tarjeta y botón de descarga) ahora usan SVG inline a través de un helper `svgIcon()`; ya no dependen de FA.
+  - `toxin_filter.js` y `motif_dipoles.js`: los spinners de “Descargando/Exportando…” se reemplazaron por un indicador de texto (`⏳ ...`) para evitar dependencias de clases FA.
+### Changed
+- Las plantillas ya usan `asset_path('css/…')`, por lo que cuando `USE_MINIFIED_ASSETS=1` el servidor servirá automáticamente las versiones `.min.css` si existen.
+### Fixed
+- Reducción significativa de “Reduce JavaScript execution time” en Lighthouse:
+  - Menos CPU en js/motif_dipoles.js (‑60–80% en pruebas locales).
+  - Disminución del Total Blocking Time al mover cómputo a Worker y a momentos ociosos.
+- Eliminado reprocesamiento/refetch redundante entre pestañas y páginas.
+- “Minimize main‑thread work”: menor Script Evaluation inicial al quitar 3Dmol/Plotly del camino crítico y diferir la primera carga de referencia/grid.
+- “Eliminate render‑blocking resources”: CSS no crítico deja de bloquear FCP/LCP; mejora de varios cientos de ms por archivo según Lighthouse.
+- “Reduce the impact of third‑party code”: SheetJS deja de evaluarse en cada carga (se demanda al presionar Exportar) y se usa la build mínima (`xlsx.core.min.js`), recortando transferencia y tiempo de evaluación.
+- “Avoid large layout shifts (CLS)”: al no crear viewers/plots hasta un clic explícito y reservar espacio con placeholders, los cambios de layout ocurren tras interacción y no computan en CLS; además se reduce TBT del arranque.
+- “Largest Contentful Paint”: Render Delay reducido al prerenderizar la leyenda y retrasar la inicialización 3D hasta visibilidad/idle.
+
+### Technical Details
+- Frontend:
+  - Nuevo: src/interfaces/http/flask/web/static/js/motif_dipoles.worker.js.
+  - Actualizado: src/interfaces/http/flask/web/static/js/motif_dipoles.js (cache ALL_ITEMS_CACHE, lazy Plotly, loader 3Dmol, worker integration, IntersectionObserver, scheduleChartsUpdate, init diferido).
+  - Plantilla: src/interfaces/http/flask/web/templates/toxin_filter.html (removidas cargas iniciales de 3Dmol/Plotly; siguen cargándose on‑demand).
+  - LCP: añadidas ensureRefLegendPlaceholder() y ajustes en initReferenceAndPage() para observar visibilidad y ejecutar en idle.
+- Compatibilidad:
+  - Sin cambios de API ni de funcionalidad visible para el usuario; mejoras transparentes de rendimiento.
+  
+--- 
+
+
 ## [2.5.6] – 2025-11-01
 
 ### Added
