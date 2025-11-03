@@ -2,6 +2,27 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.6.1] – 2025-11-03
+
+### Added
+- Overlay de carga con spinner para la tarjeta de Gráficos en la página de filtros:
+  - Se muestra al inicializar y actualizar los gráficos; se oculta automáticamente al finalizar.
+- Script de seguridad para sincronizar el texto/estado de los botones de toggle (“Mostrar/Ocultar …”) con la visibilidad real de las secciones (fallback si se carga una build minificada antigua).
+- Estilo responsive tipo “chip” para los tabs de la tabla de resultados (Todos / Con Nav1.7 / …), con estado activo resaltado y mejor distribución en pantallas pequeñas.
+
+### Changed
+- Navbar: unificación de iconos en todas las plantillas para coherencia visual:
+  - “Visualizador” → `fas fa-microscope`
+  - “Familias” → `fas fa-flask`
+- `toxin_filter.html`: carga del script `motif_dipoles` vía `asset_path(...)` para respetar el modo minificado y mantener consistencia con el resto de assets.
+- Paginación de la tabla de resultados: flechas reemplazadas por Font Awesome (`fa-angle-left` / `fa-angle-right`) para uniformidad con el resto de iconografía.
+
+### Fixed
+- Botones de mostrar/ocultar: ahora cambian correctamente a “Ocultar visualizaciones 3D” y “Ocultar gráficos” tras la primera carga y mantienen el estado sincronizado (aria-pressed y clase `.active`).
+- Actualización de gráficos envuelta en overlay para evitar parpadeos y dar feedback de estado durante cargas pesadas.
+
+## [2.6.0] – 2025-11-02
+
 ### Added
 - Carga perezosa de gráficos en la página de filtros mediante IntersectionObserver (se renderizan solo al ser visibles).
 - Web Worker dedicado (motif_dipoles.worker.js) para construir datasets de gráficos fuera del hilo principal.
@@ -22,10 +43,8 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - `toxin_filter.js`: se agrega loader on‑demand de `xlsx.core.min.js` y el export se vuelve asíncrono con feedback de UI.
 - `toxin_filter.html` y `motif_dipoles.js`: visualizaciones 3D y gráficos quedan detrás de botones (“Mostrar visualizaciones 3D”, “Mostrar gráficos”); se revela la sección bajo demanda (hidden + inert) y se inicializa en el primer clic.
 - `motif_dipoles.js`: la carga de la referencia 3D se difiere a idle y a cuando el contenedor es visible (IntersectionObserver) para no competir con el primer paint.
-- Eliminado Font Awesome de la página de filtros para reducir CSS no usado y coste de parseo:
-  - `toxin_filter.html`: se quitó el `<link>` a FA y se reemplazaron todos los `<i class="fas ...">` por SVG inline livianos (navbar, botones, headers, paginación, etc.).
-  - `motif_dipoles.js`: los iconos generados por JS (título de tarjeta y botón de descarga) ahora usan SVG inline a través de un helper `svgIcon()`; ya no dependen de FA.
-  - `toxin_filter.js` y `motif_dipoles.js`: los spinners de “Descargando/Exportando…” se reemplazaron por un indicador de texto (`⏳ ...`) para evitar dependencias de clases FA.
+- `toxin_filter.js` y `motif_dipoles.js`: los spinners de “Descargando/Exportando…” se reemplazaron por un indicador de texto (`⏳ ...`) para evitar dependencias de clases FA.
+ - `toxin_filter.html`: las hojas de estilo clave de layout (design-system.css, navbar.css, components.css, filter-page.css) pasan a cargarse en modo bloqueante para evitar FOUC y eliminar los últimos saltos de layout (CLS) en `div.filter-container`; el CSS no crítico se mantiene diferido.
 ### Changed
 - Las plantillas ya usan `asset_path('css/…')`, por lo que cuando `USE_MINIFIED_ASSETS=1` el servidor servirá automáticamente las versiones `.min.css` si existen.
 ### Fixed
@@ -38,17 +57,7 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - “Reduce the impact of third‑party code”: SheetJS deja de evaluarse en cada carga (se demanda al presionar Exportar) y se usa la build mínima (`xlsx.core.min.js`), recortando transferencia y tiempo de evaluación.
 - “Avoid large layout shifts (CLS)”: al no crear viewers/plots hasta un clic explícito y reservar espacio con placeholders, los cambios de layout ocurren tras interacción y no computan en CLS; además se reduce TBT del arranque.
 - “Largest Contentful Paint”: Render Delay reducido al prerenderizar la leyenda y retrasar la inicialización 3D hasta visibilidad/idle.
-
-### Technical Details
-- Frontend:
-  - Nuevo: src/interfaces/http/flask/web/static/js/motif_dipoles.worker.js.
-  - Actualizado: src/interfaces/http/flask/web/static/js/motif_dipoles.js (cache ALL_ITEMS_CACHE, lazy Plotly, loader 3Dmol, worker integration, IntersectionObserver, scheduleChartsUpdate, init diferido).
-  - Plantilla: src/interfaces/http/flask/web/templates/toxin_filter.html (removidas cargas iniciales de 3Dmol/Plotly; siguen cargándose on‑demand).
-  - LCP: añadidas ensureRefLegendPlaceholder() y ajustes en initReferenceAndPage() para observar visibilidad y ejecutar en idle.
-- Compatibilidad:
-  - Sin cambios de API ni de funcionalidad visible para el usuario; mejoras transparentes de rendimiento.
-  
---- 
+ - CLS residual en `div.filter-container`: se estabiliza reservando altura del header y tabs (placeholder `#tabs-placeholder`) y fijando min-height para header/estado/paginación y filas esqueleto; ya no hay saltos al inyectar pestañas ni al pintar resultados.
 
 
 ## [2.5.6] – 2025-11-01

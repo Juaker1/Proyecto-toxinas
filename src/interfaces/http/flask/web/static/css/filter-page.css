@@ -430,8 +430,9 @@
 .pagination-btn {
     padding: var(--space-3) var(--space-5);
     background: white;
-    color: var(--primary-600);
-    border: 2px solid var(--primary-500);
+    /* Increase contrast of text vs white background for WCAG AA */
+    color: var(--primary-800);
+    border: 2px solid var(--primary-700);
     border-radius: var(--radius-lg);
     font-weight: 600;
     cursor: pointer;
@@ -439,10 +440,15 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background: var(--primary-500);
+    background: var(--primary-700);
     color: white;
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
+}
+
+.pagination-btn:focus-visible {
+    outline: 3px solid var(--primary-800);
+    outline-offset: 2px;
 }
 
 .pagination-btn:disabled {
@@ -456,6 +462,18 @@
     border-radius: var(--radius-lg);
     font-weight: 700;
     color: var(--gray-700);
+}
+
+/* Toggle buttons (Mostrar/Ocultar) share primary style and have an active state */
+.btn-primary[aria-pressed="true"],
+.btn-toggle.active {
+    background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-800) 100%);
+    color: #fff;
+}
+
+.btn-primary[aria-pressed="true"]:hover,
+.btn-toggle.active:hover {
+    background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-900) 100%);
 }
 
 /* Grid de resultados filtrados */

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tblNext = document.getElementById('tbl-next');
   const tblPage = document.getElementById('tbl-page');
   let tblPageNum = 1;
-  const tblPageSize = 10;
+  const tblPageSize = 10; // keep in sync with CSS --page-size
   let tblRows = [];
   let tableSearchQuery = '';
   // UI and filtering state
@@ -39,9 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return _sheetJsLoading;
   }
 
-  // Inject simple tabs for filtering modes (keeps existing UI order)
+  // Inject simple tabs for filtering modes without changing header height (use placeholder if present)
   const resultsHeader = document.querySelector('.results-table-header');
   if (resultsHeader) {
+    const placeholder = resultsHeader.querySelector('#tabs-placeholder');
     const tabs = document.createElement('div');
     tabs.className = 'filter-mode-tabs';
     tabs.style.display = 'flex';
@@ -54,9 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <button class="tab-btn" data-mode="with_ic50">Con IC50</button>
       <button class="tab-btn" data-mode="without_ic50">Sin IC50</button>
     `;
-    // insert tabs after search area
-    const searchArea = resultsHeader.querySelector('div[style]') || resultsHeader;
-    resultsHeader.insertBefore(tabs, searchArea.nextSibling);
+    if (placeholder) {
+      placeholder.replaceWith(tabs);
+    } else {
+      const searchArea = resultsHeader.querySelector('div[style]') || resultsHeader;
+      resultsHeader.insertBefore(tabs, searchArea.nextSibling);
+    }
 
     tabs.addEventListener('click', (ev) => {
       const btn = ev.target.closest('.tab-btn');
@@ -69,13 +73,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function setStatus(text) {
+    if (!statusEl) return;
+    const span = statusEl.querySelector('.status-text') || statusEl.querySelector('span') || statusEl;
+    span.textContent = text || '';
+    statusEl.style.visibility = text ? 'visible' : 'hidden';
+  }
+
+  function ensureSkeletonRows() {
+    if (!bodyEl || bodyEl._skeletonReady) return;
+    const rows = [];
+    for (let i = 0; i < tblPageSize; i++) {
+      rows.push('<tr class="skeleton-row">' + '<td></td>'.repeat(10) + '</tr>');
+    }
+    bodyEl.innerHTML = rows.join('');
+    bodyEl._skeletonReady = true;
+  }
+
+  function paintRows(pageRows) {
+    if (!bodyEl) return;
+    const trs = bodyEl.querySelectorAll('tr');
+    for (let i = 0; i < tblPageSize; i++) {
+      const tr = trs[i];
+      if (!tr) continue;
+      const r = pageRows[i] || null;
+      if (!r) {
+        tr.classList.add('skeleton-row');
+        tr.innerHTML = '<td></td>'.repeat(10);
+        continue;
+      }
+      tr.classList.remove('skeleton-row');
+      const seqHtml = highlightSequence(r.sequence, r);
+      tr.innerHTML = `
+        <td>${r.peptide_id}</td>
+        <td>${r.name || ''}</td>
+        <td>${r.score}</td>
+        <td>${r.gap}</td>
+        <td>${r.X3 || ''}</td>
+        <td>${r.has_hydrophobic_pair ? '✔' : ''}</td>
+        <td>${r.hydrophobic_pair || ''}</td>
+        <td>${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : ''}</td>
+        <td>${r.length}</td>
+        <td><code>${seqHtml}</code></td>`;
+    }
+  }
+
   async function fetchtoxin_filter() {
     const gapMin = gapMinEl.value || 3;
     const gapMax = gapMaxEl.value || 6;
     const requirePair = requirePairEl.checked ? 1 : 0;
     const url = `/v2/toxin_filter?gap_min=${gapMin}&gap_max=${gapMax}&require_pair=${requirePair}`;
-    statusEl.querySelector('span').textContent = 'Buscando...';
-  bodyEl.innerHTML = '<tr><td colspan="10">Cargando...</td></tr>';
+    setStatus('Buscando...');
+    ensureSkeletonRows();
     try {
       const res = await fetch(url);
       const data = await res.json();
@@ -85,12 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
       tblRows = data.results || [];
       tblPageNum = 1;
       renderTablePage();
-      statusEl.querySelector('span').textContent = 'Listo.';
+      setStatus('Listo.');
       // store for export
       exportBtn.dataset.rows = JSON.stringify(data.results);
     } catch (e) {
-  bodyEl.innerHTML = `<tr><td colspan="10">Error: ${e.message}</td></tr>`;
-      statusEl.querySelector('span').textContent = 'Error al cargar.';
+      setStatus('Error al cargar.');
+      console.error(e);
     }
   }
 
@@ -130,21 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
     tblPageNum = Math.min(Math.max(1, tblPageNum), maxPage);
     const start = (tblPageNum - 1) * tblPageSize;
     const pageRows = filtered.slice(start, start + tblPageSize);
-    bodyEl.innerHTML = pageRows.map(r => {
-      const seqHtml = highlightSequence(r.sequence, r);
-      return `<tr>
-          <td>${r.peptide_id}</td>
-          <td>${r.name || ''}</td>
-          <td>${r.score}</td>
-          <td>${r.gap}</td>
-          <td>${r.X3 || ''}</td>
-          <td>${r.has_hydrophobic_pair ? '✔' : ''}</td>
-          <td>${r.hydrophobic_pair || ''}</td>
-          <td>${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : ''}</td>
-          <td>${r.length}</td>
-          <td><code>${seqHtml}</code></td>
-        </tr>`;
-    }).join('');
+    ensureSkeletonRows();
+    paintRows(pageRows);
     if (tblPage) tblPage.textContent = `Página ${tblPageNum}`;
     if (tblPrev) tblPrev.disabled = tblPageNum <= 1;
     if (tblNext) tblNext.disabled = tblPageNum >= maxPage;
@@ -308,7 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initial load
+  // Initial load (pre-render skeleton for CLS stability)
+  ensureSkeletonRows();
   fetchtoxin_filter();
 
   // Señal para fallback de carga (minificado vs no minificado)

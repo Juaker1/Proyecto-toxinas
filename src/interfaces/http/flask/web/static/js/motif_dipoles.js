@@ -140,6 +140,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!overlay) return;
     overlay.style.display = 'none';
   }
+  // ========== OVERLAY DE CARGA PARA GRÁFICOS ==========
+  function getChartsOverlay() {
+    const chartsBody = document.querySelector('#charts-card .card-body');
+    if (!chartsBody) return null;
+    let overlay = document.getElementById('charts-loading-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'charts-loading-overlay';
+      overlay.className = 'charts-loading-overlay';
+      overlay.innerHTML = `
+        <div class="charts-loading-box">
+          <div class="charts-spinner"></div>
+          <span id="charts-loading-text">Cargando gráficos…</span>
+        </div>
+      `;
+      chartsBody.appendChild(overlay);
+    }
+    return overlay;
+  }
+  function showChartsLoading(text = 'Cargando gráficos…') {
+    const overlay = getChartsOverlay();
+    if (!overlay) return;
+    const label = overlay.querySelector('#charts-loading-text');
+    if (label) label.textContent = text;
+    overlay.style.display = 'flex';
+  }
+  function hideChartsLoading() {
+    const overlay = getChartsOverlay();
+    if (!overlay) return;
+    overlay.style.display = 'none';
+  }
 
   // ========== FUNCIONES DE DETECCIÓN DE PUENTES DISULFURO ==========
   
@@ -1699,6 +1730,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       console.error('Error renderizando página al abrir visualizaciones:', e);
     }
+    // Asegurar estado del botón tras la carga inicial
+    try {
+      setToggleButtonState(btnOpenVisuals, true, {
+        show: 'Mostrar visualizaciones 3D',
+        hide: 'Ocultar visualizaciones 3D'
+      });
+    } catch(e) {}
   }
 
   async function openCharts() {
@@ -1708,29 +1746,110 @@ document.addEventListener('DOMContentLoaded', () => {
       try { chartsCard.hidden = false; chartsCard.inert = false; } catch(e) {}
     }
     try {
+      showChartsLoading('Cargando librería y datos…');
       await loadPlotlyOnce();
       chartsVisible = true;
+      await updateChartsWithAllItems();
+      // en siguientes ocasiones, usar schedule
       scheduleChartsUpdate();
       enableChartsObserver();
     } catch (e) {
       console.error('Error inicializando gráficos:', e);
-    }
+    } finally { hideChartsLoading(); }
+    // Asegurar estado del botón tras la carga inicial
+    try {
+      setToggleButtonState(btnOpenCharts, true, {
+        show: 'Mostrar gráficos',
+        hide: 'Ocultar gráficos'
+      });
+    } catch(e) {}
   }
 
+  // Utilidad para actualizar el estado visual/ARIA y el texto del botón
+  function setToggleButtonState(btn, isActive, labels) {
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    btn.classList.toggle('active', !!isActive);
+    const textSpan = btn.querySelector('span:last-child');
+    if (textSpan) textSpan.textContent = isActive ? labels.hide : labels.show;
+  }
+
+  // Toggle de Visualizaciones 3D
   if (btnOpenVisuals) {
     btnOpenVisuals.addEventListener('click', async (ev) => {
       ev.preventDefault();
-      btnOpenVisuals.disabled = true;
-      await openVisualizations();
+      const visSec = document.getElementById('visualizations-section');
+      if (!visSec) return;
+      const isHidden = !!visSec.hidden;
+      if (isHidden) {
+        // Mostrar: primera vez inicializamos, luego solo alternamos visibilidad
+        if (!visualsOpened) {
+          // deshabilitar mientras inicializa por primera vez
+          btnOpenVisuals.disabled = true;
+          try { await openVisualizations(); } finally { btnOpenVisuals.disabled = false; }
+        } else {
+          try { visSec.hidden = false; visSec.inert = false; } catch(e) {}
+        }
+        setToggleButtonState(btnOpenVisuals, true, {
+          show: 'Mostrar visualizaciones 3D',
+          hide: 'Ocultar visualizaciones 3D'
+        });
+      } else {
+        // Ocultar (no destruimos, solo ocultamos para poder reabrir sin costo)
+        try { visSec.hidden = true; visSec.inert = true; } catch(e) {}
+        setToggleButtonState(btnOpenVisuals, false, {
+          show: 'Mostrar visualizaciones 3D',
+          hide: 'Ocultar visualizaciones 3D'
+        });
+      }
     });
   }
   if (btnOpenCharts) {
     btnOpenCharts.addEventListener('click', async (ev) => {
       ev.preventDefault();
-      btnOpenCharts.disabled = true;
-      await openCharts();
+      const card = document.getElementById('charts-card');
+      if (!card) return;
+      const isHidden = !!card.hidden;
+      if (isHidden) {
+        if (!chartsOpened) {
+          btnOpenCharts.disabled = true;
+          try { await openCharts(); } finally { btnOpenCharts.disabled = false; }
+        } else {
+          try { card.hidden = false; card.inert = false; } catch(e) {}
+          chartsVisible = true;
+          scheduleChartsUpdate();
+        }
+        setToggleButtonState(btnOpenCharts, true, {
+          show: 'Mostrar gráficos',
+          hide: 'Ocultar gráficos'
+        });
+      } else {
+        try { card.hidden = true; card.inert = true; } catch(e) {}
+        chartsVisible = false; // detener refrescos mientras están ocultos
+        setToggleButtonState(btnOpenCharts, false, {
+          show: 'Mostrar gráficos',
+          hide: 'Ocultar gráficos'
+        });
+      }
     });
   }
+  // Sincronizar el texto inicial de los botones en función del estado visible de las secciones
+  try {
+    const visSec0 = document.getElementById('visualizations-section');
+    if (btnOpenVisuals && visSec0) {
+      setToggleButtonState(btnOpenVisuals, !visSec0.hidden, {
+        show: 'Mostrar visualizaciones 3D',
+        hide: 'Ocultar visualizaciones 3D'
+      });
+    }
+    const chartsCard0 = document.getElementById('charts-card');
+    if (btnOpenCharts && chartsCard0) {
+      setToggleButtonState(btnOpenCharts, !chartsCard0.hidden, {
+        show: 'Mostrar gráficos',
+        hide: 'Ocultar gráficos'
+      });
+    }
+  } catch(e) {}
   // Señal para fallback de carga (minificado vs no minificado)
   try { window.__MOTIF_JS_LOADED__ = true; } catch (e) {}
 });
