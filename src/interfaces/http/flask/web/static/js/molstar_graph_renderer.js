@@ -38,8 +38,22 @@ class MolstarGraphRenderer {
         
         // Create canvas element for rendering
         this.canvas = document.createElement('canvas');
-        this.canvas.width = this.container.clientWidth;
-        this.canvas.height = this.container.clientHeight;
+        
+        // Forzar dimensiones mínimas si el contenedor no tiene tamaño
+        let containerWidth = this.container.clientWidth;
+        let containerHeight = this.container.clientHeight;
+        
+        // Si las dimensiones son 0, usar valores por defecto y forzar al contenedor
+        if (containerWidth === 0 || containerHeight === 0) {
+            console.warn('Graph container has zero dimensions, applying defaults');
+            containerWidth = 800;
+            containerHeight = 600;
+            this.container.style.minWidth = '800px';
+            this.container.style.minHeight = '600px';
+        }
+        
+        this.canvas.width = containerWidth;
+        this.canvas.height = containerHeight;
         this.canvas.style.width = '100%';
         this.canvas.style.height = '100%';
         this.canvas.style.display = 'block';
@@ -51,8 +65,13 @@ class MolstarGraphRenderer {
         
         this.container.appendChild(this.canvas);
         
-    // Get 2D context with antialiasing
+        // Get 2D context with antialiasing
         this.ctx = this.canvas.getContext('2d', { alpha: false, willReadFrequently: false });
+        
+        if (!this.ctx) {
+            console.error('Failed to get 2D context for canvas');
+            return;
+        }
         
         // Create zoom controls UI
         this.createZoomControls();
@@ -291,71 +310,126 @@ class MolstarGraphRenderer {
     }
 
     /**
-     * Actualiza el panel de información blanco abajo del gráfico.
-     * Se llama solo cuando se hace CLICK en un nodo.
+     * Actualiza el panel de información con el nuevo diseño Card Grid.
+     * Se llama cuando se hace CLICK en un nodo del grafo.
      */
     updateInfoPanel(node, index) {
-        if (!this.infoPanelElement) return;
+        // Ocultar estado vacío y mostrar detalles
+        const emptyState = document.querySelector('.graph-info-empty');
+        const detailsDiv = document.getElementById('graph-info-details');
+        
+        if (emptyState) emptyState.style.display = 'none';
+        if (detailsDiv) detailsDiv.style.display = 'block';
+        
+        // Actualizar información básica del nodo
+        const nodeNameEl = document.getElementById('node-name');
+        const nodeTypeEl = document.getElementById('node-type');
+        
+        if (nodeNameEl) nodeNameEl.textContent = node.label || 'Nodo';
+        if (nodeTypeEl) nodeTypeEl.textContent = 'Residuo';
+        
+        // Actualizar métricas (si están disponibles en el nodo)
+        this.updateNodeMetrics(node);
+        
+        // Actualizar conexiones con el nuevo diseño
+        this.updateConnectionsGrid(node, index);
+    }
+    
+    /**
+     * Actualiza las métricas del nodo seleccionado
+     */
+    updateNodeMetrics(node) {
+        const degreeEl = document.getElementById('node-degree');
+        const betweennessEl = document.getElementById('node-betweenness');
+        const closenessEl = document.getElementById('node-closeness');
+        
+        if (degreeEl) degreeEl.textContent = (node.degree || 0).toFixed(3);
+        if (betweennessEl) betweennessEl.textContent = (node.betweenness || 0).toFixed(3);
+        if (closenessEl) closenessEl.textContent = (node.closeness || 0).toFixed(3);
+    }
+    
+    /**
+     * Genera el grid de conexiones con el nuevo diseño tipo card
+     */
+    updateConnectionsGrid(node, index) {
+        const connectionsGrid = document.getElementById('node-connected');
+        const connectionsBadge = document.getElementById('connections-badge');
+        
+        if (!connectionsGrid) return;
         
         // Obtener conexiones del nodo
         const connections = this.adj && this.adj.get(index) ? Array.from(this.adj.get(index)) : [];
-        const connectionLabels = connections.map(i => {
-            const connectedNode = this.graphData.nodes[i];
-            return connectedNode ? (connectedNode.label || `Nodo ${i}`) : `Nodo ${i}`;
-        });
-
-        const coords = `x: ${node.x.toFixed(2)} | y: ${node.y.toFixed(2)} | z: ${node.z.toFixed(2)}`;
-
-        let html = `
-            <div style="margin-bottom: 12px;">
-                <div style="font-weight: 700; font-size: 14px; color: #000; margin-bottom: 6px;">
-                    📍 ${node.label || 'Sin nombre'}
-                </div>
-                <div style="font-size: 12px; color: #555; margin-bottom: 10px;">
-                    ${coords}
-                </div>
-            </div>
-        `;
-
-        if (connections.length > 0) {
-            html += `
-                <div>
-                    <div style="font-weight: 700; font-size: 12px; color: #000; margin-bottom: 8px;">
-                        🔗 Conexiones (${connections.length}):
-                    </div>
-                    <div style="
-                        display: grid;
-                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                        gap: 8px;
-                        max-height: 200px;
-                        overflow-y: auto;
-                        padding-right: 8px;
-                    ">
-                        ${connectionLabels.map((label, idx) => `
-                            <div style="
-                                background: #fff0e6;
-                                border-left: 3px solid #FF6600;
-                                padding: 6px 8px;
-                                border-radius: 4px;
-                                font-size: 11px;
-                                color: #333;
-                                word-break: break-word;
-                            ">
-                                ${label}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        } else {
-            html += `
-                <div style="font-size: 12px; color: #999; font-style: italic;">
-                    Este nodo no tiene conexiones.
-                </div>
-            `;
+        
+        // Actualizar badge con el número de conexiones
+        if (connectionsBadge) {
+            connectionsBadge.textContent = connections.length;
         }
-
-        this.infoPanelElement.innerHTML = html;
+        
+        // Limpiar grid
+        connectionsGrid.innerHTML = '';
+        
+        // Si no hay conexiones, mostrar estado vacío
+        if (connections.length === 0) {
+            connectionsGrid.innerHTML = `
+                <div class="connections-empty">
+                    <i class="fas fa-unlink"></i>
+                    <span>Este nodo no tiene conexiones</span>
+                </div>
+            `;
+            return;
+        }
+        
+        // Generar cards para cada conexión
+        connections.forEach(connIndex => {
+            const connectedNode = this.graphData.nodes[connIndex];
+            if (!connectedNode) return;
+            
+            const card = document.createElement('div');
+            card.className = 'connection-card';
+            
+            // Calcular distancia si está disponible
+            const distance = this.calculateDistance(node, connectedNode);
+            const distanceStr = distance ? `${distance.toFixed(1)}Å` : '';
+            
+            card.innerHTML = `
+                <div class="connection-card-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="connection-card-name">${connectedNode.label || `Nodo ${connIndex}`}</div>
+                ${distanceStr ? `<div class="connection-card-distance">${distanceStr}</div>` : ''}
+            `;
+            
+            // Event listener para hacer click en una conexión
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.selectNodeByIndex(connIndex);
+            });
+            
+            connectionsGrid.appendChild(card);
+        });
+    }
+    
+    /**
+     * Calcula la distancia euclidiana entre dos nodos
+     */
+    calculateDistance(node1, node2) {
+        if (!node1 || !node2) return null;
+        const dx = node1.x - node2.x;
+        const dy = node1.y - node2.y;
+        const dz = node1.z - node2.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    
+    /**
+     * Selecciona un nodo por su índice (usado al hacer click en una conexión)
+     */
+    selectNodeByIndex(index) {
+        if (!this.graphData || !this.graphData.nodes[index]) return;
+        
+        this.selectedNode = index;
+        const node = this.graphData.nodes[index];
+        this.updateInfoPanel(node, index);
+        this.render();
     }
     
     /**
@@ -485,38 +559,64 @@ class MolstarGraphRenderer {
      * Render the graph
      */
     render() {
-        if (!this.graphData || !this.ctx) return;
+        if (!this.graphData || !this.ctx) {
+            console.warn('Cannot render: graphData or ctx is null', {
+                hasGraphData: !!this.graphData,
+                hasCtx: !!this.ctx
+            });
+            return;
+        }
         
         const ctx = this.ctx;
         const { nodes, edges } = this.graphData;
+        
+        if (!nodes || !edges) {
+            console.warn('Cannot render: nodes or edges missing');
+            return;
+        }
+        
+        console.log('Rendering graph:', { nodeCount: nodes.length, edgeCount: edges.length });
         
         // Clear canvas
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Fondo estilo científico moderno (similar a Plotly oscuro)
-        const gradient = ctx.createRadialGradient(
-            this.canvas.width / 2, this.canvas.height / 2, 0,
-            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 1.5
-        );
-        gradient.addColorStop(0, '#1e1e2e');
-        gradient.addColorStop(0.5, '#181825');
-        gradient.addColorStop(1, '#0f0f1a');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Validar dimensiones del canvas antes de crear gradiente
+        const canvasWidth = this.canvas.width || 800;
+        const canvasHeight = this.canvas.height || 600;
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+        const radius = canvasWidth / 1.5;
+        
+        // Validar que todos los valores sean finitos
+        if (isFinite(centerX) && isFinite(centerY) && isFinite(radius) && radius > 0) {
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, radius
+            );
+            gradient.addColorStop(0, '#1e1e2e');
+            gradient.addColorStop(0.5, '#181825');
+            gradient.addColorStop(1, '#0f0f1a');
+            ctx.fillStyle = gradient;
+        } else {
+            // Fallback a color sólido si hay problema
+            ctx.fillStyle = '#1e1e2e';
+        }
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         
         // Optional: Add subtle grid pattern for depth
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
         ctx.lineWidth = 1;
-        for (let i = 0; i < this.canvas.width; i += 50) {
+        for (let i = 0; i < canvasWidth; i += 50) {
             ctx.beginPath();
             ctx.moveTo(i, 0);
-            ctx.lineTo(i, this.canvas.height);
+            ctx.lineTo(i, canvasHeight);
             ctx.stroke();
         }
-        for (let i = 0; i < this.canvas.height; i += 50) {
+        for (let i = 0; i < canvasHeight; i += 50) {
             ctx.beginPath();
             ctx.moveTo(0, i);
-            ctx.lineTo(this.canvas.width, i);
+            ctx.lineTo(canvasWidth, i);
             ctx.stroke();
         }
         
@@ -606,10 +706,15 @@ class MolstarGraphRenderer {
             // Depth factor for color
             const depthFactor = Math.max(0.3, Math.min(1, (p.z + 150) / 300));
             
+            // Validar que finalSize sea válido y finito
+            const validSize = (isFinite(finalSize) && finalSize > 0) ? finalSize : 5;
+            const validX = isFinite(p.x) ? p.x : 0;
+            const validY = isFinite(p.y) ? p.y : 0;
+            
             // Create radial gradient for 3D sphere effect
             const gradient = ctx.createRadialGradient(
-                p.x - finalSize * 0.3, p.y - finalSize * 0.3, 0,
-                p.x, p.y, finalSize
+                validX - validSize * 0.3, validY - validSize * 0.3, 0,
+                validX, validY, validSize
             );
             
             if (isSelected) {
@@ -631,10 +736,10 @@ class MolstarGraphRenderer {
                 gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
             }
             
-            // Draw node
+            // Draw node con valores validados
             ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, finalSize, 0, Math.PI * 2);
+            ctx.arc(validX, validY, validSize, 0, Math.PI * 2);
             ctx.fill();
             
             // Border - grueso si está seleccionado o hovado

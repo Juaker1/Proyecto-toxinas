@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const longInput = document.getElementById('long-input');
     const distInput = document.getElementById('dist-input');
     const granularityToggle = document.getElementById('granularity-toggle');
+    const granularityToggleWrapper = document.getElementById('granularity-toggle-wrapper');
     
     let currentProteinGroup = null;
     let currentProteinId = null;
@@ -49,6 +50,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Exponer globalmente para debugging
     window.graphRenderer = graphRenderer;
+    
+    // Función para sincronizar el estado visual del toggle con el checkbox
+    function syncGranularityToggleVisual() {
+        if (granularityToggleWrapper && granularityToggle) {
+            if (granularityToggle.checked) {
+                granularityToggleWrapper.classList.remove('active');
+            } else {
+                granularityToggleWrapper.classList.add('active');
+            }
+        }
+    }
+    
+    // Inicializar estado visual del toggle
+    syncGranularityToggleVisual();
     
     // Show initial message
     const initialMsg = document.createElement('div');
@@ -60,7 +75,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Eventos para actualizar automaticamente el grafo
     longInput.addEventListener('change', updateGraphVisualization);
     distInput.addEventListener('change', updateGraphVisualization);
-    granularityToggle.addEventListener('change', updateGraphVisualization);
+    granularityToggle.addEventListener('change', () => {
+        syncGranularityToggleVisual();
+        updateGraphVisualization();
+    });
+    
+    // Event listener para el toggle visual
+    if (granularityToggleWrapper) {
+        granularityToggleWrapper.addEventListener('click', () => {
+            granularityToggle.checked = !granularityToggle.checked;
+            syncGranularityToggleVisual();
+            updateGraphVisualization();
+        });
+    }
     
     const groupSelect = document.getElementById('groupSelect');
     const proteinSelect = document.getElementById('proteinSelect');

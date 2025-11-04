@@ -897,9 +897,6 @@ input:not(:checked) + .slider .slider-text:before {
 /* Hide tab-related styles since we're not using them anymore */
 .tab-buttons,
 .tab-content,
-.visualization-container {
-    display: none !important;
-}
 
 /* Button styles for new functionality */
 .btn {

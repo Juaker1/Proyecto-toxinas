@@ -1,3 +1,53 @@
+## [2.5.9] – 2025-11-03
+
+### Changed
+- Rediseño completo del intro section en la página de filtros de toxinas con layout de grid responsive y referencia al paper FEBS Letters (2025).
+- Unificación de paleta de colores a blues sólidos, eliminación de gradientes en toda la página para consistencia con home.html.
+- Mejora de controles de visualización con toggle cards interactivas mostrando estado "Oculto"/"Visible".
+
+### Fixed
+- Arreglos de Lighthouse audit: corrección de jerarquía de headings (h3→h2), mejora de ratios de contraste en botones, eliminación de CSS no utilizado (~18 KiB), consolidación de reglas duplicadas (#reference-viewer).
+- Optimización de critical CSS path para reducir latencia de 695ms.
+- Actualización de JavaScript (motif_dipoles.js) para manejo de badges de estado en toggle cards.
+
+---
+
+## [2.5.8] – 2025-11-03
+
+### Fixed
+- Sincronización del toggle de granularidad en el visualizador de grafos: implementación de estado visual consistente entre el slider CSS y el checkbox JavaScript.
+- Agregado event listener para clics en el wrapper visual del toggle (`#granularity-toggle-wrapper`) que actualiza el estado del checkbox oculto y dispara la actualización del grafo.
+- Función `syncGranularityToggleVisual()` para mantener la clase CSS `active` sincronizada con el estado del checkbox, controlando la posición del slider (izquierda para 'Atómico', derecha para 'Carbono Alfa').
+
+
+---
+
+## [2.5.7] – 2025-11-03
+
+### Added
+- Rediseño completo del apartado "Explora métricas y exporta resultado" en la página del visualizador con sistema de navegación moderno basado en cards horizontales.
+- Nuevo panel de conexiones del grafo con diseño tipo card grid responsive, mostrando conexiones como cards individuales con iconos, nombres y distancias calculadas.
+- Sistema de navegación horizontal con cards interactivas para acceso directo a secciones de análisis y exportación.
+- Estados de carga y feedback visual mejorado en botones de exportación con animaciones ripple.
+
+### Changed
+- Reestructuración completa del header del analysis hub con badge introductorio, título grande y navegación basada en cards en lugar de botones tradicionales.
+- Rediseño de panels de análisis y exportación con headers modernos que incluyen iconos grandes, badges temáticos y descripciones extendidas.
+- Transformación de las cards de exportación en un diseño de 3 capas (header, body, footer) con form groups estructurados, selects estilizados y botones con gradientes temáticos.
+- Actualización del sistema de grids para usar layouts modernos con mejor jerarquía visual y espaciado consistente.
+- Mejora del panel de información del grafo con nuevo diseño card grid para conexiones, reemplazando la lista simple por cards interactivas.
+
+### Fixed
+- Alineación y espaciado inconsistente en el apartado de métricas y exportación, ahora completamente uniforme con el sistema de diseño.
+- Problemas de UX/UI en las opciones de exportación, ahora con diseño profesional y navegación intuitiva.
+- Estados visuales de botones de exportación mejorados con feedback claro de carga y estados disabled apropiados.
+
+
+
+--- 
+
+## [2.5.7] – 2025-11-02
+
 # Changelog
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
@@ -105,6 +155,7 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - “Avoid large layout shifts (CLS)”: al no crear viewers/plots hasta un clic explícito y reservar espacio con placeholders, los cambios de layout ocurren tras interacción y no computan en CLS; además se reduce TBT del arranque.
 - “Largest Contentful Paint”: Render Delay reducido al prerenderizar la leyenda y retrasar la inicialización 3D hasta visibilidad/idle.
  - CLS residual en `div.filter-container`: se estabiliza reservando altura del header y tabs (placeholder `#tabs-placeholder`) y fijando min-height para header/estado/paginación y filas esqueleto; ya no hay saltos al inyectar pestañas ni al pintar resultados.
+
 
 
 ## [2.5.6] – 2025-11-01

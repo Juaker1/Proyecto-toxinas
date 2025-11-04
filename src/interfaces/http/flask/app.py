@@ -282,13 +282,5 @@ def create_app_v2() -> Flask:
         return response
     
 
-    # Optionally expose legacy-compatible alias routes for the UI during migration
-    if app.config.get('LEGACY_ALIASES_ENABLED', False):
-        try:
-            from src.interfaces.http.flask.controllers.legacy_compat_controller import legacy_compat, dipole_family_routes
-            app.register_blueprint(legacy_compat)
-            app.register_blueprint(dipole_family_routes)
-            app.logger.info("Legacy alias routes enabled (LEGACY_ALIASES_ENABLED=1)")
-        except Exception as e:
-            app.logger.warning(f"Legacy alias blueprints not registered: {e}")
+   
     return app

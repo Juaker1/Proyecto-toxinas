@@ -1,0 +1,157 @@
+Info) VMD for LINUXAMD64, version 1.9.3 (November 30, 2016)
+Info) http://www.ks.uiuc.edu/Research/vmd/                         
+Info) Email questions and bug reports to vmd@ks.uiuc.edu           
+Info) Please include this reference in published work using VMD:   
+Info)    Humphrey, W., Dalke, A. and Schulten, K., `VMD - Visual   
+Info)    Molecular Dynamics', J. Molec. Graphics 1996, 14.1, 33-38.
+Info) -------------------------------------------------------------
+Info) Multithreading available, 12 CPUs detected.
+Info)   CPU features: SSE2 AVX AVX2 FMA 
+Info) Free system memory: 13GB (86%)
+Info) Creating CUDA device pool and initializing hardware...
+Info) Detected 1 available CUDA accelerator:
+Info) [0] NVIDIA GeForce RTX 3060 28 SM_8.6 @ 1.81 GHz, 12GB RAM, KTO, AE1, ZCP
+Warning) Unable to open dynamic library '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so'.
+Warning) libexpat.so.0: failed to map segment from shared object
+Warning) Unable to dlopen '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so':
+  Unable to dlopen plugin file /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so
+Info) Dynamically loaded 1 plugins in directory:
+Info) /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile
+1.6.4
+Iniciando construcción PSF para: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/D2Y1Y8.pdb
+Topologías: "/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf"
+Prefijo salida: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8
+Segmento: PROA
+Cutoff disulfuro: 2.3 Å
+psfgen) clearing structure, preserving topology and aliases
+Cargando topología: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf
+psfgen) reading topology file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf
+
+psfgen) >>>>>>>>CHARMM36 All-Hydrogen Topology File for Proteins <<<<<<
+psfgen) >>>>> Includes phi, psi cross term map (CMAP) correction <<<<<<<
+psfgen) >>>>>>>>>>>>>>>>>>>>>>>>>> May 2011 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+psfgen)  All comments to the CHARMM web site: www.charmm.org
+psfgen)              parameter set discussion forum
+psfgen) 
+psfgen) Created by CHARMM version 36 1
+psfgen) ERROR!  Failed to parse autogenerate statement.  Line 95: AUTO ANGLES DIHE PATCH
+
+psfgen) cross-term entries present in topology definitions
+psfgen) aliasing residue ILE atom CD1 to CD
+psfgen) aliasing residue HIS to HSE
+psfgen) aliasing residue HID to HSD
+psfgen) aliasing residue HIE to HSE
+psfgen) aliasing residue HIP to HSP
+psfgen) aliasing residue HSD to HSD
+psfgen) aliasing residue HSE to HSE
+psfgen) aliasing residue HSP to HSP
+psfgen) aliasing residue MSE to MET
+psfgen) aliasing residue SEC to CYS
+psfgen) aliasing residue CYX to CYS
+Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/D2Y1Y8.pdb
+Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/D2Y1Y8.pdb
+Info) Determining bond structure from distance search ...
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/D2Y1Y8.pdb.
+Info) Analyzing structure ...
+Info)    Atoms: 248
+Info)    Bonds: 258
+Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
+Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
+Info)    Residues: 33
+Info)    Waters: 0
+Info)    Segments: 1
+Info)    Fragments: 1   Protein: 1   Nucleic: 0
+Info) Opened coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb for writing.
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb.
+Construyendo segmento PROA...
+psfgen) building segment PROA
+psfgen) reading residues from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb
+psfgen) extracted 33 residues from pdb file
+psfgen) Info: generating structure...psfgen) Info: skipping improper N-C-CA-HN at beginning of segment.
+psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at beginning of segment.
+psfgen) Info: skipping conformation C-N-CA-C at beginning of segment.
+psfgen) Info: skipping conformation C-CA-N-HN at beginning of segment.
+psfgen) Info: skipping bond C-N at end of segment.
+psfgen) Info: skipping improper C-CA-N-O at end of segment.
+psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at end of segment.
+psfgen) Info: skipping conformation CA-C-N-CA at end of segment.
+psfgen) Info: skipping conformation N-CA-C-O at end of segment.
+psfgen) Info: skipping conformation N-CA-C-N at end of segment.
+segment complete.
+psfgen) reading coordinates from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb for segment PROA
+psfgen) Warning: failed to set coordinate for atom O	 LEU:27	  PROA
+Buscando enlaces disulfuro...
+PROA:27 
+PROA:1 
+Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb
+Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb
+Info) Determining bond structure from distance search ...
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_12466_1761053951090375.pdb.
+Info) Analyzing structure ...
+Info)    Atoms: 248
+Info)    Bonds: 258
+Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
+Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
+Info)    Residues: 33
+Info)    Waters: 0
+Info)    Segments: 1
+Info)    Fragments: 1   Protein: 1   Nucleic: 0
+Encontrados 6 átomos SG de cisteína
+Calculando distancias entre 6 átomos SG...
+Distancia SG 2 - SG 32: 12.107320966524162 Å
+Distancia SG 2 - SG 8: 8.554499253499705 Å
+Distancia SG 2 - SG 9: 2.030560017009159 Å
+  -> Candidato a enlace disulfuro (distancia: 2.030560017009159 Å)
+Distancia SG 2 - SG 15: 13.093890096698647 Å
+Distancia SG 2 - SG 22: 8.479205017012445 Å
+Distancia SG 32 - SG 8: 4.0487964989499154 Å
+Distancia SG 32 - SG 9: 11.299827587684117 Å
+Distancia SG 32 - SG 15: 2.019084710663938 Å
+  -> Candidato a enlace disulfuro (distancia: 2.019084710663938 Å)
+Distancia SG 32 - SG 22: 3.9520244708908163 Å
+Distancia SG 8 - SG 9: 7.8225385072349924 Å
+Distancia SG 8 - SG 15: 4.830778904778019 Å
+Distancia SG 8 - SG 22: 2.03455170629067 Å
+  -> Candidato a enlace disulfuro (distancia: 2.03455170629067 Å)
+Distancia SG 9 - SG 15: 12.494830675218033 Å
+Distancia SG 9 - SG 22: 7.443007278067891 Å
+Distancia SG 15 - SG 22: 5.460275249864122 Å
+Enlaces disulfuro seleccionados: 3
+>> Aplicando patch DISU entre PROA:32 y PROA:15
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:2 y PROA:9
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:8 y PROA:22
+psfgen) applying patch DISU to 2 residues
+Total de patches DISU aplicados: 3
+psfgen) regenerating all angles
+psfgen) regenerating all dihedrals
+psfgen) Info: guessing coordinates for 232 atoms (2 non-hydrogen)
+psfgen) Warning: poorly guessed coordinates for 5 atoms (2 non-hydrogen):
+psfgen) Warning: poorly guessed coordinate for atom HT1	 GLY:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT2	 GLY:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT3	 GLY:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT1	 LEU:27	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT2	 LEU:27	  PROA
+psfgen) Info: writing psf file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.psf
+psfgen) total of 479 atoms
+psfgen) total of 489 bonds
+psfgen) total of 883 angles
+psfgen) total of 1306 dihedrals
+psfgen) total of 81 impropers
+psfgen) total of 0 explicit exclusions
+psfgen) total of 31 cross-terms
+psfgen) Info: psf file complete.
+psfgen) Info: writing pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.pdb
+psfgen) Info: Atoms with guessed coordinates will have occupancy of 0.0.
+psfgen) Info: pdb file complete.
+/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.psf /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.pdb
+PSF_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.psf
+PDB_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/D2Y1Y8.pdb
+PROA:32 PROA:15 
+PROA:2 PROA:9 
+PROA:8 PROA:22 
+Info) VMD for LINUXAMD64, version 1.9.3 (November 30, 2016)
+Info) Exiting normally.
+vmd > 
+/home/juaker/miniconda3/envs/vmd/lib/vmd_LINUXAMD64: /lib/x86_64-linux-gnu/libGL.so.1: no version information available (required by /home/juaker/miniconda3/envs/vmd/lib/vmd_LINUXAMD64)

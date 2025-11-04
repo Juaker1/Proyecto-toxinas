@@ -1,0 +1,358 @@
+Info) VMD for LINUXAMD64, version 1.9.3 (November 30, 2016)
+Info) http://www.ks.uiuc.edu/Research/vmd/                         
+Info) Email questions and bug reports to vmd@ks.uiuc.edu           
+Info) Please include this reference in published work using VMD:   
+Info)    Humphrey, W., Dalke, A. and Schulten, K., `VMD - Visual   
+Info)    Molecular Dynamics', J. Molec. Graphics 1996, 14.1, 33-38.
+Info) -------------------------------------------------------------
+Info) Multithreading available, 12 CPUs detected.
+Info)   CPU features: SSE2 AVX AVX2 FMA 
+Info) Free system memory: 13GB (86%)
+Info) Creating CUDA device pool and initializing hardware...
+Info) Detected 1 available CUDA accelerator:
+Info) [0] NVIDIA GeForce RTX 3060 28 SM_8.6 @ 1.81 GHz, 12GB RAM, KTO, AE1, ZCP
+Warning) Unable to open dynamic library '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so'.
+Warning) libexpat.so.0: failed to map segment from shared object
+Warning) Unable to dlopen '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so':
+  Unable to dlopen plugin file /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so
+Info) Dynamically loaded 1 plugins in directory:
+Info) /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile
+1.6.4
+Iniciando construcción PSF para: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84510.pdb
+Topologías: "/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf"
+Prefijo salida: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510
+Segmento: PROA
+Cutoff disulfuro: 2.3 Å
+psfgen) clearing structure, preserving topology and aliases
+Cargando topología: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf
+psfgen) reading topology file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf
+
+psfgen) >>>>>>>>CHARMM36 All-Hydrogen Topology File for Proteins <<<<<<
+psfgen) >>>>> Includes phi, psi cross term map (CMAP) correction <<<<<<<
+psfgen) >>>>>>>>>>>>>>>>>>>>>>>>>> May 2011 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+psfgen)  All comments to the CHARMM web site: www.charmm.org
+psfgen)              parameter set discussion forum
+psfgen) 
+psfgen) Created by CHARMM version 36 1
+psfgen) ERROR!  Failed to parse autogenerate statement.  Line 95: AUTO ANGLES DIHE PATCH
+
+psfgen) cross-term entries present in topology definitions
+psfgen) aliasing residue ILE atom CD1 to CD
+psfgen) aliasing residue HIS to HSE
+psfgen) aliasing residue HID to HSD
+psfgen) aliasing residue HIE to HSE
+psfgen) aliasing residue HIP to HSP
+psfgen) aliasing residue HSD to HSD
+psfgen) aliasing residue HSE to HSE
+psfgen) aliasing residue HSP to HSP
+psfgen) aliasing residue MSE to MET
+psfgen) aliasing residue SEC to CYS
+psfgen) aliasing residue CYX to CYS
+Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84510.pdb
+Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84510.pdb
+Info) Determining bond structure from distance search ...
+Info) Eliminating bonds duplicated from existing structure...
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84510.pdb.
+Info) Analyzing structure ...
+Info)    Atoms: 553
+Info)    Bonds: 563
+Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
+Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
+Info)    Residues: 34
+Info)    Waters: 0
+Info)    Segments: 1
+Info)    Fragments: 1   Protein: 1   Nucleic: 0
+Info) Opened coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb for writing.
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb.
+Construyendo segmento PROA...
+psfgen) building segment PROA
+psfgen) reading residues from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb
+psfgen) extracted 34 residues from pdb file
+psfgen) Info: generating structure...psfgen) Info: skipping improper N-C-CA-HN at beginning of segment.
+psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at beginning of segment.
+psfgen) Info: skipping conformation C-N-CA-C at beginning of segment.
+psfgen) Info: skipping conformation C-CA-N-HN at beginning of segment.
+psfgen) Info: skipping bond C-N at end of segment.
+psfgen) Info: skipping improper C-CA-N-O at end of segment.
+psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at end of segment.
+psfgen) Info: skipping conformation CA-C-N-CA at end of segment.
+psfgen) Info: skipping conformation N-CA-C-O at end of segment.
+psfgen) Info: skipping conformation N-CA-C-N at end of segment.
+segment complete.
+psfgen) reading coordinates from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb for segment PROA
+psfgen) Warning: failed to set coordinate for atom H1	 ASP:1	  PROA
+psfgen) Warning: failed to set coordinate for atom H2	 ASP:1	  PROA
+psfgen) Warning: failed to set coordinate for atom H3	 ASP:1	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASP:1	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:2	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:2	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LEU:13	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LEU:13	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 GLY:24	  PROA
+psfgen) Warning: failed to set coordinate for atom HA3	 GLY:24	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 PHE:29	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 PHE:29	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LEU:30	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LEU:30	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 TRP:31	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 TRP:31	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LYS:32	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LYS:32	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 LYS:32	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 LYS:32	  PROA
+psfgen) Warning: failed to set coordinate for atom HE3	 LYS:32	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:33	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:33	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ASN:34	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASN:34	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 PRO:3	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 PRO:3	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 PRO:3	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 SER:4	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 SER:4	  PROA
+psfgen) Warning: failed to set coordinate for atom HG	 SER:4	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ASN:5	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASN:5	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ASP:6	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASP:6	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LYS:7	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LYS:7	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 LYS:7	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 LYS:7	  PROA
+psfgen) Warning: failed to set coordinate for atom HE3	 LYS:7	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:8	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:8	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:9	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:9	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ARG:10	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ARG:10	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 ARG:10	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 ARG:10	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 PRO:11	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 PRO:11	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 PRO:11	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ASN:12	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASN:12	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LEU:14	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LEU:14	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 VAL:15	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:16	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:16	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 SER:17	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 SER:17	  PROA
+psfgen) Warning: failed to set coordinate for atom HG	 SER:17	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ARG:18	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ARG:18	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 ARG:18	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 ARG:18	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LYS:19	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LYS:19	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 LYS:19	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 LYS:19	  PROA
+psfgen) Warning: failed to set coordinate for atom HE3	 LYS:19	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ASP:20	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 ASP:20	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LYS:21	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LYS:21	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 LYS:21	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 LYS:21	  PROA
+psfgen) Warning: failed to set coordinate for atom HE3	 LYS:21	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 TRP:22	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 TRP:22	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 CYS:23	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 CYS:23	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 LYS:25	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 LYS:25	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 LYS:25	  PROA
+psfgen) Warning: failed to set coordinate for atom HD3	 LYS:25	  PROA
+psfgen) Warning: failed to set coordinate for atom HE3	 LYS:25	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 TYR:26	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 TYR:26	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 GLN:27	  PROA
+psfgen) Warning: failed to set coordinate for atom HB3	 GLN:27	  PROA
+psfgen) Warning: failed to set coordinate for atom HG3	 GLN:27	  PROA
+psfgen) Warning: failed to set coordinate for atom O	 ILE:28	  PROA
+psfgen) Warning: failed to set coordinate for atom H	 ILE:28	  PROA
+psfgen) Warning: failed to set coordinate for atom HG13	 ILE:28	  PROA
+psfgen) Warning: failed to set coordinate for atom HD11	 ILE:28	  PROA
+psfgen) Warning: failed to set coordinate for atom HD12	 ILE:28	  PROA
+psfgen) Warning: failed to set coordinate for atom HD13	 ILE:28	  PROA
+Buscando enlaces disulfuro...
+PROA:28 
+PROA:1 
+Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb
+Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb
+Info) Determining bond structure from distance search ...
+Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14248_1761053971908682.pdb.
+Info) Analyzing structure ...
+Info)    Atoms: 553
+Info)    Bonds: 563
+Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
+Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
+Info)    Residues: 34
+Info)    Waters: 0
+Info)    Segments: 1
+Info)    Fragments: 1   Protein: 1   Nucleic: 0
+Encontrados 6 átomos SG de cisteína
+Calculando distancias entre 6 átomos SG...
+Distancia SG 2 - SG 33: 12.375635741581384 Å
+Distancia SG 2 - SG 8: 6.47997339095289 Å
+Distancia SG 2 - SG 9: 2.014597406361804 Å
+  -> Candidato a enlace disulfuro (distancia: 2.014597406361804 Å)
+Distancia SG 2 - SG 16: 12.749563789122806 Å
+Distancia SG 2 - SG 23: 8.034488533059564 Å
+Distancia SG 33 - SG 8: 5.979972605974889 Å
+Distancia SG 33 - SG 9: 13.423200196605363 Å
+Distancia SG 33 - SG 16: 2.0211166577803947 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0211166577803947 Å)
+Distancia SG 33 - SG 23: 4.392414235453159 Å
+Distancia SG 8 - SG 9: 7.657684177523635 Å
+Distancia SG 8 - SG 16: 6.495628369510307 Å
+Distancia SG 8 - SG 23: 2.0175341960141915 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0175341960141915 Å)
+Distancia SG 9 - SG 16: 13.533310063910674 Å
+Distancia SG 9 - SG 23: 9.09652356565085 Å
+Distancia SG 16 - SG 23: 5.008326546471291 Å
+Enlaces disulfuro seleccionados: 3
+>> Aplicando patch DISU entre PROA:2 y PROA:9
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:8 y PROA:23
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:33 y PROA:16
+psfgen) applying patch DISU to 2 residues
+Total de patches DISU aplicados: 3
+psfgen) regenerating all angles
+psfgen) regenerating all dihedrals
+psfgen) Info: guessing coordinates for 98 atoms (2 non-hydrogen)
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HE2 CE HE1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HE2 CE HE1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HE2 CE HE1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HE2 CE HE1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HD2 CD HD1
+psfgen) Warning: failed to guess coordinate due to bad angle HE2 CE HE1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HB2 CB HB1
+psfgen) Warning: failed to guess coordinate due to bad angle HG2 CG HG1
+psfgen) Warning: failed to guess coordinate due to bad angle HG12 CG1 HG11
+psfgen) Warning: poorly guessed coordinates for 57 atoms (2 non-hydrogen):
+psfgen) Warning: poorly guessed coordinate for atom HT1	 ASP:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT2	 ASP:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT3	 ASP:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASP:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:2	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LEU:13	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 PHE:29	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LEU:30	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 TRP:31	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LYS:32	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 LYS:32	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 LYS:32	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HE1	 LYS:32	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:33	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASN:34	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 PRO:3	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 SER:4	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASN:5	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASP:6	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LYS:7	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 LYS:7	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 LYS:7	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HE1	 LYS:7	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:8	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:9	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ARG:10	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 ARG:10	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 ARG:10	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 PRO:11	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASN:12	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LEU:14	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:16	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 SER:17	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ARG:18	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 ARG:18	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 ARG:18	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LYS:19	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 LYS:19	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 LYS:19	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HE1	 LYS:19	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 ASP:20	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LYS:21	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 LYS:21	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 LYS:21	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HE1	 LYS:21	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 TRP:22	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 CYS:23	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 LYS:25	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 LYS:25	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HD1	 LYS:25	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HE1	 LYS:25	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 TYR:26	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HB1	 GLN:27	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG1	 GLN:27	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HG11	 ILE:28	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT1	 ILE:28	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT2	 ILE:28	  PROA
+psfgen) Info: writing psf file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.psf
+psfgen) total of 554 atoms
+psfgen) total of 564 bonds
+psfgen) total of 1023 angles
+psfgen) total of 1514 dihedrals
+psfgen) total of 92 impropers
+psfgen) total of 0 explicit exclusions
+psfgen) total of 32 cross-terms
+psfgen) Info: psf file complete.
+psfgen) Info: writing pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.pdb
+psfgen) Info: Atoms with guessed coordinates will have occupancy of 0.0.
+psfgen) Info: pdb file complete.
+/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.psf /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.pdb
+PSF_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.psf
+PDB_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84510.pdb
+PROA:2 PROA:9 
+PROA:8 PROA:23 
+PROA:33 PROA:16 
+Info) VMD for LINUXAMD64, version 1.9.3 (November 30, 2016)
+Info) Exiting normally.
+vmd > 
+/home/juaker/miniconda3/envs/vmd/lib/vmd_LINUXAMD64: /lib/x86_64-linux-gnu/libGL.so.1: no version information available (required by /home/juaker/miniconda3/envs/vmd/lib/vmd_LINUXAMD64)

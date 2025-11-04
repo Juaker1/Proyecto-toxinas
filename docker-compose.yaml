@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   app:
     build: .
@@ -15,23 +17,30 @@ services:
       - PSF_DIR=/app/psfs
       - WT_REFERENCE_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.pdb
       - WT_REFERENCE_PSF_PATH=/app/pdbs/WT/generated/hwt4_Hh2a_WT.psf
+
+    # Si usarás Nginx Proxy Manager por red interna, puedes QUITAR este 'ports'.
+    # Si quieres probar desde el host, cambia a "8087:5001". Si lo dejas en loopback, NPM no lo verá.
     ports:
-      - "127.0.0.1:5001:5001"
+      - "8087:5001"
+
     volumes:
       - toxinas_db:/app/database
       - toxinas_pdbs:/app/pdbs:ro
       - toxinas_psfs:/app/psfs:ro
+
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:5001/v2/health || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 30s
-   logging:
+
+    logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
     networks:
       - default
       - web
@@ -39,7 +48,9 @@ services:
 networks:
   web:
     external: true
+
 volumes:
   toxinas_db:
   toxinas_pdbs:
   toxinas_psfs:
+YAML

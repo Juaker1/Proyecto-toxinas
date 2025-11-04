@@ -80,42 +80,55 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.style.visibility = text ? 'visible' : 'hidden';
   }
 
+  function toggleEmptyState(show) {
+    const emptyState = document.getElementById('empty-state');
+    const resultsTable = document.querySelector('.results-table');
+    if (emptyState && resultsTable) {
+      emptyState.style.display = show ? 'block' : 'none';
+      resultsTable.style.display = show ? 'none' : 'table';
+    }
+  }
+
   function ensureSkeletonRows() {
-    if (!bodyEl || bodyEl._skeletonReady) return;
+    if (!bodyEl) return;
     const rows = [];
     for (let i = 0; i < tblPageSize; i++) {
       rows.push('<tr class="skeleton-row">' + '<td></td>'.repeat(10) + '</tr>');
     }
     bodyEl.innerHTML = rows.join('');
-    bodyEl._skeletonReady = true;
   }
 
   function paintRows(pageRows) {
     if (!bodyEl) return;
-    const trs = bodyEl.querySelectorAll('tr');
+    
+    // Crear todas las filas de cero para evitar problemas con skeletons
+    const rowsHtml = [];
     for (let i = 0; i < tblPageSize; i++) {
-      const tr = trs[i];
-      if (!tr) continue;
       const r = pageRows[i] || null;
       if (!r) {
-        tr.classList.add('skeleton-row');
-        tr.innerHTML = '<td></td>'.repeat(10);
-        continue;
+        // Fila skeleton vacía
+        rowsHtml.push('<tr class="skeleton-row">' + '<td></td>'.repeat(10) + '</tr>');
+      } else {
+        // Fila con datos reales
+        const seqHtml = highlightSequence(r.sequence, r);
+        rowsHtml.push(`
+          <tr>
+            <td title="${r.peptide_id || ''}">${r.peptide_id || '—'}</td>
+            <td title="${r.name || 'Sin nombre'}">${r.name || '<em class="text-muted">Sin nombre</em>'}</td>
+            <td title="Score: ${r.score || 0}"><strong>${r.score || 0}</strong></td>
+            <td title="Gap: ${r.gap || 0}">${r.gap || 0}</td>
+            <td title="Residuo X3: ${r.X3 || 'N/A'}">${r.X3 || '—'}</td>
+            <td title="${r.has_hydrophobic_pair ? 'Tiene par hidrofóbico' : 'Sin par hidrofóbico'}">${r.has_hydrophobic_pair ? '<span class="table-cell-badge">✓</span>' : '—'}</td>
+            <td title="Par: ${r.hydrophobic_pair || 'N/A'}">${r.hydrophobic_pair || '—'}</td>
+            <td title="Score par: ${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : 'N/A'}">${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : '—'}</td>
+            <td title="Longitud: ${r.length || 0} aminoácidos">${r.length || 0}</td>
+            <td title="Secuencia completa con residuos destacados"><code class="table-cell-mono">${seqHtml}</code></td>
+          </tr>
+        `);
       }
-      tr.classList.remove('skeleton-row');
-      const seqHtml = highlightSequence(r.sequence, r);
-      tr.innerHTML = `
-        <td>${r.peptide_id}</td>
-        <td>${r.name || ''}</td>
-        <td>${r.score}</td>
-        <td>${r.gap}</td>
-        <td>${r.X3 || ''}</td>
-        <td>${r.has_hydrophobic_pair ? '✔' : ''}</td>
-        <td>${r.hydrophobic_pair || ''}</td>
-        <td>${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : ''}</td>
-        <td>${r.length}</td>
-        <td><code>${seqHtml}</code></td>`;
     }
+    
+    bodyEl.innerHTML = rowsHtml.join('');
   }
 
   async function fetchtoxin_filter() {
@@ -123,7 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const gapMax = gapMaxEl.value || 6;
     const requirePair = requirePairEl.checked ? 1 : 0;
     const url = `/v2/toxin_filter?gap_min=${gapMin}&gap_max=${gapMax}&require_pair=${requirePair}`;
-    setStatus('Buscando...');
+    setStatus('🔍 Buscando toxinas...');
+    toggleEmptyState(false);
     ensureSkeletonRows();
     try {
       const res = await fetch(url);
@@ -134,12 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
       tblRows = data.results || [];
       tblPageNum = 1;
       renderTablePage();
-      setStatus('Listo.');
+      
+      if (data.count === 0) {
+        setStatus('⚠️ No se encontraron resultados con estos filtros.');
+        toggleEmptyState(true);
+      } else {
+        setStatus(`✅ Se encontraron ${data.count} toxina${data.count !== 1 ? 's' : ''}.`);
+      }
+      
       // store for export
       exportBtn.dataset.rows = JSON.stringify(data.results);
     } catch (e) {
-      setStatus('Error al cargar.');
+      setStatus('❌ Error al cargar. Por favor, intenta de nuevo.');
       console.error(e);
+      toggleEmptyState(true);
     }
   }
 
@@ -179,15 +201,30 @@ document.addEventListener('DOMContentLoaded', () => {
     tblPageNum = Math.min(Math.max(1, tblPageNum), maxPage);
     const start = (tblPageNum - 1) * tblPageSize;
     const pageRows = filtered.slice(start, start + tblPageSize);
-    ensureSkeletonRows();
-    paintRows(pageRows);
-    if (tblPage) tblPage.textContent = `Página ${tblPageNum}`;
+    
+    // Mostrar/ocultar estado vacío
+    if (total === 0 && tblRows.length > 0) {
+      toggleEmptyState(true);
+    } else {
+      toggleEmptyState(false);
+      ensureSkeletonRows();
+      paintRows(pageRows);
+    }
+    
+    if (tblPage) tblPage.textContent = `Página ${tblPageNum} de ${maxPage}`;
     if (tblPrev) tblPrev.disabled = tblPageNum <= 1;
     if (tblNext) tblNext.disabled = tblPageNum >= maxPage;
 
     // Update visible hit count to reflect filtered rows
     const hitCountEl = document.getElementById('hit-count');
     if (hitCountEl) hitCountEl.textContent = total;
+    
+    // Update pagination info
+    const paginationInfo = document.getElementById('pagination-info');
+    if (paginationInfo && total > 0) {
+      const end = Math.min(start + tblPageSize, total);
+      paginationInfo.textContent = `Mostrando ${start + 1}-${end} de ${total} resultado${total !== 1 ? 's' : ''}`;
+    }
   }
 
   function highlightSequence(seq, meta) {
@@ -200,15 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!marks.has(i)) return ch;
       const cls = marks.get(i);
       const color = ({
-        iC5:'#d9534f',
-        iS:'#0275d8',
-        iW:'#5cb85c',
-        iK:'#f0ad4e',
-        iX3:'#6f42c1',
-        iHP1:'#20c997',
-        iHP2:'#20c997'
-      })[cls] || '#222';
-      return `<span style="color:${color};font-weight:bold;">${ch}</span>`;
+        iC5:'#DC2626',    // Rojo más oscuro y visible
+        iS:'#2563EB',     // Azul más oscuro
+        iW:'#0891B2',     // Cyan más oscuro
+        iK:'#EA580C',     // Naranja más oscuro
+        iX3:'#7C3AED',    // Púrpura más oscuro
+        iHP1:'#059669',   // Verde más oscuro
+        iHP2:'#059669'    // Verde más oscuro
+      })[cls] || '#475569';
+      return `<span style="color:${color};font-weight:bold;background-color:rgba(255,255,255,0.3);padding:1px 2px;border-radius:2px;">${ch}</span>`;
     }).join('');
   }
 
@@ -300,13 +337,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
       const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      const icon = toggleBtn.querySelector('i');
+      const text = toggleBtn.querySelector('span');
+      
       if (expanded) {
         resultsBody.style.display = 'none';
-        toggleBtn.textContent = 'Expandir';
+        if (text) text.textContent = 'Mostrar';
+        if (icon) icon.className = 'fa-solid fa-eye-slash';
         toggleBtn.setAttribute('aria-expanded', 'false');
       } else {
         resultsBody.style.display = '';
-        toggleBtn.textContent = 'Colapsar';
+        if (text) text.textContent = 'Ocultar';
+        if (icon) icon.className = 'fa-solid fa-eye';
         toggleBtn.setAttribute('aria-expanded', 'true');
       }
     });
@@ -347,7 +389,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial load (pre-render skeleton for CLS stability)
   ensureSkeletonRows();
   fetchtoxin_filter();
-
-  // Señal para fallback de carga (minificado vs no minificado)
-  try { window.__TOXIN_FILTER_JS_LOADED__ = true; } catch (e) {}
 });

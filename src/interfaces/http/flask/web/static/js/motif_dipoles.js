@@ -1770,8 +1770,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     btn.classList.toggle('active', !!isActive);
+    
+    // Actualizar badge de estado
+    const statusBadge = btn.querySelector('.status-badge');
+    if (statusBadge) {
+      statusBadge.textContent = isActive ? 'Visible' : 'Oculto';
+      statusBadge.className = isActive ? 'status-badge status-visible' : 'status-badge status-hidden';
+    }
+    
+    // Mantener compatibilidad con botones antiguos sin badge
     const textSpan = btn.querySelector('span:last-child');
-    if (textSpan) textSpan.textContent = isActive ? labels.hide : labels.show;
+    if (textSpan && !textSpan.classList.contains('status-badge')) {
+      textSpan.textContent = isActive ? labels.hide : labels.show;
+    }
   }
 
   // Toggle de Visualizaciones 3D

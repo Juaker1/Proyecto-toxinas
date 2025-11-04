@@ -16,27 +16,128 @@
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
     <!-- Critical CSS inline -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a202c; background: #f8fafc; }
-        .page-header { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 2rem 1rem; border-bottom: 1px solid #e2e8f0; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
-    </style>
-    
+
     <!-- Sistema de diseño -->
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/design-system.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/navbar.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/components.css')) }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/families-page.css')) }}">
+    <!-- Estilos de página de introducción (identico al filtro de toxinas) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/filter-page.css')) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/dipole_families.css')) }}">
 </head>
-<body class="families-page">
+<body class="family-analysis-body">
     <!-- NAVBAR -->
-        {% set navbar_actions %}{% endset %}
-    {% include 'partials/navbar.html' %}
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="navbar-brand">
+                <div class="navbar-logo"><i class="fas fa-dna"></i></div>
+                <span class="navbar-title">Proyecto Toxinas</span>
+            </a>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.home_page_v2') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-home"></i></span>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-microscope"></i></span>
+                        <span>Visualizador</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-flask"></i></span>
+                        <span>Familias</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-filter"></i></span>
+                        <span>Filtros</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="navbar-actions">
+                <button class="action-btn" id="export-family-data">
+                    <i class="fas fa-download"></i>
+                    <span>Exportar</span>
+                </button>
+            </div>
+            
+            <button class="navbar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <div class="families-container">
+    <!-- Intro de la página -->
+    <section class="page-intro" aria-labelledby="intro-title">
+        <div class="intro-header">
+            <div class="intro-icon" aria-hidden="true"><i class="fa-solid fa-flask"></i></div>
+            <div class="intro-texts">
+                <h1 id="intro-title" class="intro-title">Análisis de Familias de Toxinas Nav1.7</h1>
+
+
+            </div>
+        </div>
+
+        <!-- Grid de secciones explicativas -->
+        <div class="intro-grid">
+            <!-- Objetivo -->
+            <div class="intro-section">
+                <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></div>
+                <h2 class="intro-section-title">Objetivo</h2>
+                <p class="intro-section-text">
+                    Analizar y comparar las características estructurales y funcionales de familias de toxinas peptídicas 
+                    afines a NaV1.7, enfocándonos en vectores dipolares, secuencias de aminoácidos y variaciones mutacionales 
+                    respecto a la toxina de referencia PAPPER.
+                </p>
+            </div>
+
+            <!-- Metodología -->
+            <div class="intro-section">
+                <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-dna"></i></div>
+                <h2 class="intro-section-title">Análisis Comparativo</h2>
+                <p class="intro-section-text">
+                    Se realiza un estudio detallado de las familias de toxinas, incluyendo visualización de dipolos moleculares, 
+                    comparación de secuencias peptídicas y análisis de mutaciones que afectan la afinidad y selectividad 
+                    hacia el canal de sodio NaV1.7.
+                </p>
+            </div>
+
+            <!-- Referencia -->
+            <div class="intro-section intro-section--highlight">
+                <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></div>
+                <h2 class="intro-section-title">Referencia Científica</h2>
+                <p class="intro-section-text">
+                    Basado en el estudio publicado en <strong>FEBS Letters</strong>:
+                </p>
+                <div class="paper-reference">
+                    <cite class="paper-title">
+                        "Refining the NaV1.7 pharmacophore of a class of venom-derived peptide inhibitors via a combination of in silico screening and rational engineering"
+                    </cite>
+                    <a href="https://febs.onlinelibrary.wiley.com/toc/18733468/2025/599/12" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="paper-link"
+                       aria-label="Ver artículo completo en FEBS Letters (abre en nueva pestaña)">
+                        <i class="fa-solid fa-external-link-alt" aria-hidden="true"></i>
+                        <span>Ver artículo completo</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <div class="family-container">
 
         <!-- Selector de familia -->
         <div class="family-selection-section">
@@ -47,35 +148,29 @@
                     </h2>
                 </div>
                 <div class="card-body">
-                    <div class="selection-controls">
+                    <!-- Sección de selección -->
+                    <div class="selection-section">
                         <div class="control-group">
-                            <label for="familySelector" class="control-label">Familia de Toxinas</label>
+                            <label for="familySelector" class="control-label">Selecciona una familia de toxinas</label>
                             <select class="family-selector" id="familySelector">
                                 <option value="" selected disabled>Seleccione una familia de toxinas...</option>
                                 <!-- Opciones se cargarán dinámicamente -->
                             </select>
                         </div>
-                        <div class="action-controls">
-                            <button type="button" class="btn btn-primary btn-visualize" id="visualizeFamilyBtn" disabled>
-                                <i class="fas fa-eye"></i> Visualizar Dipolos de la Familia
-                            </button>
-                        </div>
                     </div>
                     
-                    <!-- Info + aviso en una sola fila para mejor UX -->
-                    <div class="family-info-row">
-                        <!-- Info de la familia seleccionada -->
-                        <div id="familyInfo" class="family-info-alert" style="display: none;">
-                            <i class="fas fa-circle-check" aria-hidden="true"></i>
-                            <span id="familyInfoText">Información de la familia...</span>
-                        </div>
-                        
-                        <!-- Aviso de acción para visualizar dipolos -->
-                        <div id="familyHint" class="family-hint-alert" style="display: none;">
-                            <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
-                            <span>Para visualizar los dipolos de esta familia, haz clic en el botón
-                                <strong>“Visualizar Dipolos de la Familia”</strong>.</span>
-                        </div>
+                    <!-- Info de la familia seleccionada -->
+                    <div id="familyInfo" class="family-info-alert" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="familyInfoText">Información de la familia...</span>
+                    </div>
+                    
+                    <!-- Botón de visualización con mejor jerarquía -->
+                    <div class="action-section">
+                        <button type="button" class="btn btn-primary btn-visualize btn-lg" id="visualizeFamilyBtn" disabled>
+                            <i class="fas fa-eye"></i>
+                            <span class="btn-text">Visualizar Dipolos de la Familia</span>
+                        </button>
                     </div>
                     
                     <!-- Lista de péptidos -->
@@ -95,16 +190,13 @@
                             <i class="fas fa-chart-bar"></i> Visualización de Dipolos - <span id="selectedFamilyTitle"></span>
                         </h2>
                     </div>
-                    <div class="header-actions"></div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-export" id="exportDataBtn">
+                            <i class="fas fa-file-export"></i> Exportar Datos
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <!-- Leyenda global de flechas -->
-                    <div class="dipole-legend" aria-label="Leyenda de flechas">
-                        <div class="legend-item"><span class="legend-color legend-dipole" aria-hidden="true"></span> Dipolo</div>
-                        <div class="legend-item"><span class="legend-color legend-x" aria-hidden="true"></span> Eje X</div>
-                        <div class="legend-item"><span class="legend-color legend-y" aria-hidden="true"></span> Eje Y</div>
-                        <div class="legend-item"><span class="legend-color legend-z" aria-hidden="true"></span> Eje Z</div>
-                    </div>
                     <!-- Área de visualización -->
                     <div id="dipoleVisualization" class="dipole-visualization-area">
                         <div class="loading-state">
@@ -120,7 +212,35 @@
             </div>
         </div>
 
-        <!-- Área de estadísticas eliminada por UX simplificada -->
+        <!-- Área de estadísticas -->
+        <div class="statistics-section" id="statisticsArea" style="display: none;">
+            <div class="statistics-grid">
+                <div class="stat-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-calculator"></i> Estadísticas de Magnitud
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="magnitudeStats" class="stats-content">
+                            <!-- Estadísticas se cargarán aquí -->
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-compass"></i> Análisis de Orientación
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="orientationStats" class="stats-content">
+                            <!-- Análisis de orientación se cargará aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- py3Dmol (lazy loaded) -->
