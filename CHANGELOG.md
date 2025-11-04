@@ -1,3 +1,142 @@
+# Changelog
+Todas las modificaciones significativas del proyecto se documentan aquí.  
+El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
+
+## [2.7.1] – 2025-11-04
+
+### Added
+- Orquestación completa en `run_full_pipeline.py` de los procesos offline necesarios para la web:
+  - Exportación de PDBs filtrados.
+  - Generación de PSF/PDB para los PDBs filtrados (vía VMD/Tcl).
+  - Producción del JSON de análisis por IA para accesiones filtradas.
+- Nuevos flags de CLI para control fino del pipeline:
+  - `--no-psf` y `--no-ai` para omitir etapas específicas.
+  - `--overwrite` para forzar la regeneración de artefactos existentes.
+  - Parámetros de filtros/motivos: `--query`, `--gap-min`, `--gap-max`, `--require-pair`.
+
+### Changed
+- Ejecución idempotente por defecto: se omiten etapas si los artefactos finales ya existen; `--overwrite` fuerza su recreación.
+- Resumen final con tiempos por etapa, recuentos y rutas de salida para trazabilidad del proceso.
+
+### Technical Details
+- Archivos implicados:
+  - `run_full_pipeline.py` (orquestador con argparse, timings y control de etapas).
+  - Reutiliza: `extractors/export_filtered_pdbs.py`, `extractors/generate_filtered_psfs.py`, `tools/export_filtered_accessions_nav1_7.py`.
+- Salidas estandarizadas:
+  - JSON IA: `exports/filtered_accessions_nav1_7_analysis.json`.
+  - Log/timings: `exports/process_log.txt`.
+- Reglas de omisión:
+  - `--no-psf` omite la generación de PSF/PDB.
+  - `--no-ai` omite la generación del JSON de IA.
+  - Exportación de PDBs filtrados respeta `--overwrite` (no reescribe si ya existen, salvo que se indique).
+- Retrocompatibilidad: no cambia APIs ni rutas usadas por la aplicación web; es una mejora de tooling offline.
+
+## [2.7.0] – 2025-11-03
+
+### Added
+- Navbar como componente reutilizable:
+  - Nuevo parcial `templates/partials/navbar.html` con “slot” para acciones por página (`navbar_actions`).
+- Página de Familias: aviso guiado que indica cómo visualizar los dipolos; aparece al seleccionar una familia, se oculta al visualizar y reaparece al cambiar la selección.
+- Leyenda global de flechas en la visualización de Familias (arriba del grid):
+  - Colores: Dipolo=rojo, Eje X=verde, Eje Y=naranja, Eje Z=azul.
+- Flechas de ejes X e Y añadidas en cada visualizador (además del eje Z existente).
+- Controles “Resaltar” por péptido en las tablas (original y modificados): permiten marcar visualizaciones 3D específicas sin abandonar la tabla.
+
+### Changed
+- Orden del menú actualizado en todas las vistas: Inicio → Familias → Visualizador → Filtros.
+- Plantillas `home.html`, `viewer.html`, `dipole_families.html` y `toxin_filter.html` ahora incluyen el parcial y, cuando aplica, inyectan sus acciones con `navbar_actions`.
+- La marca (logo/título) enlaza a Inicio de forma consistente.
+- Página de Familias (UX):
+  - Mayor contraste en “Familia de Toxinas” y “Familia seleccionada”.
+  - Reposicionamiento del aviso junto al cartel de “Familia seleccionada” con iconos claros.
+  - Más espacio vertical entre selector/botón, avisos y la lista de péptidos.
+  - Resaltado de cambios en secuencias: ahora se ve claramente (fondo blanco + borde acentuado) sobre el contenedor amarillo y aplica a todas las familias; si no hay tokens en el código del péptido, se usa un fallback por diferencias contra el original.
+  - Visualización 3D por familia: el péptido original (código sin "_") aparece primero en la grilla; el resto se ordena alfabéticamente por código.
+- En las tarjetas de visualización, se reemplaza “Componentes” por los ángulos respecto a los ejes X/Y/Z (en grados) junto a la Magnitud.
+- Estilos más visibles para IC50 (chip) y para el control “Resaltar” (pill con borde/fondo y negrita).
+- Color de resaltado de la tarjeta 3D cambiado a azul (borde/halo) para combinar con la paleta existente.
+- Al activar “Resaltar” ya no se hace auto‑scroll a la visualización (permite marcar varios a la vez).
+
+### Removed
+- Página de Familias: se eliminaron las tarjetas/estadísticas finales (magnitud, orientación, componentes) para simplificar la UI y evitar información redundante.
+- Página de Familias: se eliminaron los botones de exportación (acción del navbar y “Exportar Datos” en el header de la visualización).
+
+### Fixed
+- Eliminación de marcado duplicado del navbar entre plantillas, evitando desincronizaciones de iconos/orden/estados.
+- Estado activo y comportamiento móvil consistentes en todas las páginas al compartir un único marcado.
+- Señal de ayuda en Familias: ahora se oculta al iniciar la visualización y solo reaparece al cambiar de familia.
+
+### Technical Details
+- Integración vía `{% include 'partials/navbar.html' %}` y bloque inline `{% set navbar_actions %}…{% endset %}` cuando se requieren botones específicos por página.
+- Sin cambios en `static/js/navbar.js` ni en `static/css/navbar.css`; el comportamiento existente aplica al nuevo parcial.
+- Familias:
+  - `templates/dipole_families.html`: se removió la sección de estadísticas; se mantiene solo el área de visualización.
+  - `templates/dipole_families.html`: se quitaron las acciones de exportar del navbar y el botón “Exportar Datos” del header; se añadió la leyenda `.dipole-legend` sobre el área de visualización; columnas “Resaltar” agregadas a las tablas.
+  - `static/js/dipole_family_analysis.js`: `displayFamilyStats()` no‑op; ocultado de `statisticsArea`; orden "original primero"; resaltado de secuencias (`parseModificationsFromCode()` + `highlightDiffs()`); `computeAxisAngles()` para X/Y/Z; `addDipoleArrowToViewer()` dibuja X (verde), Y (naranja), Z (azul) y dipolo (rojo); nuevo vínculo tabla↔tarjetas con `cardIndexByCode`; controles “Resaltar” activan `.highlighted-card` y se eliminó el auto‑scroll al togglear.
+  - `static/css/families-page.css` y `.min.css`: estilos de `.seq-change` (alto contraste), `.dipole-legend`, chips de `IC50`, pills de `Resaltar` (accent azul) y `.highlighted-card` con borde/halo azul.
+
+---
+
+## [2.6.1] – 2025-11-03
+
+### Added
+- Overlay de carga con spinner para la tarjeta de Gráficos en la página de filtros:
+  - Se muestra al inicializar y actualizar los gráficos; se oculta automáticamente al finalizar.
+- Script de seguridad para sincronizar el texto/estado de los botones de toggle (“Mostrar/Ocultar …”) con la visibilidad real de las secciones (fallback si se carga una build minificada antigua).
+- Estilo responsive tipo “chip” para los tabs de la tabla de resultados (Todos / Con Nav1.7 / …), con estado activo resaltado y mejor distribución en pantallas pequeñas.
+
+### Changed
+- Navbar: unificación de iconos en todas las plantillas para coherencia visual:
+  - “Visualizador” → `fas fa-microscope`
+  - “Familias” → `fas fa-flask`
+- Navbar: se componentiza el marcado en `templates/partials/navbar.html` y se actualiza el orden de los ítems a: Inicio → Familias → Visualizador → Filtros. Las plantillas `home.html`, `viewer.html`, `dipole_families.html` y `toxin_filter.html` ahora incluyen el parcial y, cuando aplica, inyectan sus acciones con `navbar_actions`.
+- `toxin_filter.html`: carga del script `motif_dipoles` vía `asset_path(...)` para respetar el modo minificado y mantener consistencia con el resto de assets.
+- Paginación de la tabla de resultados: flechas reemplazadas por Font Awesome (`fa-angle-left` / `fa-angle-right`) para uniformidad con el resto de iconografía.
+
+### Fixed
+- Botones de mostrar/ocultar: ahora cambian correctamente a “Ocultar visualizaciones 3D” y “Ocultar gráficos” tras la primera carga y mantienen el estado sincronizado (aria-pressed y clase `.active`).
+- Actualización de gráficos envuelta en overlay para evitar parpadeos y dar feedback de estado durante cargas pesadas.
+
+## [2.6.0] – 2025-11-02
+
+### Added
+- Carga perezosa de gráficos en la página de filtros mediante IntersectionObserver (se renderizan solo al ser visibles).
+- Web Worker dedicado (motif_dipoles.worker.js) para construir datasets de gráficos fuera del hilo principal.
+- Capa de caché por parámetros (gap_min, gap_max, require_pair, referencia) para el agregado de items.
+- Loader on‑demand de 3Dmol (load3DmolOnce) y bootstrap diferido de la vista (requestIdleCallback) para no bloquear el hilo principal.
+- Placeholder temprano de la leyenda (.dipole-legend) para adelantar el LCP (texto visible inmediato).
+- Minificado de CSS de first‑party: se extendió `tools/minify_assets.py` para generar `.min.css` en `static/css` (p. ej. `viewer.min.css`).
+
+### Changed
+- Actualizaciones de gráficos diferidas con scheduleChartsUpdate usando requestIdleCallback (fallback setTimeout).
+- Carga on‑demand de Plotly (loadPlotlyOnce) para evitar coste inicial innecesario.
+- Render con Plotly.react en lugar de recrear gráficos completos, reutilizando instancias.
+- Reemplazo de llamadas directas a updateChartsWithAllItems por scheduleChartsUpdate en cambios de filtros, referencia y paginación.
+- `toxin_filter.html`: se eliminan los scripts de 3Dmol y Plotly (ahora se inyectan bajo demanda desde JS).
+- `motif_dipoles.js`: los viewers 3D esperan a 3Dmol (await load3DmolOnce) en loadReference/renderPage/reRenderCurrentPage; reRenderCurrentPage pasa a async.
+- `toxin_filter.html`: hojas CSS no críticas se cargan como no‑bloqueantes (media="print" + onload + <noscript>) y se reserva altura mínima de contenedores para estabilidad (CLS≈0).
+- `toxin_filter.html`: se elimina la carga anticipada de SheetJS; ahora se carga bajo demanda.
+- `toxin_filter.js`: se agrega loader on‑demand de `xlsx.core.min.js` y el export se vuelve asíncrono con feedback de UI.
+- `toxin_filter.html` y `motif_dipoles.js`: visualizaciones 3D y gráficos quedan detrás de botones (“Mostrar visualizaciones 3D”, “Mostrar gráficos”); se revela la sección bajo demanda (hidden + inert) y se inicializa en el primer clic.
+- `motif_dipoles.js`: la carga de la referencia 3D se difiere a idle y a cuando el contenedor es visible (IntersectionObserver) para no competir con el primer paint.
+- `toxin_filter.js` y `motif_dipoles.js`: los spinners de “Descargando/Exportando…” se reemplazaron por un indicador de texto (`⏳ ...`) para evitar dependencias de clases FA.
+ - `toxin_filter.html`: las hojas de estilo clave de layout (design-system.css, navbar.css, components.css, filter-page.css) pasan a cargarse en modo bloqueante para evitar FOUC y eliminar los últimos saltos de layout (CLS) en `div.filter-container`; el CSS no crítico se mantiene diferido.
+### Changed
+- Las plantillas ya usan `asset_path('css/…')`, por lo que cuando `USE_MINIFIED_ASSETS=1` el servidor servirá automáticamente las versiones `.min.css` si existen.
+### Fixed
+- Reducción significativa de “Reduce JavaScript execution time” en Lighthouse:
+  - Menos CPU en js/motif_dipoles.js (‑60–80% en pruebas locales).
+  - Disminución del Total Blocking Time al mover cómputo a Worker y a momentos ociosos.
+- Eliminado reprocesamiento/refetch redundante entre pestañas y páginas.
+- “Minimize main‑thread work”: menor Script Evaluation inicial al quitar 3Dmol/Plotly del camino crítico y diferir la primera carga de referencia/grid.
+- “Eliminate render‑blocking resources”: CSS no crítico deja de bloquear FCP/LCP; mejora de varios cientos de ms por archivo según Lighthouse.
+- “Reduce the impact of third‑party code”: SheetJS deja de evaluarse en cada carga (se demanda al presionar Exportar) y se usa la build mínima (`xlsx.core.min.js`), recortando transferencia y tiempo de evaluación.
+- “Avoid large layout shifts (CLS)”: al no crear viewers/plots hasta un clic explícito y reservar espacio con placeholders, los cambios de layout ocurren tras interacción y no computan en CLS; además se reduce TBT del arranque.
+- “Largest Contentful Paint”: Render Delay reducido al prerenderizar la leyenda y retrasar la inicialización 3D hasta visibilidad/idle.
+ - CLS residual en `div.filter-container`: se estabiliza reservando altura del header y tabs (placeholder `#tabs-placeholder`) y fijando min-height para header/estado/paginación y filas esqueleto; ya no hay saltos al inyectar pestañas ni al pintar resultados.
+
+---
+
 ## [2.5.9] – 2025-11-03
 
 ### Changed
