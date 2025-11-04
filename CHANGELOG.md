@@ -1,3 +1,17 @@
+## [2.5.9] – 2025-11-03
+
+### Changed
+- Rediseño completo del intro section en la página de filtros de toxinas con layout de grid responsive y referencia al paper FEBS Letters (2025).
+- Unificación de paleta de colores a blues sólidos, eliminación de gradientes en toda la página para consistencia con home.html.
+- Mejora de controles de visualización con toggle cards interactivas mostrando estado "Oculto"/"Visible".
+
+### Fixed
+- Arreglos de Lighthouse audit: corrección de jerarquía de headings (h3→h2), mejora de ratios de contraste en botones, eliminación de CSS no utilizado (~18 KiB), consolidación de reglas duplicadas (#reference-viewer).
+- Optimización de critical CSS path para reducir latencia de 695ms.
+- Actualización de JavaScript (motif_dipoles.js) para manejo de badges de estado en toggle cards.
+
+---
+
 ## [2.5.8] – 2025-11-03
 
 ### Fixed

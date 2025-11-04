@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,449 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Filtro de toxinas Nav1.7 con búsqueda avanzada por motivos y características moleculares">
     <title>Filtro de Toxinas | Proyecto Toxinas</title>
-    
-    <!-- Preconexiones -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    
-    <!-- Font Awesome eliminado en esta página para reducir CSS no usado -->
-    
-    <!-- Sistema de diseño (no bloqueante: media=print + onload, con fallback noscript) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/design-system.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/design-system.css')) }}"></noscript>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/navbar.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/navbar.css')) }}"></noscript>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}"></noscript>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/components.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/components.css')) }}"></noscript>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/filter-page.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/filter-page.css')) }}"></noscript>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/viewer.css')) }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/viewer.css')) }}"></noscript>
-    
-    <!-- Critical CSS inline -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a202c; background: #f8fafc; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
-        /* Reserva de espacio para estabilidad y pintura temprana */
-        #reference-viewer { min-height: 320px; position: relative; background: #f9fafb; border-radius: 8px; }
-        #filtered-dipoles-card .card-body { min-height: 240px; }
-        
-        /* Estilos para los botones de modo de visualización */
-        .view-mode-controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 8px;
-            margin: 1rem 1.5rem;
-        }
-        
-        .btn-view-mode {
-            background: white;
-            color: #64748b;
-            border: 2px solid #e2e8f0;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-view-mode:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #cbd5e1;
-        }
-        
-        .btn-view-mode:active {
-            transform: translateY(0);
-        }
-        
-        .btn-view-mode.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-view-mode.active:hover {
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-        }
-        
-        .btn-view-mode i {
-            font-size: 16px;
-        }
-        
-        /* Animación al cambiar de modo */
-        @keyframes modeChange {
-            0% { opacity: 0; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .visualization-grid.mode-changing {
-            animation: modeChange 0.3s ease;
-        }
-
-        /* Botones IC50 (Todos / Con / Sin) */
-        .ic50-filter-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-            color: #334155;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
-        }
-        .ic50-filter-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(15, 23, 42, .12);
-            border-color: #cbd5e1;
-        }
-        .ic50-filter-btn .icon { font-size: 1rem; opacity: .85; }
-        .ic50-filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 8px 18px rgba(102, 126, 234, .35);
-        }
-        .ic50-filter-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        /* Overlay de carga sobre el grid de dipolos */
-        #filtered-dipoles-card .card-body { position: relative; }
-        .ic50-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-        .ic50-loading-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
-            border-radius: 10px;
-            background: #ffffff;
-            box-shadow: 0 8px 22px rgba(0,0,0,.12);
-            color: #334155;
-            font-weight: 600;
-        }
-        .ic50-spinner {
-            width: 18px; height: 18px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: ic50spin .9s linear infinite;
-        }
-        @keyframes ic50spin { to { transform: rotate(360deg); } }
-    </style>
-</head>
-<body class="filter-page">
-    <!-- NAVBAR -->
-    <nav class="main-navbar">
-        <div class="navbar-container">
-                        <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="navbar-brand">
-                                <div class="navbar-logo" aria-hidden="true">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" role="img" focusable="false"><path d="M7 2a1 1 0 0 0 0 2c2.21 0 4 1.79 4 4 0 1.86-1.28 3.43-3 3.87V14h2a1 1 0 1 1 0 2H8v2a1 1 0 1 1-2 0v-2H4a1 1 0 1 1 0-2h2v-2.13A5.996 5.996 0 0 1 7 2zm10 0a1 1 0 0 0-1 1v2h-2a1 1 0 1 0 0 2h2v2.13A5.996 5.996 0 0 0 17 22a1 1 0 1 0 0-2c-2.21 0-4-1.79-4-4 0-1.86 1.28-3.43 3-3.87V10h-2a1 1 0 1 0 0-2h2V6a1 1 0 1 0 2 0V3a1 1 0 0 0-1-1z"/></svg>
-                                </div>
-                <span class="navbar-title">Proyecto Toxinas</span>
-            </a>
-            
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.home_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z"/></svg></span>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.viewer_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h2v6h2V2h2v6h2V2h2v8h2v2h-2.35A6.5 6.5 0 0 1 21 19.6V20H3v-0.4c0-2.6 1.68-4.82 4.05-5.6H5v-2h1V2zM5 18h14a4.5 4.5 0 0 0-4.5-4.5h-5A4.5 4.5 0 0 0 5 18z"/></svg></span>
-                        <span>Visualizador</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('pages_v2.dipole_families_page_v2') }}" class="nav-link">
-                        <span class="nav-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h-1v4.586l5.707 5.707A1 1 0 0 1 18.293 16H5.707a1 1 0 0 1-.707-1.707L10 8.586V4h-1V2zM6 18h12a2 2 0 0 1 0 4H6a2 2 0 1 1 0-4z"/></svg></span>
-                        <span>Familias</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('toxin_filter.toxin_filter_page') }}" class="nav-link active">
-                        <span class="nav-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v2l-7 7v5l-4 2v-7L3 6z"/></svg></span>
-                        <span>Filtros</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="navbar-actions">
-                <button class="action-btn" id="navbar-export-xlsx">
-                    <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h10l6 6v14H4zM14 3.5V9h5.5L14 3.5zM7 12l2.5 3L7 18h2l1.5-2 1.5 2h2l-2.5-3 2.5-3h-2l-1.5 2-1.5-2H7z"/></svg></span>
-                    <span>Exportar</span>
-                </button>
-            </div>
-            
-            <button class="navbar-toggle" aria-label="Abrir menú">
-                <span aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="filter-container">
-
-        <!-- NUEVO: Botones para abrir visualizaciones bajo demanda -->
-        <div class="filter-actions" style="margin: 1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
-            <button id="btn-open-visuals" class="btn btn-primary">
-                <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2h-3v4.586l4.707 4.707a1 1 0 0 1-.707 1.707H6a1 1 0 0 1-.707-1.707L10 8.586V4H7zM6 18h12a2 2 0 0 1 0 4H6a2 2 0 1 1 0-4z"/></svg></span>
-                <span>Mostrar visualizaciones 3D</span>
-            </button>
-            <button id="btn-open-charts" class="btn">
-                <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19h16v2H2V3h2v16zm3-2H5V9h2v8zm4 0H9V5h2v12zm4 0h-2V11h2v6zm4 0h-2V7h2v10z"/></svg></span>
-                <span>Mostrar gráficos</span>
-            </button>
-        </div>
-
-        <!-- Sección de visualizaciones 3D (referencia + grilla) - oculta hasta clic -->
-        <div class="visualization-section" style="display:block;">
-            <div id="visualizations-section" hidden inert>
-            <div class="visualization-card">
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title reference-section-title" style="margin:0;display:flex;align-items:center;gap:0.75rem;">
-                        <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg></span>
-                        <span>Dipolo de Referencia:</span>
-                        <select id="reference-selector" class="reference-selector-dropdown">
-                            <option value="WT" selected>Proteína WT</option>
-                        </select>
-                        <code id="reference-sequence" class="reference-sequence" style="margin-left:8px;font-family:monospace;font-size:0.95rem;color:#374151;">-</code>
-                    </h2>
-                    <div class="header-actions" style="display:flex;gap:0.5rem;align-items:center;">
-                        <button id="download-reference-btn" class="btn btn-secondary" title="Descargar PDB y PSF de la referencia">
-                            <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM12 2v12l4-4h-3V2h-2v8H8l4 4z"/></svg></span>
-                            <span>Descargar</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
-                        <div class="loading-state">
-                            <div class="spinner" id="refSpinner"></div>
-                            <p class="loading-text">Cargando referencia...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="visualization-card" id="filtered-dipoles-card">
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title" style="margin:0;"><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h6l-1 7 9-11h-6l1-7z"/></svg></span> Dipolos de Toxinas Filtradas</h2>
-                    <div>
-                        <button id="prev-page" class="btn btn-secondary" aria-label="Anterior"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> Anterior</button>
-                        <span id="page-indicator" style="margin:0 8px;">Página 1</span>
-                        <button id="next-page" class="btn btn-secondary" aria-label="Siguiente">Siguiente <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></button>
-                    </div>
-                </div>
-                
-                <!-- Botones de Modo de Visualización -->
-                <div class="view-mode-controls">
-                    <button id="showDipoleBtn" class="btn-view-mode active" data-mode="dipole">
-                        <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h6v2H6.41L10 8.59 8.59 10 5 6.41V9H3V3zm12 0h6v6h-2V6.41L15.41 10 14 8.59 17.59 5H15V3zM3 15h2v2.59L8.59 14 10 15.41 6.41 19H9v2H3v-6zm18 0v6h-6v-2h2.59L14 15.41 15.41 14 19 17.59V15h2z"/></svg></span> Vectores Dipolares
-                    </button>
-                    <button id="showDisulfideBtn" class="btn-view-mode" data-mode="disulfide">
-                        <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 13.41L9.17 12l4.24-4.24a3 3 0 114.24 4.24l-1.41 1.41-1.41-1.41 1.41-1.41a1 1 0 10-1.41-1.41L10.59 13.41zm-7.07 7.07a3 3 0 010-4.24l1.41-1.41 1.41 1.41-1.41 1.41a1 1 0 101.41 1.41L12 11.83 13.41 13.24 7.76 18.9a3 3 0 01-4.24 0z"/></svg></span> Puentes Disulfuro
-                    </button>
-                    <!-- 'Both' visualization removed per UI update -->
-                </div>
-                
-                <div class="card-body">
-                    <div id="filtered-grid" class="visualization-grid"></div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Tarjeta fija de Gráficos (oculta hasta clic) -->
-            <div class="visualization-card" id="charts-card" hidden inert>
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title" style="margin:0;"><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19h16v2H2V3h2v16zm3-2H5V9h2v8zm4 0H9V5h2v12zm4 0h-2V11h2v6zm4 0h-2V7h2v10z"/></svg></span> Gráficos</h2>
-                </div>
-                <div class="card-body">
-                    <div class="chart-block" style="width:100%;height:420px;">
-                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">IC50 (todas las páginas)</h3>
-                        <div id="ic50-scatter-all" style="width:100%;height:380px;"></div>
-                    </div>
-                    <div class="chart-block" style="width:100%;height:380px;margin-top:16px;">
-                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">Orientación (sin IC50)</h3>
-                        <div id="ori-no-ic50-chart" style="width:100%;height:340px;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Filtros pulida -->
-        <div class="filters-section">
-            <div class="filters-header">
-                <div class="filters-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 21v-2h16v2H4zm2-6v-2h12v2H6zm-4-6V7h16v2H2zM8 3h8v2H8V3z"/></svg></div>
-                <h2 class="filters-title">Configuración de Filtros</h2>
-            </div>
-            
-            <div class="filters-grid">
-                <div class="filter-input-group">
-                    <label class="filter-label">
-                        <span class="filter-label-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h2v18H9V3zm4 0h2v18h-2V3z"/></svg></span>
-                        Gap Mínimo
-                    </label>
-                    <input id="gap-min" type="number" class="filter-input" value="3" min="1">
-                </div>
-                
-                <div class="filter-input-group">
-                    <label class="filter-label">
-                        <span class="filter-label-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h18v2H3V9zm0 4h18v2H3v-2z"/></svg></span>
-                        Gap Máximo
-                    </label>
-                    <input id="gap-max" type="number" class="filter-input" value="6" min="1">
-                </div>
-                
-                <div class="filter-input-group">
-                    <label class="checkbox-wrapper">
-                        <div class="custom-checkbox" id="require-pair-box">
-                            <input id="require-pair" type="checkbox" style="display: none;">
-                        </div>
-                        <span class="checkbox-label">
-                            <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 13.41L9.17 12l4.24-4.24a3 3 0 114.24 4.24l-1.41 1.41-1.41-1.41 1.41-1.41a1 1 0 10-1.41-1.41L10.59 13.41z"/></svg></span>
-                            Requerir Pareja Hidrofóbica
-                        </span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="filter-actions">
-                <button id="run-filter" class="btn btn-primary btn-lg search-btn">
-                    <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707-1.414 1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg></span>
-                    <span>Buscar Toxinas</span>
-                </button>
-                <button id="export-xlsx" class="btn btn-secondary btn-export" disabled>
-                    <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h10l6 6v14H4zM14 3.5V9h5.5L14 3.5zM7 12l2.5 3L7 18h2l1.5-2 1.5 2h2l-2.5-3 2.5-3h-2l-1.5 2-1.5-2H7z"/></svg></span> XLSX
-                </button>
-            </div>
-            
-            <div class="filter-status" id="status-line">
-                <span class="status-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></span>
-                <span class="status-text">Listo para buscar</span>
-            </div>
-        </div>
-
-        <!-- Tabla de Resultados -->
-        <div class="results-table-section" id="results-card">
-            <div class="results-table-header">
-                    <div class="results-title-wrapper">
-                        <div class="results-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v4h14V5H5zm14 6H5v8h14v-8z"/></svg></div>
-                    <h2 class="results-title">
-                        Tabla de Resultados 
-                        <span class="results-count" id="hit-count">0</span>
-                    </h2>
-                </div>
-                    <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <input id="accession-search" type="search" placeholder="Buscar por accession" aria-label="Buscar por accession" style="padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;">
-                        <button id="accession-clear" class="btn btn-sm btn-secondary" title="Limpiar búsqueda" style="padding:6px 8px;">Limpiar</button>
-                    </div>
-                <button id="toggle-results" class="toggle-table-btn" aria-expanded="true" aria-controls="results-body">
-                    <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5c5 0 9.27 3.11 11 7-1.73 3.89-6 7-11 7S2.73 15.89 1 12c1.73-3.89 6-7 11-7zm0 2a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/></svg></span>
-                    <span>Mostrar/Ocultar</span>
-                </button>
-            </div>
-            
-            <div class="results-table-wrapper" id="results-body">
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Score</th>
-                            <th>Gap</th>
-                            <th>X3</th>
-                            <th>Pair?</th>
-                            <th>Par Hidrofóbico</th>
-                            <th>Score Par</th>
-                            <th>Long</th>
-                            <th>Secuencia</th>
-                        </tr>
-                    </thead>
-                    <tbody id="motif-body">
-                        <!-- Resultados dinámicos -->
-                    </tbody>
-                </table>
-                <!-- Paginación de tabla -->
-                <div class="results-header" style="margin-top: var(--space-4);">
-                    <div class="pagination-controls">
-                        <button id="tbl-prev" class="pagination-btn" aria-label="Anterior"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> Anterior</button>
-                        <span id="tbl-page" class="page-indicator">Página 1</span>
-                        <button id="tbl-next" class="pagination-btn" aria-label="Siguiente">Siguiente <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></button>
-                    </div>
-                    <div></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SheetJS se carga on-demand desde toxin_filter.js al presionar Exportar (se usa build xlsx.core.min.js) -->
-    
-    <!-- py3Dmol y Plotly se cargan on-demand desde motif_dipoles.js para minimizar trabajo en main thread -->
-    
-    <!-- Custom scripts con defer -->
-        <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
-        <script src="{{ url_for('static', filename=asset_path('js/ui-enhancements.js')) }}" defer></script>
-        <script src="{{ url_for('static', filename=asset_path('js/toxin_filter.min.js')) }}" defer></script>
-        <script src="{{ url_for('static', filename='js/motif_dipoles.min.js') }}" defer></script>
-        <script>
-            (function(){
-                try {
-                                if (!window.__TOXIN_FILTER_JS_LOADED__) {
-                                    var s=document.createElement('script');
-                                    s.src="{{ url_for('static', filename=asset_path('js/toxin_filter.js')) }}";
-                                    s.defer=true; document.head.appendChild(s);
-                                }
-                                if (!window.__MOTIF_JS_LOADED__) {
-                                    var s2=document.createElement('script');
-                                    s2.src="{{ url_for('static', filename='js/motif_dipoles.js') }}";
-                                    s2.defer=true; document.head.appendChild(s2);
-                                }
-                } catch(e) {}
-            })();
-        </script>
-</body>
-=======
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Filtro de toxinas Nav1.7 con búsqueda avanzada por motivos y características moleculares">
-    <title>Filtro de Toxinas | Proyecto Toxinas</title>
-    
     <!-- Preconexiones -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -467,220 +24,6 @@
     <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}"></noscript>
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/viewer.css')) }}" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/viewer.css')) }}"></noscript>
-    
-    <!-- Critical CSS inline -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a202c; background: #f8fafc; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
-        :root { --row-h: 44px; --thead-h: 48px; --page-size: 10; --radius: 8px; }
-        /* Reserva de espacio para estabilidad y pintura temprana */
-        #reference-viewer { min-height: 320px; position: relative; background: #f9fafb; border-radius: 8px; }
-        #filtered-dipoles-card .card-body { min-height: 240px; }
-        .filter-container { min-height: 96px; padding: 8px 12px; }
-        #status-line { min-height: 22px; display:flex; align-items:center; }
-    /* Resultados: reservar altura estable para evitar CLS */
-        #results-card.results-table-section { position: relative; min-height: calc(var(--thead-h) + var(--row-h) * var(--page-size) + 56px); border-radius: var(--radius); contain: layout paint; content-visibility: auto; }
-    .results-table-header { min-height: 88px; }
-        .results-table-wrapper { min-height: calc(var(--thead-h) + var(--row-h) * var(--page-size)); }
-        .results-table { table-layout: fixed; width: 100%; }
-        .results-table thead th { height: var(--thead-h); }
-        .results-table tbody tr { height: var(--row-h); }
-        .pagination-controls { min-height: 44px; display:flex; align-items:center; }
-        .is-hidden-keep-space { visibility: hidden; }
-        /* Skeleton para filas */
-        .skeleton-row td { position: relative; overflow: hidden; background: #f8fafc; }
-        .skeleton-row td::after { content: ''; position: absolute; inset: 8px 16px; background: linear-gradient(90deg,#f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%); background-size: 400% 100%; animation: skeleton 1.2s ease-in-out infinite; border-radius: 4px; }
-        @keyframes skeleton { 0%{background-position:100% 50%} 100%{background-position:0 50%} }
-
-        /* Tabs de filtro en la tabla de resultados */
-        .filter-mode-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem;
-            align-items: center;
-        }
-        .filter-mode-tabs .tab-btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1.5px solid #cbd5e1;
-            background: #fff;
-            color: #334155;
-            font-weight: 600;
-            font-size: 0.85rem;
-            line-height: 1;
-            cursor: pointer;
-            transition: background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
-        }
-        .filter-mode-tabs .tab-btn:hover { background: #f8fafc; border-color: #94a3b8; }
-        .filter-mode-tabs .tab-btn.active {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
-        }
-        @media (max-width: 640px) {
-            .filter-mode-tabs { gap: .4rem; }
-            .filter-mode-tabs .tab-btn { flex: 1 1 auto; justify-content: center; min-width: 120px; }
-        }
-        
-        /* Estilos para los botones de modo de visualización */
-        .view-mode-controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 8px;
-            margin: 1rem 1.5rem;
-        }
-        
-        .btn-view-mode {
-            background: white;
-            color: #64748b;
-            border: 2px solid #e2e8f0;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-view-mode:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #cbd5e1;
-        }
-        
-        .btn-view-mode:active {
-            transform: translateY(0);
-        }
-        
-        .btn-view-mode.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-view-mode.active:hover {
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-        }
-        
-        .btn-view-mode i {
-            font-size: 16px;
-        }
-        
-        /* Animación al cambiar de modo */
-        @keyframes modeChange {
-            0% { opacity: 0; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .visualization-grid.mode-changing {
-            animation: modeChange 0.3s ease;
-        }
-
-        /* Botones IC50 (Todos / Con / Sin) */
-        .ic50-filter-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-            color: #334155;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
-        }
-        .ic50-filter-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(15, 23, 42, .12);
-            border-color: #cbd5e1;
-        }
-        .ic50-filter-btn .icon { font-size: 1rem; opacity: .85; }
-        .ic50-filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 8px 18px rgba(102, 126, 234, .35);
-        }
-        .ic50-filter-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        /* Overlay de carga sobre el grid de dipolos */
-        #filtered-dipoles-card .card-body { position: relative; }
-        .ic50-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-        .ic50-loading-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
-            border-radius: 10px;
-            background: #ffffff;
-            box-shadow: 0 8px 22px rgba(0,0,0,.12);
-            color: #334155;
-            font-weight: 600;
-        }
-        .ic50-spinner {
-            width: 18px; height: 18px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: ic50spin .9s linear infinite;
-        }
-        @keyframes ic50spin { to { transform: rotate(360deg); } }
-
-        /* Overlay de carga para Gráficos */
-        #charts-card .card-body { position: relative; }
-        .charts-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-        .charts-loading-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
-            border-radius: 10px;
-            background: #ffffff;
-            box-shadow: 0 8px 22px rgba(0,0,0,.12);
-            color: #334155;
-            font-weight: 600;
-        }
-        .charts-spinner {
-            width: 18px; height: 18px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: ic50spin .9s linear infinite;
-        }
-    </style>
 </head>
 <body class="filter-page">
     <!-- NAVBAR -->
@@ -734,32 +77,119 @@
     <!-- CONTENIDO PRINCIPAL -->
     <div class="filter-container">
 
-        <!-- NUEVO: Botones para abrir visualizaciones bajo demanda -->
-        <div class="filter-actions" style="margin: 1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
-            <button id="btn-open-visuals" class="btn btn-primary" aria-pressed="false" aria-controls="visualizations-section">
-                <span aria-hidden="true"><i class="fa-solid fa-cubes"></i></span>
-                <span>Mostrar visualizaciones 3D</span>
-            </button>
-            <button id="btn-open-charts" class="btn btn-primary" aria-pressed="false" aria-controls="charts-card">
-                <span aria-hidden="true"><i class="fa-solid fa-chart-column"></i></span>
-                <span>Mostrar gráficos</span>
-            </button>
-        </div>
+        <!-- Intro de la página -->
+        <section class="page-intro" aria-labelledby="intro-title">
+            <div class="intro-header">
+                <div class="intro-icon" aria-hidden="true"><i class="fa-solid fa-microscope"></i></div>
+                <div class="intro-texts">
+                    <h1 id="intro-title" class="intro-title">Búsqueda de Toxinas Afines a NaV1.7</h1>
+                    <p class="intro-lead">
+                        Aplicación del farmacóforo funcional derivado de péptidos de veneno sobre la base de datos UniProt
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grid de secciones explicativas -->
+            <div class="intro-grid">
+                <!-- Objetivo -->
+                <div class="intro-section">
+                    <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></div>
+                    <h2 class="intro-section-title">Objetivo</h2>
+                    <p class="intro-section-text">
+                        Identificar toxinas peptídicas (reportadas y potenciales) con alta probabilidad de afinidad al canal de sodio NaV1.7, 
+                        basándose en criterios estructurales y motivos funcionales validados experimentalmente.
+                    </p>
+                </div>
+
+                <!-- Metodología -->
+                <div class="intro-section">
+                    <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-dna"></i></div>
+                    <h2 class="intro-section-title">Motivo de Búsqueda</h2>
+                    <p class="intro-section-text">
+                        Se aplica el patrón estructural <span class="motif-badge">CX<sub>3-6</sub>CX<sub>n</sub>C</span> con residuos hidrofóbicos clave 
+                        (posición X<sub>3</sub>) y parejas conservadas (X<sub>3</sub>X<sub>4</sub>), según el modelo de <em>screening in silico</em> 
+                        combinado con ingeniería racional.
+                    </p>
+                </div>
+
+                <!-- Referencia -->
+                <div class="intro-section intro-section--highlight">
+                    <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></div>
+                    <h2 class="intro-section-title">Referencia Científica</h2>
+                    <p class="intro-section-text">
+                        Basado en el estudio publicado en <strong>FEBS Letters</strong>:
+                    </p>
+                    <div class="paper-reference">
+                        <cite class="paper-title">
+                            "Refining the NaV1.7 pharmacophore of a class of venom-derived peptide inhibitors via a combination of in silico screening and rational engineering"
+                        </cite>
+                        <a href="https://febs.onlinelibrary.wiley.com/toc/18733468/2025/599/12" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="paper-link"
+                           aria-label="Ver artículo completo en FEBS Letters (abre en nueva pestaña)">
+                            <i class="fa-solid fa-external-link-alt" aria-hidden="true"></i>
+                            <span>Ver artículo completo</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles de visualización mejorados -->
+            <div class="visualization-controls" role="group" aria-label="Controles de visualización">
+                <button id="btn-open-visuals" class="viz-toggle-card" aria-pressed="false" aria-controls="visualizations-section" data-viz-type="3d">
+                    <div class="viz-card-icon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="viz-card-content">
+                        <h3 class="viz-card-title">Visualizaciones 3D</h3>
+                        <p class="viz-card-desc">Explora estructuras moleculares interactivas</p>
+                    </div>
+                    <div class="viz-card-status">
+                        <span class="status-badge status-hidden">Oculto</span>
+                        <i class="fa-solid fa-chevron-down viz-chevron"></i>
+                    </div>
+                </button>
+                
+                <button id="btn-open-charts" class="viz-toggle-card" aria-pressed="false" aria-controls="charts-card" data-viz-type="charts">
+                    <div class="viz-card-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+                    <div class="viz-card-content">
+                        <h3 class="viz-card-title">Gráficos Analíticos</h3>
+                        <p class="viz-card-desc">Visualiza métricas y distribuciones</p>
+                    </div>
+                    <div class="viz-card-status">
+                        <span class="status-badge status-hidden">Oculto</span>
+                        <i class="fa-solid fa-chevron-down viz-chevron"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- Acceso rápido a tabla -->
+            <div class="quick-nav">
+                <a href="#results-card" class="quick-nav-link">
+                    <i class="fa-solid fa-table-list" aria-hidden="true"></i>
+                    <span>Ir a tabla de resultados</span>
+                    <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+                </a>
+            </div>
+        </section>
 
         <!-- Sección de visualizaciones 3D (referencia + grilla) - oculta hasta clic -->
-        <div class="visualization-section" style="display:block;">
+        <div class="visualization-section">
             <div id="visualizations-section" hidden inert>
             <div class="visualization-card">
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title reference-section-title" style="margin:0;display:flex;align-items:center;gap:0.75rem;">
+                <div class="card-header card-header-row">
+                    <h2 class="section-title reference-section-title">
                         <span aria-hidden="true"><i class="fa-solid fa-magnet"></i></span>
                         <span>Dipolo de Referencia:</span>
                         <select id="reference-selector" class="reference-selector-dropdown">
                             <option value="WT" selected>Proteína WT</option>
                         </select>
-                        <code id="reference-sequence" class="reference-sequence" style="margin-left:8px;font-family:monospace;font-size:0.95rem;color:#374151;">-</code>
+                        <code id="reference-sequence" class="reference-sequence">-</code>
                     </h2>
-                    <div class="header-actions" style="display:flex;gap:0.5rem;align-items:center;">
+                    <div class="header-actions">
                         <button id="download-reference-btn" class="btn btn-secondary" title="Descargar PDB y PSF de la referencia">
                             <span aria-hidden="true"><i class="fa-solid fa-download"></i></span>
                             <span>Descargar</span>
@@ -767,7 +197,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="reference-viewer" style="width:100%;height:360px;position:relative;">
+                    <div id="reference-viewer">
                         <div class="loading-state">
                             <div class="spinner" id="refSpinner"></div>
                             <p class="loading-text">Cargando referencia...</p>
@@ -777,11 +207,11 @@
             </div>
 
             <div class="visualization-card" id="filtered-dipoles-card">
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title" style="margin:0;"><span aria-hidden="true"><i class="fa-solid fa-bolt"></i></span> Dipolos de Toxinas Filtradas</h2>
+                <div class="card-header card-header-row">
+                    <h2 class="section-title"><span aria-hidden="true"><i class="fa-solid fa-bolt"></i></span> Dipolos de Toxinas Filtradas</h2>
                     <div>
                         <button id="prev-page" class="btn btn-secondary" aria-label="Anterior"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> Anterior</button>
-                        <span id="page-indicator" style="margin:0 8px;">Página 1</span>
+                        <span id="page-indicator" class="page-indicator">Página 1</span>
                         <button id="next-page" class="btn btn-secondary" aria-label="Siguiente">Siguiente <i class="fa-solid fa-angle-right" aria-hidden="true"></i></button>
                     </div>
                 </div>
@@ -805,17 +235,17 @@
 
             <!-- Tarjeta fija de Gráficos (oculta hasta clic) -->
             <div class="visualization-card" id="charts-card" hidden inert>
-                <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                    <h2 class="section-title" style="margin:0;"><span aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span> Gráficos</h2>
+                <div class="card-header card-header-row">
+                    <h2 class="section-title"><span aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span> Gráficos</h2>
                 </div>
                 <div class="card-body">
-                    <div class="chart-block" style="width:100%;height:420px;">
-                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">IC50 (todas las páginas)</h3>
-                        <div id="ic50-scatter-all" style="width:100%;height:380px;"></div>
+                    <div class="chart-block">
+                        <h3 class="chart-title">IC50 (todas las páginas)</h3>
+                        <div id="ic50-scatter-all" class="chart-canvas"></div>
                     </div>
-                    <div class="chart-block" style="width:100%;height:380px;margin-top:16px;">
-                        <h3 class="chart-title" style="margin:0 0 8px 0;font-size:14px;color:#475569;font-weight:600;">Orientación (sin IC50)</h3>
-                        <div id="ori-no-ic50-chart" style="width:100%;height:340px;"></div>
+                    <div class="chart-block chart-block--compact">
+                        <h3 class="chart-title">Orientación (sin IC50)</h3>
+                        <div id="ori-no-ic50-chart" class="chart-canvas chart-canvas--compact"></div>
                     </div>
                 </div>
             </div>
@@ -874,54 +304,134 @@
             </div>
         </div>
 
-        <!-- Tabla de Resultados -->
+        <!-- Tabla de Resultados - Diseño Moderno -->
         <div class="results-table-section" id="results-card">
             <div class="results-table-header">
-                    <div class="results-title-wrapper">
-                        <div class="results-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v4h14V5H5zm14 6H5v8h14v-8z"/></svg></div>
+                <!-- Título y contador -->
+                <div class="results-title-wrapper">
+                    <div class="results-icon" aria-hidden="true">
+                        <i class="fa-solid fa-table-list"></i>
+                    </div>
                     <h2 class="results-title">
-                        Tabla de Resultados 
+                        Resultados del Filtro
                         <span class="results-count" id="hit-count">0</span>
                     </h2>
                 </div>
-                    <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <input id="accession-search" type="search" placeholder="Buscar por accession" aria-label="Buscar por accession" style="padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;">
-                        <button id="accession-clear" class="btn btn-sm btn-secondary" title="Limpiar búsqueda" style="padding:6px 8px;">Limpiar</button>
+                
+                <!-- Controles de búsqueda y filtrado -->
+                <div class="results-table-controls">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                        <input 
+                            id="accession-search" 
+                            type="search" 
+                            placeholder="Buscar por ID, nombre o accession..." 
+                            aria-label="Buscar toxina por identificador"
+                            autocomplete="off">
+                        <button 
+                            id="accession-clear" 
+                            class="btn-clear-search" 
+                            title="Limpiar búsqueda"
+                            aria-label="Limpiar búsqueda">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
                     </div>
-                <!-- Placeholder de tabs para no cambiar la altura al inyectarlos desde JS -->
-                <div id="tabs-placeholder" class="filter-mode-tabs" style="height:38px;"></div>
+                    
+                    <!-- Placeholder de tabs para no cambiar la altura al inyectarlos desde JS -->
+                    <div id="tabs-placeholder" class="filter-mode-tabs"></div>
+                </div>
+                
+                <!-- Botón de toggle -->
                 <button id="toggle-results" class="toggle-table-btn" aria-expanded="true" aria-controls="results-body">
-                    <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5c5 0 9.27 3.11 11 7-1.73 3.89-6 7-11 7S2.73 15.89 1 12c1.73-3.89 6-7 11-7zm0 2a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/></svg></span>
-                    <span>Mostrar/Ocultar</span>
+                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                    <span>Ocultar</span>
                 </button>
             </div>
             
             <div class="results-table-wrapper" id="results-body">
+                <!-- Estado vacío inicial -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">
+                        <i class="fa-solid fa-flask-vial"></i>
+                    </div>
+                    <h3 class="empty-state-title">No hay resultados aún</h3>
+                    <p class="empty-state-description">
+                        Configura los filtros arriba y haz clic en "Buscar Toxinas" para ver los resultados de tu búsqueda.
+                    </p>
+                    <button class="empty-state-action" onclick="document.getElementById('run-filter').click()">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <span>Buscar Ahora</span>
+                    </button>
+                </div>
+                
+                <!-- Tabla de resultados -->
                 <table class="results-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Score</th>
-                            <th>Gap</th>
-                            <th>X3</th>
-                            <th>Pair?</th>
-                            <th>Par Hidrofóbico</th>
-                            <th>Score Par</th>
-                            <th>Long</th>
-                            <th>Secuencia</th>
+                            <th>
+                                ID Péptido
+                                <span class="header-help-icon" title="Identificador único del péptido en la base de datos UniProt. Ejemplo: P0DL84, D2Y1Y1">?</span>
+                            </th>
+                            <th>
+                                Nombre
+                                <span class="header-help-icon" title="Nombre sistemático de la toxina según nomenclatura estándar. Ejemplo: μ-TRTX-Hh2a indica tipo μ (mu), familia TRTX (tarantula toxin), especie Hh (Haplopelma hainanum), variante 2a">?</span>
+                            </th>
+                            <th>
+                                Score
+                                <span class="header-help-icon" title="Puntuación del motivo CXCX encontrado (rango 0-10). Valores mayores indican mejor coincidencia con el patrón de búsqueda. Score 9 es excelente">?</span>
+                            </th>
+                            <th>
+                                Gap
+                                <span class="header-help-icon" title="Distancia en aminoácidos entre las cisteínas clave del motivo. Rango configurado: 3-6 residuos. Importante para la estructura terciaria">?</span>
+                            </th>
+                            <th>
+                                X3
+                                <span class="header-help-icon" title="Aminoácido en posición X3 del motivo funcional. Residuos comunes: V (Valina), Y (Tirosina), F (Fenilalanina). Crítico para selectividad Nav1.7">?</span>
+                            </th>
+                            <th>
+                                Par?
+                                <span class="header-help-icon" title="Indica presencia de par hidrofóbico conservado (✓ = presente, — = ausente). Pares hidrofóbicos estabilizan la estructura y pueden afectar la afinidad">?</span>
+                            </th>
+                            <th>
+                                Par Hidrofóbico
+                                <span class="header-help-icon" title="Residuos específicos que forman el par hidrofóbico. Ejemplos: YA (Tyr-Ala), LV (Leu-Val), WF (Trp-Phe). Interacciones no polares importantes">?</span>
+                            </th>
+                            <th>
+                                Score Par
+                                <span class="header-help-icon" title="Índice de hidrofobicidad del par (escala Kyte-Doolittle). Rango 0.50-8.00. Valores >5 indican alta hidrofobicidad. Usado para predecir interacciones membrana">?</span>
+                            </th>
+                            <th>
+                                Long.
+                                <span class="header-help-icon" title="Longitud total de la cadena peptídica en residuos de aminoácidos. Toxinas Nav típicas: 30-40 aa. Determina tamaño molecular y complejidad estructural">?</span>
+                            </th>
+                            <th>
+                                Secuencia
+                                <span class="header-help-icon" title="Secuencia primaria completa (código 1 letra). Residuos coloreados: Rojo=C5 (Cys), Azul=Ser, Cyan=Trp, Naranja=Lys, Púrpura=X3, Verde=Par hidrofóbico">?</span>
+                            </th>
                         </tr>
                     </thead>
-                    <tbody id="motif-body"></tbody>
+                    <tbody id="motif-body">
+                        <!-- Las filas se cargan dinámicamente -->
+                    </tbody>
                 </table>
-                <!-- Paginación de tabla -->
-                <div class="results-header" style="margin-top: var(--space-4);">
+                
+                <!-- Paginación moderna -->
+                <div class="results-header" style="margin-top: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
                     <div class="pagination-controls">
-                        <button id="tbl-prev" class="pagination-btn" aria-label="Anterior"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> Anterior</button>
+                        <button id="tbl-prev" class="pagination-btn" aria-label="Página anterior">
+                            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                            <span>Anterior</span>
+                        </button>
                         <span id="tbl-page" class="page-indicator">Página 1</span>
-                        <button id="tbl-next" class="pagination-btn" aria-label="Siguiente">Siguiente <i class="fa-solid fa-angle-right" aria-hidden="true"></i></button>
+                        <button id="tbl-next" class="pagination-btn" aria-label="Página siguiente">
+                            <span>Siguiente</span>
+                            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    <div></div>
+                    <div style="color: var(--gray-600); font-size: var(--text-sm); text-align: center;">
+                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                        <span id="pagination-info">Mostrando resultados filtrados</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -932,52 +442,9 @@
     <!-- py3Dmol y Plotly se cargan on-demand desde motif_dipoles.js para minimizar trabajo en main thread -->
     
     <!-- Custom scripts con defer -->
-        <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
-        <script src="{{ url_for('static', filename=asset_path('js/ui-enhancements.js')) }}" defer></script>
-    <script src="{{ url_for('static', filename=asset_path('js/toxin_filter.min.js')) }}" defer></script>
+    <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
+    <script src="{{ url_for('static', filename=asset_path('js/ui-enhancements.js')) }}" defer></script>
+    <script src="{{ url_for('static', filename=asset_path('js/toxin_filter.js')) }}" defer></script>
     <script src="{{ url_for('static', filename=asset_path('js/motif_dipoles.js')) }}" defer></script>
-        <script>
-            (function(){
-                try {
-                                if (!window.__TOXIN_FILTER_JS_LOADED__) {
-                                    var s=document.createElement('script');
-                                    s.src="{{ url_for('static', filename=asset_path('js/toxin_filter.js')) }}";
-                                    s.defer=true; document.head.appendChild(s);
-                                }
-                                                                if (!window.__MOTIF_JS_LOADED__) {
-                                                                        var s2=document.createElement('script');
-                                                                        s2.src="{{ url_for('static', filename=asset_path('js/motif_dipoles.js')) }}";
-                                                                        s2.defer=true; document.head.appendChild(s2);
-                                                                }
-                } catch(e) {}
-            })();
-        </script>
-                <!-- Sincronización de etiquetas Mostrar/Ocultar como red de seguridad por si carga una versión minificada antigua -->
-                <script>
-                document.addEventListener('DOMContentLoaded', function(){
-                    try {
-                        function syncToggle(btnId, secId, showText, hideText){
-                            var btn = document.getElementById(btnId);
-                            var sec = document.getElementById(secId);
-                            if (!btn || !sec) return;
-                            var textSpan = btn.querySelector('span:last-child');
-                            function apply(){
-                                if (!textSpan) return;
-                                var active = !sec.hidden;
-                                textSpan.textContent = active ? hideText : showText;
-                                btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-                                btn.classList.toggle('active', active);
-                            }
-                            apply();
-                            var mo = new MutationObserver(apply);
-                            mo.observe(sec, { attributes:true, attributeFilter:['hidden'] });
-                            btn.addEventListener('click', function(){ setTimeout(apply, 0); }, { passive:true });
-                        }
-                        syncToggle('btn-open-visuals','visualizations-section','Mostrar visualizaciones 3D','Ocultar visualizaciones 3D');
-                        syncToggle('btn-open-charts','charts-card','Mostrar gráficos','Ocultar gráficos');
-                    } catch(e) {}
-                });
-                </script>
 </body>
->>>>>>> origin/juaker
 </html>
