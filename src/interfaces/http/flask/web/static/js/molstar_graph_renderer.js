@@ -575,7 +575,7 @@ class MolstarGraphRenderer {
             return;
         }
         
-        console.log('Rendering graph:', { nodeCount: nodes.length, edgeCount: edges.length });
+      
         
         // Clear canvas
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

@@ -7,49 +7,28 @@
     <title>Visualizador de Proteínas | Proyecto Toxinas</title>
     
     <!-- Preconexiones para optimizar carga -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <!-- Prefetch para librerías externas de terceros - Caché de 7 días en CDN -->
-    <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.js">
-    <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/3dmol@latest/build/3Dmol-min.js">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- Font Awesome - Async con fallback y font-display: optional -->
+    <!-- Font Awesome - Carga diferida para reducir bloqueo inicial -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <style>
-        /* Optimizar fuentes de terceros con font-metric-overrides para evitar layout shifts */
-        @font-face {
-            font-display: optional;
-            font-family: 'Font Awesome 6 Free';
-            font-stretch: normal;
-            font-style: normal;
-            font-weight: 900;
-            src: url('data:application/x-font-woff2;charset=utf-8;base64,') format('woff2');
-            size-adjust: 97%;
-            ascent-override: 100%;
-            descent-override: 20%;
-            line-gap-override: 0%;
-        }
-        
-        /* Fallback system fonts que no requieren descarga */
-        .fas, .fa-solid, [class^="fa-"] {
-            font-display: swap;
-        }
-    </style>
     
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/toxina.png') }}">
+
     <!-- Sistema de diseño (críticos) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/design-system.css')) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/design-system.css')) }}" fetchpriority="high">
+
+    <!-- CSS secundarios -->
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/navbar.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/components.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/viewer-page.css')) }}">
+
+
     
-    <!-- Estilos de Mol* (deferred con media=print) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.css" media="print" onload="this.onload=null;this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.css"></noscript>
+    <!-- Estilos de Mol* -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.css">
     
     <!-- Spinner animation for graph loading -->
     <style>
@@ -182,8 +161,7 @@
                         <div id="py3dmol-container" style="width: 100%; height: 100%;"></div>
                     </div>
                     
-                    <!-- Plotly viewer -->
-                    <div id="plotly-dipole-viewer" class="viewer-canvas"></div>
+                  
                     
                     <!-- Info overlay  -->
                     <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
@@ -782,17 +760,12 @@
         }
     </script>
 
-    <!-- Lazy load de scripts no-críticos con defer -->
-    <!-- Mol* viewer library -->
+    <!-- Scripts externos con defer para carga no bloqueante -->
     <script src="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.js" defer></script>
-    
-    <!-- py3Dmol for molecular visualization -->
     <script src="https://cdn.jsdelivr.net/npm/3dmol@latest/build/3Dmol-min.js" defer></script>
     
-    <!-- WebGL Graph Renderer (replaces Plotly) -->
+    <!-- Scripts personalizados con defer -->
     <script src="{{ url_for('static', filename=asset_path('js/molstar_graph_renderer.js')) }}" defer></script>
-    
-    <!-- Custom scripts con defer -->
     <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
     <script src="{{ url_for('static', filename=asset_path('js/ui-enhancements.js')) }}" defer></script>
     <script src="{{ url_for('static', filename=asset_path('js/molstar_analyzer.js')) }}" defer></script>

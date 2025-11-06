@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // Initialize Molstar Graph Renderer (WebGL-optimized, replaces Plotly)
+    // Initialize fallback renderer - WebGL renderer removed to improve stability
     let graphRenderer = null;
     
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -45,8 +45,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     let currentProteinGroup = null;
     let currentProteinId = null;
     
-    // Initialize WebGL graph renderer
-    graphRenderer = new MolstarGraphRenderer(graphPlotElement);
+    // Initialize WebGL graph renderer with safety check
+    if (typeof MolstarGraphRenderer !== 'undefined') {
+        graphRenderer = new MolstarGraphRenderer(graphPlotElement);
+    } else {
+        // Fallback if renderer not loaded yet
+        console.warn('MolstarGraphRenderer not loaded yet, will retry...');
+        graphRenderer = {
+            loadGraph: () => console.log('Waiting for MolstarGraphRenderer...'),
+            clear: () => {}
+        };
+        // Retry after a short delay
+        setTimeout(() => {
+            if (typeof MolstarGraphRenderer !== 'undefined') {
+                graphRenderer = new MolstarGraphRenderer(graphPlotElement);
+                window.graphRenderer = graphRenderer;
+                console.log('MolstarGraphRenderer loaded successfully');
+            }
+        }, 500);
+    }
     
     // Exponer globalmente para debugging
     window.graphRenderer = graphRenderer;
@@ -153,12 +170,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // LOG de tiempos del servidor
-            if (data.meta && data.meta.perf_ms) {
-                console.log('[GraphPerf] build_ms=', data.meta.perf_ms.build_ms,
-                            'viz_ms=', data.meta.perf_ms.viz_ms,
-                            'present_ms=', data.meta.perf_ms.present_ms);
-            }
+    
 
             // Render with WebGL-optimized renderer (replaces Plotly)
             console.time('webgl-render');
@@ -193,6 +205,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             
             const errorMsg = document.createElement('div');
+            errorMsg.className = 'graph-error-message';
             errorMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff6b6b; font-size: 16px; text-align: center;';
             errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i><br>Error al cargar el grafo:<br>' + error.message;
             graphPlotElement.appendChild(errorMsg);
@@ -306,10 +319,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function showLoading(element) {
-        // Clear previous content
-        const msgs = element.querySelectorAll('div');
-        msgs.forEach(msg => msg.remove());
-        
+        if (!element) return;
+
+        const removable = element.querySelectorAll('.graph-loading-indicator, .graph-error-message');
+        removable.forEach(node => node.remove());
+
+        const fallback = element.querySelector('.graph-fallback-message');
+        if (fallback) {
+            fallback.style.opacity = '0.35';
+        }
+
         const loadingMsg = document.createElement('div');
         loadingMsg.className = 'graph-loading-indicator';
         loadingMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 16px; text-align: center;';
@@ -318,8 +337,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     function hideLoading(element) {
+        if (!element) return;
         const loadingIndicators = element.querySelectorAll('.graph-loading-indicator');
         loadingIndicators.forEach(indicator => indicator.remove());
+
+        const fallback = element.querySelector('.graph-fallback-message');
+        if (fallback) {
+            fallback.style.opacity = '';
+        }
     }
 
     function setupExportButton() {
@@ -332,18 +357,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         if (!exportBtn) return;
         
-        const buttonText = exportBtn.querySelector('.button-text');
-        const loadingText = exportBtn.querySelector('.loading-text');
+        const buttonContent = exportBtn.querySelector('.btn-content-modern span:last-child');
+        const loadingContent = exportBtn.querySelector('.btn-loading-modern');
         
         // Function to update button text based on export type
         function updateExportButtonText() {
-            if (!exportTypeSelector || !buttonText) return;
+            if (!exportTypeSelector || !buttonContent) return;
             
             const exportType = exportTypeSelector.value;
             if (exportType === 'segments_atomicos') {
-                buttonText.textContent = '🧩 Descargar Excel de Segmentos Atómicos';
+                buttonContent.textContent = 'Segmentos Atómicos';
             } else {
-                buttonText.textContent = '📊 Descargar Excel de Residuos Individuales';
+                buttonContent.textContent = 'Descargar Excel';
             }
         }
         
@@ -363,8 +388,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             // Disable button and show loading state
             exportBtn.disabled = true;
-            buttonText.style.display = 'none';
-            loadingText.style.display = 'inline';
+            if (buttonContent && buttonContent.parentElement) {
+                buttonContent.parentElement.style.display = 'none';
+            }
+            if (loadingContent) {
+                loadingContent.style.display = 'inline-flex';
+            }
             
             try {
                 const longValue = longInput.value;
@@ -404,10 +433,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Segmentación atómica (solo Nav1.7)
                     filename = `Nav1.7-${cleanName}-Segmentos-Atomicos.xlsx`;
                     url = `/v2/export/segments_atomicos/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
-                    
-                    // Update button text for atomic segmentation
-                    const buttonText = exportBtn.querySelector('.button-text');
-                    buttonText.textContent = '🧩 Descargando Segmentos Atómicos...';
                 } else {
                     // Análisis por residuos (normal)
                     const exportTypeText = 'Residuos';
@@ -437,8 +462,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 exportFeedback.showError('Export failed. Please try again.');
             } finally {
                 exportBtn.disabled = false;
-                buttonText.style.display = 'inline';
-                loadingText.style.display = 'none';
+                if (buttonContent && buttonContent.parentElement) {
+                    buttonContent.parentElement.style.display = 'inline-flex';
+                }
+                if (loadingContent) {
+                    loadingContent.style.display = 'none';
+                }
                 // Restore original button text
                 updateExportButtonText();
             }
@@ -447,16 +476,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         // FAMILY EXPORT
         if (familySelector && exportFamilyBtn) {
             const familyExportTypeSelector = document.getElementById('family-export-type-selector');
+            const familyButtonContent = exportFamilyBtn.querySelector('.btn-content-modern span:last-child');
+            const familyLoadingContent = exportFamilyBtn.querySelector('.btn-loading-modern');
             
             // Update family button text based on export type
             function updateFamilyExportButtonText() {
-                const familyButtonText = exportFamilyBtn.querySelector('.button-text');
+                if (!familyButtonContent) return;
                 const exportType = familyExportTypeSelector ? familyExportTypeSelector.value : 'residues';
                 
                 if (exportType === 'segments_atomicos') {
-                    familyButtonText.textContent = '🧩 Descargar Dataset Segmentación Atómica Familia + IC₅₀';
+                    familyButtonContent.textContent = 'Segmentación Atómica Familia';
                 } else {
-                    familyButtonText.textContent = '📈 Descargar Dataset Excel Familia Completa + IC₅₀';
+                    familyButtonContent.textContent = 'Exportar familia';
                 }
             }
             
@@ -477,9 +508,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
                 
-                const familyButtonText = exportFamilyBtn.querySelector('.button-text');
-                const familyLoadingText = exportFamilyBtn.querySelector('.loading-text');
-                
                 // Get export type for families
                 const familyExportType = familyExportTypeSelector ? familyExportTypeSelector.value : 'residues';
                 
@@ -493,8 +521,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 exportFamilyBtn.disabled = true;
-                familyButtonText.style.display = 'none';
-                familyLoadingText.style.display = 'inline';
+                if (familyButtonContent && familyButtonContent.parentElement) {
+                    familyButtonContent.parentElement.style.display = 'none';
+                }
+                if (familyLoadingContent) {
+                    familyLoadingContent.style.display = 'inline-flex';
+                }
                 
                 try {
                     const longValue = longInput.value;
@@ -553,8 +585,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     exportFeedback.showError('Exportación de familia falló. Por favor intenta de nuevo.');
                 } finally {
                     exportFamilyBtn.disabled = false;
-                    familyButtonText.style.display = 'inline';
-                    familyLoadingText.style.display = 'none';
+                    if (familyButtonContent && familyButtonContent.parentElement) {
+                        familyButtonContent.parentElement.style.display = 'inline-flex';
+                    }
+                    if (familyLoadingContent) {
+                        familyLoadingContent.style.display = 'none';
+                    }
                     updateFamilyExportButtonText(); // Restore proper text
                 }
             });
@@ -563,16 +599,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         // WT COMPARISON
         if (wtFamilySelector && exportWtBtn) {
             const wtExportTypeSelector = document.getElementById('wt-export-type-selector');
+            const wtButtonContent = exportWtBtn.querySelector('.btn-content-modern span:last-child');
+            const wtLoadingContent = exportWtBtn.querySelector('.btn-loading-modern');
             
             // Update WT button text based on export type
             function updateWtExportButtonText() {
-                const wtButtonText = exportWtBtn.querySelector('.button-text');
+                if (!wtButtonContent) return;
                 const exportType = wtExportTypeSelector ? wtExportTypeSelector.value : 'residues';
                 
                 if (exportType === 'segments_atomicos') {
-                    wtButtonText.textContent = '🧩 Comparar WT vs Referencia Segmentación Atómica + Excel';
+                    wtButtonContent.textContent = 'Comparar WT (Segmentación)';
                 } else {
-                    wtButtonText.textContent = '🔬 Comparar WT vs Referencia + Exportar Excel';
+                    wtButtonContent.textContent = 'Comparar con WT';
                 }
             }
             
@@ -593,9 +631,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
                 
-                const wtButtonText = exportWtBtn.querySelector('.button-text');
-                const wtLoadingText = exportWtBtn.querySelector('.loading-text');
-                
                 // Get export type for WT comparison
                 const wtExportType = wtExportTypeSelector ? wtExportTypeSelector.value : 'residues';
                 
@@ -609,8 +644,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 exportWtBtn.disabled = true;
-                wtButtonText.style.display = 'none';
-                wtLoadingText.style.display = 'inline';
+                if (wtButtonContent && wtButtonContent.parentElement) {
+                    wtButtonContent.parentElement.style.display = 'none';
+                }
+                if (wtLoadingContent) {
+                    wtLoadingContent.style.display = 'inline-flex';
+                }
                 
                 try {
                     const longValue = longInput.value;
@@ -665,8 +704,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     exportFeedback.showError('Comparación WT falló. Por favor intenta de nuevo.');
                 } finally {
                     exportWtBtn.disabled = false;
-                    wtButtonText.style.display = 'inline';
-                    wtLoadingText.style.display = 'none';
+                    if (wtButtonContent && wtButtonContent.parentElement) {
+                        wtButtonContent.parentElement.style.display = 'inline-flex';
+                    }
+                    if (wtLoadingContent) {
+                        wtLoadingContent.style.display = 'none';
+                    }
                     updateWtExportButtonText(); // Restore proper text
                 }
             });
