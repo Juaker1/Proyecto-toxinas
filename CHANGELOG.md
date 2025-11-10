@@ -2,6 +2,36 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.7.2] – 2025-11-10
+
+### Added
+
+- Dos nuevas métricas de centralidad para análisis de grafos moleculares:
+  - Distancia Secuencial Promedio: identifica residuos con conexiones locales vs. globales.
+  - Proporción de Contactos Largos: clasifica residuos por su rol estructural (núcleo vs. superficie).
+- Formato de nombres de residuos extendido para granularidad atómica: `A:TRP:21:N` (cadena:residuo:número:átomo).
+
+### Changed
+
+- Visualizador 3D de grafos: etiquetas de nodos ahora muestran formato completo con átomos cuando aplica.
+- Panel de información de nodos: mantiene funcionalidad de selección después de usar reset o doble-click.
+
+### Fixed
+
+- Cálculo de métricas de centralidad: incluye las nuevas métricas en el pipeline completo (cálculo → API → UI).
+- Top 5 residuos: ahora muestra correctamente las dos nuevas métricas en la interfaz.
+
+### Technical Details
+
+- Archivos modificados:
+  - `src/infrastructure/graph/graph_metrics.py`: cálculo de `seq_distance_avg` y `long_contacts_prop`.
+  - `src/infrastructure/graphein/graphein_graph_adapter.py`: inclusión de nuevas métricas en respuesta API.
+  - `src/interfaces/http/flask/presenters/graph_presenter.py`: formateo de métricas para frontend.
+  - `src/infrastructure/graphein/graph_visualizer_adapter.py`: etiquetas de nodos con formato atómico.
+  - `src/interfaces/http/flask/web/static/js/molstar_graph_renderer.js`: reset de panel sin perder estructura.
+- Nuevas métricas disponibles en exportaciones Excel y visualización Top 5.
+- Compatibilidad mantenida con granularidad de residuos (sin átomos).
+
 ## [2.7.1] – 2025-11-04
 
 ### Added

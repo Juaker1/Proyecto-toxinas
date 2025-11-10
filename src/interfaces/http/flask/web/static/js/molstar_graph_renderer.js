@@ -443,7 +443,25 @@ class MolstarGraphRenderer {
         this.selectedNode = null;
         this.hoveredNode = null;
         if (this.infoPanelElement) {
-            this.infoPanelElement.innerHTML = '<div style="color: #666; font-size: 13px; text-align: center;">Pasa el cursor sobre un nodo para ver sus conexiones</div>';
+            const emptyState = this.infoPanelElement.querySelector('.graph-info-empty');
+            const detailsDiv = document.getElementById('graph-info-details');
+            const connectionsGrid = document.getElementById('node-connected');
+            const connectionsBadge = document.getElementById('connections-badge');
+            const nodeNameEl = document.getElementById('node-name');
+            const nodeTypeEl = document.getElementById('node-type');
+            const degreeEl = document.getElementById('node-degree');
+            const betweennessEl = document.getElementById('node-betweenness');
+            const closenessEl = document.getElementById('node-closeness');
+
+            if (emptyState) emptyState.style.display = 'flex';
+            if (detailsDiv) detailsDiv.style.display = 'none';
+            if (connectionsGrid) connectionsGrid.innerHTML = '';
+            if (connectionsBadge) connectionsBadge.textContent = '0';
+            if (nodeNameEl) nodeNameEl.textContent = '-';
+            if (nodeTypeEl) nodeTypeEl.textContent = 'Residuo';
+            if (degreeEl) degreeEl.textContent = '-';
+            if (betweennessEl) betweennessEl.textContent = '-';
+            if (closenessEl) closenessEl.textContent = '-';
         }
         this.render();
     }

@@ -107,13 +107,29 @@ def agrupar_por_segmentos_atomicos(G: Any, granularity: str = "atom") -> pd.Data
         else:
             degree_avg = between_avg = close_avg = cluster_avg = 0
 
+        # Obtener residuos vecinos conectados (únicos, fuera del segmento actual)
+        vecinos_externos = set()
+        for atom_node in atom_nodes:
+            for neighbor in G.neighbors(atom_node):
+                neighbor_data = G.nodes[neighbor]
+                neighbor_chain = neighbor_data.get('chain_id', 'A')
+                neighbor_res_name = neighbor_data.get('residue_name', 'UNK')
+                neighbor_res_num = neighbor_data.get('residue_number', '?')
+                
+                # Solo agregar si es de un residuo diferente
+                neighbor_key = f"{neighbor_chain}_{neighbor_res_num}"
+                if neighbor_key != key:
+                    vecinos_externos.add(f"{neighbor_res_name}:{neighbor_res_num}")
+        
+        vecinos_list = sorted(list(vecinos_externos))
+
         segmentos_data.append({
             'Segmento_ID': segmento_id,
             'Num_Atomos': num_atomos,
             'Conexiones_Internas': internal_edges,
             'Atomos_Lista': ', '.join(atom_names),
-            'Residuo_Nombre': residuo_info['residuo_nombre'],
-            'Residuo_Numero': residuo_info['residuo_numero'],
+            'Aminoacido': residuo_info['residuo_nombre'],
+            'Posicion_Secuencia': residuo_info['residuo_numero'],
             'Cadena': residuo_info['cadena'],
             'Grado_Promedio': round(grado_promedio, 6),
             'Grado_Maximo': grado_max,
@@ -123,6 +139,7 @@ def agrupar_por_segmentos_atomicos(G: Any, granularity: str = "atom") -> pd.Data
             'Centralidad_Intermediacion_Promedio': round(between_avg, 6),
             'Centralidad_Cercania_Promedio': round(close_avg, 6),
             'Coeficiente_Agrupamiento_Promedio': round(cluster_avg, 6),
+            'Residuos_Vecinos_Conectados': ', '.join(vecinos_list) if vecinos_list else 'Ninguno'
         })
 
     segmentos_data.sort(key=lambda x: (x['Cadena'], x['Residuo_Numero'] if isinstance(x['Residuo_Numero'], int) else 999))
@@ -138,13 +155,24 @@ def agrupar_por_segmentos(G: Any, granularity: str = "atom") -> pd.DataFrame:
         chain = data.get('chain_id', 'A')
         residue_name = data.get('residue_name', 'UNK')
         residue_number = data.get('residue_number', 1)
+        
+        # Obtener vecinos conectados
+        neighbors = list(G.neighbors(node))
+        neighbor_list = []
+        for neighbor in neighbors:
+            neighbor_data = G.nodes[neighbor]
+            neighbor_res_name = neighbor_data.get('residue_name', 'UNK')
+            neighbor_res_num = neighbor_data.get('residue_number', '?')
+            neighbor_list.append(f"{neighbor_res_name}:{neighbor_res_num}")
+        
         segmentos.append({
             'Segmento_ID': f"{chain}:{residue_name}:{residue_number}",
             'Cadena': chain,
-            'Residuo_Nombre': residue_name,
-            'Residuo_Numero': residue_number,
+            'Aminoacido': residue_name,
+            'Posicion_Secuencia': residue_number,
             'Atomos_Lista': f"{residue_name}{residue_number}:CA",
             'Num_Atomos': 1,
-            'Grado_Nodo': G.degree(node)
+            'Numero_Conexiones': G.degree(node),
+            'Vecinos_Conectados': ', '.join(neighbor_list) if neighbor_list else 'Ninguno'
         })
     return pd.DataFrame(segmentos)

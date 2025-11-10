@@ -67,31 +67,103 @@ class ExportService:
 
         residue_data: List[Dict[str, Any]] = []
         for node in G.nodes():
-            if granularity == 'CA':
+            node_attrs = G.nodes[node]
+            
+            # Extraer atributos del nodo (Graphein guarda estos datos)
+            chain = node_attrs.get('chain_id', 'A')
+            residue_name = node_attrs.get('residue_name', 'UNK')
+            residue_number = node_attrs.get('residue_number', None)
+            atom_name = node_attrs.get('atom_name', node_attrs.get('atom_type', None))
+            
+            # Si no hay residue_number en atributos, intentar parsearlo del node_id
+            if residue_number is None:
                 parts = str(node).split(':')
                 if len(parts) >= 3:
-                    chain = parts[0]
-                    residue_name = parts[1]
-                    residue_number = parts[2]
+                    try:
+                        residue_number = int(parts[2])
+                    except:
+                        residue_number = str(node)
                 else:
-                    chain = G.nodes[node].get('chain_id', 'A')
-                    residue_name = G.nodes[node].get('residue_name', 'UNK')
                     residue_number = str(node)
+            
+            # Si no hay atom_name y el node_id tiene 4 partes, extraerlo
+            if atom_name is None and isinstance(node, str) and node.count(':') >= 3:
+                parts = str(node).split(':')
+                atom_name = parts[3] if len(parts) > 3 else None
+            
+            # Obtener vecinos del nodo (residuos/átomos conectados)
+            neighbors = list(G.neighbors(node))
+            neighbor_list = []
+            sequential_distances = []  # Para calcular distancias secuenciales
+            long_range_contacts = 0  # Para contar contactos de largo alcance
+            
+            for neighbor in neighbors:
+                neighbor_attrs = G.nodes[neighbor]
+                neighbor_res_name = neighbor_attrs.get('residue_name', 'UNK')
+                neighbor_res_num = neighbor_attrs.get('residue_number', str(neighbor))
+                
+                # Calcular distancia secuencial (solo si son números)
+                try:
+                    current_num = int(residue_number) if residue_number is not None else None
+                    neighbor_num = int(neighbor_res_num) if neighbor_res_num is not None else None
+                    
+                    if current_num is not None and neighbor_num is not None:
+                        seq_distance = abs(neighbor_num - current_num)
+                        sequential_distances.append(seq_distance)
+                        
+                        # Contar contactos de largo alcance (>5 residuos de separación)
+                        if seq_distance > 5:
+                            long_range_contacts += 1
+                except (ValueError, TypeError):
+                    pass  # Si no se pueden convertir a int, ignorar
+                
+                # Si es granularidad atom, incluir el nombre del átomo en los vecinos
+                if granularity.lower() == 'atom':
+                    neighbor_atom = neighbor_attrs.get('atom_name', neighbor_attrs.get('atom_type', '?'))
+                    if neighbor_atom is None and isinstance(neighbor, str) and neighbor.count(':') >= 3:
+                        neighbor_atom = str(neighbor).split(':')[3]
+                    if neighbor_atom:
+                        neighbor_list.append(f"{neighbor_res_name}:{neighbor_res_num}:{neighbor_atom}")
+                    else:
+                        neighbor_list.append(f"{neighbor_res_name}:{neighbor_res_num}")
+                else:
+                    neighbor_list.append(f"{neighbor_res_name}:{neighbor_res_num}")
+            
+            # Calcular métricas de distancia secuencial
+            avg_seq_distance = round(sum(sequential_distances) / len(sequential_distances), 2) if sequential_distances else 0.0
+            long_range_proportion = round(long_range_contacts / len(neighbors), 3) if neighbors else 0.0
+            
+            # Crear identificador único del residuo/átomo
+            if granularity.lower() == 'atom' and atom_name:
+                residue_id = f"{chain}:{residue_name}:{residue_number}:{atom_name}"
             else:
-                chain = G.nodes[node].get('chain_id', 'A')
-                residue_name = G.nodes[node].get('residue_name', 'UNK')
-                residue_number = str(G.nodes[node].get('residue_number', node))
+                residue_id = f"{chain}:{residue_name}:{residue_number}"
 
-            residue_data.append({
+            # Construir el diccionario de datos con nombres descriptivos
+            data_dict = {
+                'Identificador_Residuo': residue_id,
                 'Cadena': chain,
-                'Residuo_Nombre': residue_name,
-                'Residuo_Numero': residue_number,
+                'Aminoacido': residue_name,
+                'Posicion_Secuencia': residue_number,
+            }
+            
+            # Agregar columna de átomo solo si es granularidad atom
+            if granularity.lower() == 'atom':
+                data_dict['Tipo_Atomo'] = atom_name if atom_name else 'N/A'
+            
+            # Agregar métricas de centralidad y conectividad
+            data_dict.update({
                 'Centralidad_Grado': round(degree_centrality.get(node, 0), 6) if degree_centrality else 0,
                 'Centralidad_Intermediacion': round(betweenness_centrality.get(node, 0), 6) if betweenness_centrality else 0,
                 'Centralidad_Cercania': round(closeness_centrality.get(node, 0), 6) if closeness_centrality else 0,
                 'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6) if clustering_coefficient else 0,
-                'Grado_Nodo': G.degree(node)
+                'Numero_Conexiones': G.degree(node),
+                'Distancia_Secuencial_Promedio': avg_seq_distance,
+                'Proporcion_Contactos_Largos': long_range_proportion,
+                'Residuos_Vecinos': ', '.join(neighbor_list) if neighbor_list else 'Ninguno'
             })
+            
+            residue_data.append(data_dict)
         return residue_data
 
     @staticmethod

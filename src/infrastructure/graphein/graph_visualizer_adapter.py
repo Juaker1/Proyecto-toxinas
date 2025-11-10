@@ -35,24 +35,48 @@ class MolstarGraphVisualizerAdapter:
         for idx, node in enumerate(G.nodes()):
             x, y, z = pos3d[node]
             label = str(node)
-            
-            # Try to extract structured label (chain:residue:position)
+            chain = None
+            res_name = None
+            res_num = None
+            atom_name = None
+
             try:
                 node_data = G.nodes[node]
-                if 'residue_name' in node_data and 'residue_number' in node_data:
-                    res_name = node_data.get('residue_name', '')
-                    res_num = node_data.get('residue_number', '')
-                    chain = node_data.get('chain_id', 'A')
-                    label = f"{chain}:{res_name}:{res_num}"
+                chain = node_data.get('chain_id') or node_data.get('chain')
+                res_name = node_data.get('residue_name') or node_data.get('residue_name_short')
+                res_num = node_data.get('residue_number')
+                atom_name = node_data.get('atom_name') or node_data.get('atom_type')
+
+                if atom_name is None and isinstance(node, str):
+                    parts = node.split(':')
+                    if len(parts) >= 4:
+                        atom_name = parts[3]
+
+                if chain and res_name is not None and res_num is not None:
+                    if atom_name:
+                        label = f"{chain}:{res_name}:{res_num}:{atom_name}"
+                    else:
+                        label = f"{chain}:{res_name}:{res_num}"
             except Exception:
                 pass
-            
-            nodes.append({
+
+            node_entry = {
                 'x': float(x),
-                'y': float(y), 
+                'y': float(y),
                 'z': float(z),
                 'label': label
-            })
+            }
+
+            if chain:
+                node_entry['chain'] = chain
+            if res_name is not None:
+                node_entry['residueName'] = res_name
+            if res_num is not None:
+                node_entry['residueNumber'] = res_num
+            if atom_name:
+                node_entry['atomName'] = atom_name
+
+            nodes.append(node_entry)
             node_to_index[node] = idx
         
         # Build edge data: pairs of node indices

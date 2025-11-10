@@ -313,6 +313,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             populateTop5List('top-between-list', top5.betweenness_centrality);
             populateTop5List('top-closeness-list', top5.closeness_centrality);
             populateTop5List('top-clustering-list', top5.clustering_coefficient);
+            populateTop5List('top-seqdist-list', top5.seq_distance_avg);
+            populateTop5List('top-longcontacts-list', top5.long_contacts_prop);
         } else {
             console.warn('No top_5_residues found in analysis data');
         }
@@ -782,20 +784,55 @@ function populateTop5List(listId, items) {
     if (!items || items.length === 0) {
         const li = document.createElement('li');
         li.textContent = 'No hay datos disponibles';
+        li.style.opacity = '0.6';
+        li.style.fontStyle = 'italic';
         list.appendChild(li);
         return;
     }
     
     items.forEach((item, index) => {
         const li = document.createElement('li');
-        // Verificar si tenemos la información completa del residuo
+        
+        // Crear estructura más detallada con el nuevo formato
+        const residueInfo = document.createElement('div');
+        residueInfo.style.cssText = 'display: flex; flex-direction: column; gap: 0.25rem; flex: 1;';
+        
+        // Identificador del residuo (formato completo: A:TRP:21 o A:TRP:21:N)
+        const residueId = document.createElement('span');
+        residueId.style.cssText = 'font-weight: 700; color: var(--gray-900); font-size: var(--text-sm);';
+        
         if (item.residueName && item.chain) {
-            // Formato deseado: "VAL21 (Cadena A): 0.1122"
-            li.textContent = `${item.residueName}${item.residue} (Cadena ${item.chain}): ${item.value.toFixed(4)}`;
+            // Formato nuevo: mostrar cadena, aminoácido y posición
+            let idText = `${item.chain}:${item.residueName}:${item.residue}`;
+            
+            // Si hay información de átomo (granularidad atom), incluirlo
+            if (item.atomName) {
+                idText += `:${item.atomName}`;
+            }
+            
+            residueId.textContent = idText;
         } else {
-            // Fallback al formato anterior si no tenemos toda la información
-            li.textContent = `${item.residueName}${item.residue}: ${item.value.toFixed(4)}`;
+            // Fallback al formato anterior
+            residueId.textContent = `${item.residueName || ''}${item.residue || ''}`;
         }
+        
+        // Valor de la métrica
+        const metricValue = document.createElement('span');
+        metricValue.style.cssText = 'font-size: var(--text-xs); color: var(--primary-600); font-weight: 600;';
+        metricValue.textContent = `Valor: ${item.value.toFixed(4)}`;
+        
+        residueInfo.appendChild(residueId);
+        residueInfo.appendChild(metricValue);
+        
+        // Agregar badge de ranking
+        const rankBadge = document.createElement('span');
+        rankBadge.style.cssText = 'background: var(--primary-100); color: var(--primary-700); padding: 0.125rem 0.5rem; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700;';
+        rankBadge.textContent = `#${index + 1}`;
+        
+        li.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);';
+        li.appendChild(residueInfo);
+        li.appendChild(rankBadge);
+        
         list.appendChild(li);
     });
 }

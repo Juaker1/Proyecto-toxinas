@@ -468,23 +468,56 @@
                                     <i class="fas fa-ranking-star"></i>
                                     Top 5 residuos por métrica
                                 </h4>
+                                <p class="section-subtitle">Identifica residuos clave según su rol en la estructura molecular</p>
                             </div>
                             <div class="top-residues-grid-modern">
                                 <div class="top-metric-column">
-                                    <h5>Centralidad de grado</h5>
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-diagram-project"></i>
+                                        <h5>Centralidad de grado</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Residuos con más conexiones directas</p>
                                     <ul id="top-degree-list" class="residue-list"></ul>
                                 </div>
                                 <div class="top-metric-column">
-                                    <h5>Intermediación</h5>
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-route"></i>
+                                        <h5>Intermediación</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Puentes entre regiones estructurales</p>
                                     <ul id="top-between-list" class="residue-list"></ul>
                                 </div>
                                 <div class="top-metric-column">
-                                    <h5>Cercanía</h5>
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-compass"></i>
+                                        <h5>Cercanía</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Acceso rápido a otros residuos</p>
                                     <ul id="top-closeness-list" class="residue-list"></ul>
                                 </div>
                                 <div class="top-metric-column">
-                                    <h5>Agrupamiento</h5>
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-share-nodes"></i>
+                                        <h5>Agrupamiento</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Regiones de alta cohesión local</p>
                                     <ul id="top-clustering-list" class="residue-list"></ul>
+                                </div>
+                                <div class="top-metric-column">
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                        <h5>Distancia secuencial</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Conectan regiones lejanas en secuencia</p>
+                                    <ul id="top-seqdist-list" class="residue-list"></ul>
+                                </div>
+                                <div class="top-metric-column">
+                                    <div class="metric-column-header">
+                                        <i class="fas fa-wave-square"></i>
+                                        <h5>Contactos largos</h5>
+                                    </div>
+                                    <p class="metric-column-hint">Residuos en superficie/interfaces</p>
+                                    <ul id="top-longcontacts-list" class="residue-list"></ul>
                                 </div>
                             </div>
                         </div>

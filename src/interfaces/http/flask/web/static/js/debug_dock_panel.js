@@ -1,12 +1,7 @@
 /**
  * Script de validación para verificar que el panel de información (dock) funciona correctamente.
  * 
- * INSTRUCCIONES:
- * 1. Copia todo el contenido de este archivo
- * 2. Abre la consola del navegador (F12)
- * 3. Pega el código en la consola
- * 4. Presiona Enter
- * 5. Sigue las instrucciones que aparecen en la consola
+ 
  */
 
 console.clear();

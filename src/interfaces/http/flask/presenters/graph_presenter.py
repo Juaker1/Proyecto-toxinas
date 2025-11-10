@@ -23,25 +23,35 @@ class GraphPresenter:
             try:
                 s = str(key)
                 parts = s.split(":")
-                if len(parts) >= 3:
+                if len(parts) >= 4:
+                    # Formato: A:VAL:21:CA
                     chain = parts[0]
                     residue_name = parts[1]
                     residue_num = parts[2]
-                    return chain, residue_name, residue_num
+                    atom_name = parts[3]
+                    return chain, residue_name, residue_num, atom_name
+                elif len(parts) >= 3:
+                    # Formato: A:VAL:21
+                    chain = parts[0]
+                    residue_name = parts[1]
+                    residue_num = parts[2]
+                    return chain, residue_name, residue_num, None
             except Exception:
                 pass
-            return None, None, str(key)
+            return None, None, str(key), None
         
         # Helper to get top 5 residues
         def _top5(vals: Dict[Any, float]):
             items = []
             for k, v in sorted(vals.items(), key=lambda kv: kv[1], reverse=True)[:5]:
-                chain, res_name, res_num = parse_residue_key(k)
+                chain, res_name, res_num, atom_name = parse_residue_key(k)
                 entry = {"residue": str(res_num), "value": v}
                 if res_name is not None:
                     entry["residueName"] = res_name
                 if chain is not None:
                     entry["chain"] = chain
+                if atom_name is not None:
+                    entry["atomName"] = atom_name
                 items.append(entry)
             return items
 
@@ -58,6 +68,8 @@ class GraphPresenter:
                 "betweenness_centrality": summary_stats.get("betweenness", {}),
                 "closeness_centrality": summary_stats.get("closeness", {}),
                 "clustering_coefficient": summary_stats.get("clustering", {}),
+                "seq_distance_avg": summary_stats.get("seq_distance_avg", {}),
+                "long_contacts_prop": summary_stats.get("long_contacts_prop", {}),
             }
             
             # Use common module for top residues
@@ -66,8 +78,10 @@ class GraphPresenter:
                 "betweenness_centrality": _top5(cent.get("betweenness", {})),
                 "closeness_centrality": _top5(cent.get("closeness", {})),
                 "clustering_coefficient": _top5(cent.get("clustering", {})),
+                "seq_distance_avg": _top5(cent.get("seq_distance_avg", {})),
+                "long_contacts_prop": _top5(cent.get("long_contacts_prop", {})),
             }
-            
+
         except ImportError as e:
             # Fallback if import fails
             print(f"Warning: Could not import graph_metrics: {e}")
@@ -91,6 +105,8 @@ class GraphPresenter:
                 "betweenness_centrality": _stats(cent.get("betweenness", {})),
                 "closeness_centrality": _stats(cent.get("closeness", {})),
                 "clustering_coefficient": _stats(cent.get("clustering", {})),
+                "seq_distance_avg": _stats(cent.get("seq_distance_avg", {})),
+                "long_contacts_prop": _stats(cent.get("long_contacts_prop", {})),
             }
             
             # Fallback for top5
@@ -99,14 +115,18 @@ class GraphPresenter:
                 "betweenness_centrality": _top5(cent.get("betweenness", {})),
                 "closeness_centrality": _top5(cent.get("closeness", {})),
                 "clustering_coefficient": _top5(cent.get("clustering", {})),
+                "seq_distance_avg": _top5(cent.get("seq_distance_avg", {})),
+                "long_contacts_prop": _top5(cent.get("long_contacts_prop", {})),
             }
-
+            
         # Provide key_residues (string summaries) mirroring the client-side analyzer format
         key_residues = {
             "degree_centrality": summary_stats_renamed.get("degree_centrality", {}).get("top_residues", "-"),
             "betweenness_centrality": summary_stats_renamed.get("betweenness_centrality", {}).get("top_residues", "-"),
             "closeness_centrality": summary_stats_renamed.get("closeness_centrality", {}).get("top_residues", "-"),
             "clustering_coefficient": summary_stats_renamed.get("clustering_coefficient", {}).get("top_residues", "-"),
+            "seq_distance_avg": summary_stats_renamed.get("seq_distance_avg", {}).get("top_residues", "-"),
+            "long_contacts_prop": summary_stats_renamed.get("long_contacts_prop", {}).get("top_residues", "-"),
         }
 
         base = GraphResponseDTO(properties=normalize(properties), meta=normalize(meta)).__dict__

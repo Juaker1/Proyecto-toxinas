@@ -2192,8 +2192,94 @@
 
 .top-residues-grid-modern {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--space-4);
+}
+
+.top-metric-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: linear-gradient(135deg, #ffffff 0%, rgba(249, 250, 251, 0.8) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.top-metric-column:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-300);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.1);
+}
+
+.metric-column-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+}
+
+.metric-column-header i {
+    color: var(--primary-600);
+    font-size: var(--text-base);
+}
+
+.metric-column-header h5 {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.metric-column-hint {
+    font-size: var(--text-xs);
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.residue-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.residue-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background: rgba(59, 130, 246, 0.04);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--gray-700);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+}
+
+.residue-list li:hover {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateX(2px);
+}
+
+.residue-list li::before {
+    content: '•';
+    color: var(--primary-600);
+    font-weight: 700;
+}
+
+.section-subtitle {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    margin: var(--space-2) 0 0;
+    line-height: 1.5;
 }
 
 /* Export grid moderno */

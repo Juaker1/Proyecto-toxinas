@@ -17,6 +17,7 @@ def calculate_centrality_metrics(G):
     """
     Calcula métricas de centralidad de manera eficiente.
     Retorna diccionarios con valores por nodo.
+    Ahora incluye: degree, betweenness, closeness, clustering, seq_distance_avg, long_contacts_prop
     """
     nx = _import_networkx()
     
@@ -25,26 +26,81 @@ def calculate_centrality_metrics(G):
             'degree': {},
             'betweenness': {},
             'closeness': {},
-            'clustering': {}
+            'clustering': {},
+            'seq_distance_avg': {},
+            'long_contacts_prop': {}
         }
 
-    # Calcular centralidades
+    # Calcular centralidades tradicionales
     degree_centrality = nx.degree_centrality(G)
     betweenness_centrality = nx.betweenness_centrality(G)
     closeness_centrality = nx.closeness_centrality(G)
     clustering_coefficient = nx.clustering(G)
+    
+    # Nuevas métricas: distancia secuencial promedio y proporción de contactos largos
+    seq_distance_avg = {}
+    long_contacts_prop = {}
+    
+    for node in G.nodes():
+        node_attrs = G.nodes[node]
+        node_res_num = node_attrs.get('residue_number', None)
+        node_chain = node_attrs.get('chain_id', None)
+        
+        neighbors = list(G.neighbors(node))
+        if not neighbors:
+            seq_distance_avg[node] = 0.0
+            long_contacts_prop[node] = 0.0
+            continue
+        
+        # Calcular distancias secuenciales
+        seq_distances = []
+        long_range_count = 0
+        
+        for neighbor in neighbors:
+            neighbor_attrs = G.nodes[neighbor]
+            neighbor_res_num = neighbor_attrs.get('residue_number', None)
+            neighbor_chain = neighbor_attrs.get('chain_id', None)
+            
+            # Solo calcular distancias para residuos de la misma cadena
+            if node_chain != neighbor_chain:
+                continue
+            
+            try:
+                current_num = int(node_res_num) if node_res_num is not None else None
+                neighbor_num = int(neighbor_res_num) if neighbor_res_num is not None else None
+                
+                if current_num is not None and neighbor_num is not None:
+                    seq_dist = abs(neighbor_num - current_num)
+                    seq_distances.append(seq_dist)
+                    
+                    if seq_dist > 5:
+                        long_range_count += 1
+            except (ValueError, TypeError):
+                pass  # Ignorar si no se pueden convertir a números
+        
+        # Promedios
+        if seq_distances:
+            seq_distance_avg[node] = sum(seq_distances) / len(seq_distances)
+            long_contacts_prop[node] = long_range_count / len(seq_distances)
+        else:
+            seq_distance_avg[node] = 0.0
+            long_contacts_prop[node] = 0.0
 
     # Almacenar en nodos para compatibilidad
     nx.set_node_attributes(G, degree_centrality, 'degree_centrality')
     nx.set_node_attributes(G, betweenness_centrality, 'betweenness_centrality')
     nx.set_node_attributes(G, closeness_centrality, 'closeness_centrality')
     nx.set_node_attributes(G, clustering_coefficient, 'clustering_coefficient')
+    nx.set_node_attributes(G, seq_distance_avg, 'seq_distance_avg')
+    nx.set_node_attributes(G, long_contacts_prop, 'long_contacts_prop')
 
     return {
         'degree': degree_centrality,
         'betweenness': betweenness_centrality,
         'closeness': closeness_centrality,
-        'clustering': clustering_coefficient
+        'clustering': clustering_coefficient,
+        'seq_distance_avg': seq_distance_avg,
+        'long_contacts_prop': long_contacts_prop
     }
 
 

@@ -71,6 +71,8 @@ class GrapheinGraphAdapter:
                     "betweenness": {},
                     "closeness": {},
                     "clustering": {},
+                    "seq_distance_avg": {},
+                    "long_contacts_prop": {},
                 },
                 "error": "Grafo vacío"
             }
@@ -80,16 +82,20 @@ class GrapheinGraphAdapter:
         result = compute_comprehensive_metrics(G)
 
         # Adaptar al formato esperado por el controlador Flask
+        centrality_data = result.get('centrality', {})
+
         return {
             "num_nodes": result['properties']['num_nodes'],
             "num_edges": result['properties']['num_edges'],
             "density": result['properties']['density'],
             "avg_clustering": result['properties']['avg_clustering'],
             "centrality": {
-                "degree": result.get('centrality', {}).get('degree', {}),
-                "betweenness": result.get('centrality', {}).get('betweenness', {}),
-                "closeness": result.get('centrality', {}).get('closeness', {}),
-                "clustering": result.get('centrality', {}).get('clustering', {}),
+                "degree": centrality_data.get('degree', {}),
+                "betweenness": centrality_data.get('betweenness', {}),
+                "closeness": centrality_data.get('closeness', {}),
+                "clustering": centrality_data.get('clustering', {}),
+                "seq_distance_avg": centrality_data.get('seq_distance_avg', {}),
+                "long_contacts_prop": centrality_data.get('long_contacts_prop', {}),
             },
             # Métricas adicionales
             "disulfide_count": result['properties'].get('disulfide_count', 0),
