@@ -43,8 +43,14 @@
     </style>
 </head>
 <body class="viewer-page">
-    <!-- NAVBAR -->
-    {% include 'partials/navbar.html' %}
+        <!-- NAVBAR -->
+        {% set navbar_actions %}
+            <button class="action-btn" type="button">
+                <i class="fas fa-download"></i>
+                <span>Exportar</span>
+            </button>
+        {% endset %}
+        {% include 'partials/navbar.html' %}
 
     <!-- CONTENIDO PRINCIPAL -->
     <div class="viewer-container" role="main" aria-label="Visualizador de proteínas">
@@ -140,8 +146,8 @@
                     </h3>
                     <div class="panel-controls">
                         <div class="view-toggle">
-                            <button id="switch-to-molstar" class="view-toggle-btn active">Proteína</button>
-                            <button id="switch-to-py3dmol" class="view-toggle-btn">Dipolo</button>
+                            <button id="switch-to-molstar" class="view-toggle-btn active" type="button">Proteína</button>
+                            <button id="switch-to-py3dmol" class="view-toggle-btn" type="button">Dipolo</button>
                         </div>
                     </div>
                 </div>
@@ -299,7 +305,7 @@
                 </div>
        
                 <div class="analysis-hub-navigation">
-                    <button id="toggle-analysis" class="analysis-nav-btn" data-target="detailed-analysis">
+                    <button id="toggle-analysis" class="analysis-nav-btn" data-target="detailed-analysis" type="button" aria-controls="detailed-analysis" aria-expanded="false">
                         <div class="nav-btn-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
@@ -310,7 +316,7 @@
                         <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
                     
-                    <button id="toggle-export" class="analysis-nav-btn" data-target="export-data-section">
+                    <button id="toggle-export" class="analysis-nav-btn" data-target="export-data-section" type="button" aria-controls="export-data-section" aria-expanded="false">
                         <div class="nav-btn-icon">
                             <i class="fas fa-file-export"></i>
                         </div>
@@ -321,7 +327,7 @@
                         <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
                     
-                    <button id="toggle-dipole-analysis" class="analysis-nav-btn" data-target="dipole-calculations" style="display: none;">
+                    <button id="toggle-dipole-analysis" class="analysis-nav-btn" data-target="dipole-calculations" style="display: none;" type="button" aria-controls="dipole-calculations" aria-expanded="false">
                         <div class="nav-btn-icon">
                             <i class="fas fa-bolt"></i>
                         </div>
@@ -580,7 +586,7 @@
                                     </div>
                                 </div>
                                 <div class="export-card-footer-modern">
-                                    <button id="export-csv-btn" class="btn-export-modern btn-primary-modern">
+                                    <button id="export-csv-btn" class="btn-export-modern btn-primary-modern" type="button">
                                         <span class="btn-content-modern">
                                             <i class="fas fa-download"></i>
                                             <span>Descargar Excel</span>
@@ -634,7 +640,7 @@
                                     </div>
                                 </div>
                                 <div class="export-card-footer-modern">
-                                    <button id="export-family-csv-btn" class="btn-export-modern btn-success-modern" disabled>
+                                    <button id="export-family-csv-btn" class="btn-export-modern btn-success-modern" type="button" disabled>
                                         <span class="btn-content-modern">
                                             <i class="fas fa-download"></i>
                                             <span>Exportar familia</span>
@@ -688,7 +694,7 @@
                                     </div>
                                 </div>
                                 <div class="export-card-footer-modern">
-                                    <button id="export-wt-comparison-btn" class="btn-export-modern btn-accent-modern" disabled>
+                                    <button id="export-wt-comparison-btn" class="btn-export-modern btn-accent-modern" type="button" disabled>
                                         <span class="btn-content-modern">
                                             <i class="fas fa-download"></i>
                                             <span>Comparar con WT</span>

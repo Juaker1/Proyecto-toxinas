@@ -160,6 +160,22 @@
                             </p>
                         </div>
                     </div>
+                    <div id="visualizationActions" class="visualization-actions" style="display: none;" aria-live="polite">
+                        <p class="visualization-actions__hint">
+                            Marca «Resaltar» en la tabla para enfocar sólo esas visualizaciones.
+                        </p>
+                        <div class="visualization-actions__buttons">
+                            <button type="button" class="action-chip action-chip--primary" id="showHighlightsBtn" disabled aria-pressed="false">
+                                <i class="fas fa-filter"></i>
+                                <span>Resaltar vistas</span>
+                                <span class="action-chip__badge" id="highlightedCountBadge" hidden>0</span>
+                            </button>
+                            <button type="button" class="action-chip action-chip--ghost" id="showAllBtn" disabled>
+                                <i class="fas fa-th-large"></i>
+                                <span>Ver todo</span>
+                            </button>
+                        </div>
+                    </div>
                     <!-- Grid de visualizaciones -->
                     <div id="visualizationGrid" class="visualization-grid"></div>
                 </div>
