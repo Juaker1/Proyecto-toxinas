@@ -19,11 +19,15 @@ class DipoleFamilyAnalyzer {
         this.peptideList = document.getElementById('peptideList');
         this.visualizationGrid = document.getElementById('visualizationGrid');
         
-    this.currentFamilyData = null;
+        this.currentFamilyData = null;
     // Cache por familia para restaurar estado (datos y resaltados)
     this.familyCache = {}; // { [familyName]: { dipoleData, highlights: Set<string> } }
         this.cardIndexByCode = {}; // mapa peptide_code -> índice de tarjeta
         this.visualizationReady = false;
+        
+        // Sistema de reordenamiento dinámico
+        this.originalOrder = [];        // Array inmutable con orden original de carga
+        this.highlightedSet = new Set(); // Set de códigos actualmente resaltados
         
         this.loadFamilyOptions();
         this.initializeEventListeners();
@@ -114,15 +118,16 @@ class DipoleFamilyAnalyzer {
                 }
                 this.visualizationReady = true;
                 this.enableHighlightControls();
-                // Reaplicar resaltados guardados
+                // Restaurar resaltados desde cache
                 if (cached.highlights && cached.highlights.size) {
-                    cached.highlights.forEach(code => {
-                        this.toggleCardHighlight(code, true);
-                        // Sincronizar checkbox si existe
-                        const inputs = this.peptideList.querySelectorAll('.highlight-toggle');
-                        inputs.forEach(inp => {
-                            if (inp.dataset.peptideCode === code) inp.checked = true;
-                        });
+                    this.highlightedSet = new Set(cached.highlights);
+                    this.reorderDipoleGrid(); // Aplicar orden con resaltados
+                    // Sincronizar checkboxes
+                    const inputs = this.peptideList.querySelectorAll('.highlight-toggle');
+                    inputs.forEach(inp => {
+                        if (this.highlightedSet.has(inp.dataset.peptideCode)) {
+                            inp.checked = true;
+                        }
                     });
                 }
                 // Como ya hay visualización, ocultar el hint
@@ -593,6 +598,10 @@ class DipoleFamilyAnalyzer {
             });
         } catch (e) { /* si falla, se usa el orden original */ }
 
+        // Guardar orden original para sistema de reordenamiento
+        this.originalOrder = dipoleResults.map(r => r.peptide_code);
+        this.highlightedSet.clear(); // Reset de resaltados al cargar nueva familia
+
         // ✅ CAMBIO: CSS Grid puro sin Bootstrap
         let gridHTML = '';
         this.cardIndexByCode = {};
@@ -708,12 +717,17 @@ class DipoleFamilyAnalyzer {
     }
 
     toggleCardHighlight(peptideCode, on) {
-        const index = this.cardIndexByCode[peptideCode];
-        const cards = Array.from(document.querySelectorAll('.dipole-visualization-card'));
-        const card = (index != null) ? cards[index] : cards.find(c => (c.dataset.peptideCode||'') === peptideCode);
-        if (!card) return;
-        card.classList.toggle('highlighted-card', !!on);
-        // No auto-scroll al activar, para permitir seleccionar múltiples a la vez
+        // Actualizar Set de resaltados
+        if (on) {
+            this.highlightedSet.add(peptideCode);
+        } else {
+            this.highlightedSet.delete(peptideCode);
+        }
+        
+        // Reordenar el grid completo
+        this.reorderDipoleGrid();
+        
+        // Sin scroll automático para permitir seleccionar múltiples cómodamente
     }
 
     // Permite hacer clic en la secuencia para alternar el resaltado de su visualización
@@ -757,6 +771,60 @@ class DipoleFamilyAnalyzer {
             }
         };
         this.peptideList.addEventListener('click', this._sequenceClickHandler);
+    }
+
+    // Sistema de reordenamiento dinámico
+    reorderDipoleGrid() {
+        // Filtrar resaltados manteniendo orden original
+        const highlightedInOrder = this.originalOrder.filter(code => 
+            this.highlightedSet.has(code)
+        );
+        
+        // Filtrar NO resaltados manteniendo orden original
+        const unhighlightedInOrder = this.originalOrder.filter(code => 
+            !this.highlightedSet.has(code)
+        );
+        
+        // Orden final: resaltados primero, luego no-resaltados
+        const finalOrder = [...highlightedInOrder, ...unhighlightedInOrder];
+        
+        // Crear fragmento para reordenamiento eficiente
+        const fragment = document.createDocumentFragment();
+        
+        finalOrder.forEach(code => {
+            const card = this.findCardByCode(code);
+            if (card) {
+                // Aplicar/quitar clase highlighted
+                if (this.highlightedSet.has(code)) {
+                    card.classList.add('highlighted-card');
+                } else {
+                    card.classList.remove('highlighted-card');
+                }
+                
+                // Mover al fragmento (automáticamente se quita del DOM)
+                fragment.appendChild(card);
+            }
+        });
+        
+        // Vaciar grid y reinsertar en nuevo orden
+        this.visualizationGrid.innerHTML = '';
+        this.visualizationGrid.appendChild(fragment);
+        
+        // Actualizar índices internos
+        this.updateCardIndexes(finalOrder);
+    }
+    
+    findCardByCode(peptideCode) {
+        return this.visualizationGrid.querySelector(
+            `.dipole-visualization-card[data-peptide-code="${peptideCode}"]`
+        );
+    }
+    
+    updateCardIndexes(newOrder) {
+        this.cardIndexByCode = {};
+        newOrder.forEach((code, index) => {
+            this.cardIndexByCode[code] = index;
+        });
     }
 
     async initializeDipoleViewers(dipoleResults) {
