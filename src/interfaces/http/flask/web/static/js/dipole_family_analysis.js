@@ -1,6 +1,54 @@
 // filepath: app/static/js/dipole_family_analysis.js
 class DipoleFamilyAnalyzer {
     constructor() {
+        // Constantes de clasificación de zonas funcionales
+        this.GENERAL_ZONES = {
+            X: {
+                optimal: [28, 32],
+                acceptable: [[20, 28], [32, 35]],
+                unfavorable: [0, 20, 35, 180]
+            },
+            Y: {
+                optimal: [110, 122],
+                acceptable: [[100, 110], [122, 125]],
+                unfavorable: [0, 100, 125, 180]
+            },
+            Z: {
+                optimalA: [70, 90],
+                optimalB: [100, 112],
+                acceptable: [[90, 100]],
+                unfavorable: [0, 70, 112, 180]
+            }
+        };
+
+        this.FAMILY_ZONES = {
+            'μ-TRTX-Hh2a': {
+                X: [10, 35],
+                Y: [100, 115],
+                Z: [70, 90]
+            },
+            'μ-TRTX-Hhn2b': {
+                X: [28, 35],
+                Y: [110, 115],
+                Z: [100, 110]
+            },
+            'β-TRTX': {
+                X: null,
+                Y: null,
+                Z: [108, 112]
+            },
+            'ω-TRTX-Gr2a': {
+                X: [28, 32],
+                Y: [118, 122],
+                Z: [87, 90]
+            }
+        };
+
+        this.ZONE_COLORS = {
+            optimal: '#4CAF50',
+            acceptable: '#FFC107',
+            unfavorable: '#F44336'
+        };
       
         
         this.familySelector = document.getElementById('familySelector');
@@ -19,11 +67,33 @@ class DipoleFamilyAnalyzer {
         this.peptideList = document.getElementById('peptideList');
         this.visualizationGrid = document.getElementById('visualizationGrid');
         this.visualizationActions = document.getElementById('visualizationActions');
-        this.showHighlightsBtn = document.getElementById('showHighlightsBtn');
-        this.showAllBtn = document.getElementById('showAllBtn');
+        this.toggleFilterBtn = document.getElementById('toggleFilterBtn');
+        this.toggleFilterText = document.getElementById('toggleFilterText');
+        this.toggleFilterIcon = document.getElementById('toggleFilterIcon');
         this.highlightedCountBadge = document.getElementById('highlightedCountBadge');
         
-        this.currentFamilyData = null;
+        // Elementos de análisis de ángulos
+        this.angleAnalysisSection = document.getElementById('angleAnalysisSection');
+        this.angleChartX = document.getElementById('angleChartX');
+        this.angleChartY = document.getElementById('angleChartY');
+        this.angleChartZ = document.getElementById('angleChartZ');
+        
+        // Elementos de análisis de zonas funcionales
+        this.zonesAnalysisSection = document.getElementById('zonesAnalysisSection');
+        this.zoneChartX = document.getElementById('zoneChartX');
+        this.zoneChartY = document.getElementById('zoneChartY');
+        this.zoneChartZ = document.getElementById('zoneChartZ');
+        this.zonesModeToggle = document.getElementById('zonesModeToggle');
+        this.zonesLegend = document.getElementById('zonesLegend');
+        this.currentZonesMode = 'general';
+        
+        // Elementos de Rose Plot
+        this.rosePlotModeToggle = document.getElementById('rosePlotModeToggle');
+        this.currentRosePlotMode = 'frequency'; // 'frequency' o 'affinity'
+        this.rosePlotBinSize = 10; // grados por bin
+        this.rosePlotUpdateTimer = null; // Para debouncing
+        
+    this.currentFamilyData = null;
     // Cache por familia para restaurar estado (datos y resaltados)
     this.familyCache = {}; // { [familyName]: { dipoleData, highlights: Set<string> } }
         this.cardIndexByCode = {}; // mapa peptide_code -> índice de tarjeta
@@ -51,27 +121,19 @@ class DipoleFamilyAnalyzer {
         control.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     }
 
-    onShowHighlightsClicked() {
+    onToggleFilterClicked() {
         if (!this.visualizationReady) return;
         const highlightCount = this.getCurrentHighlights().size;
-        if (highlightCount === 0) return;
-        this.showingHighlightsOnly = true;
+        if (highlightCount === 0 && !this.showingHighlightsOnly) return;
+        
+        // Toggle entre mostrar solo resaltados y mostrar todo
+        this.showingHighlightsOnly = !this.showingHighlightsOnly;
         this.applyVisualizationFilter();
         this.updateFilterButtonsState();
+        
         const fname = this.familySelector.value;
         if (this.familyCache[fname]) {
-            this.familyCache[fname].filterMode = 'highlights';
-        }
-    }
-
-    onShowAllClicked() {
-        if (!this.visualizationReady) return;
-        this.showingHighlightsOnly = false;
-        this.applyVisualizationFilter();
-        this.updateFilterButtonsState();
-        const fname = this.familySelector.value;
-        if (this.familyCache[fname]) {
-            this.familyCache[fname].filterMode = 'all';
+            this.familyCache[fname].filterMode = this.showingHighlightsOnly ? 'highlights' : 'all';
         }
     }
 
@@ -96,13 +158,25 @@ class DipoleFamilyAnalyzer {
 
     updateFilterButtonsState() {
         const highlightCount = this.getCurrentHighlights().size;
-        if (this.showHighlightsBtn) {
-            this.showHighlightsBtn.disabled = !this.visualizationReady || highlightCount === 0;
-            this.showHighlightsBtn.setAttribute('aria-pressed', this.showingHighlightsOnly ? 'true' : 'false');
+        
+        if (this.toggleFilterBtn) {
+            // Deshabilitar solo si no hay visualización o no hay resaltados y está en modo "mostrar todo"
+            this.toggleFilterBtn.disabled = !this.visualizationReady || (highlightCount === 0 && !this.showingHighlightsOnly);
+            this.toggleFilterBtn.setAttribute('aria-pressed', this.showingHighlightsOnly ? 'true' : 'false');
         }
-        if (this.showAllBtn) {
-            this.showAllBtn.disabled = !this.visualizationReady || !this.showingHighlightsOnly;
+        
+        // Actualizar texto e icono del botón según el estado
+        if (this.toggleFilterText && this.toggleFilterIcon) {
+            if (this.showingHighlightsOnly) {
+                this.toggleFilterText.textContent = 'Mostrar todas';
+                this.toggleFilterIcon.className = 'fas fa-th-large';
+            } else {
+                this.toggleFilterText.textContent = 'Resaltar vistas';
+                this.toggleFilterIcon.className = 'fas fa-filter';
+            }
         }
+        
+        // Actualizar badge de contador
         if (this.highlightedCountBadge) {
             this.highlightedCountBadge.textContent = highlightCount;
             this.highlightedCountBadge.hidden = highlightCount === 0;
@@ -122,12 +196,77 @@ class DipoleFamilyAnalyzer {
             this.visualizeFamily();
         });
 
-        if (this.showHighlightsBtn) {
-            this.showHighlightsBtn.addEventListener('click', () => this.onShowHighlightsClicked());
+        if (this.toggleFilterBtn) {
+            this.toggleFilterBtn.addEventListener('click', () => this.onToggleFilterClicked());
         }
-
-        if (this.showAllBtn) {
-            this.showAllBtn.addEventListener('click', () => this.onShowAllClicked());
+        
+        if (this.zonesModeToggle) {
+            this.zonesModeToggle.addEventListener('change', (e) => {
+                this.currentZonesMode = e.target.checked ? 'family' : 'general';
+                if (this.currentFamilyData && this.currentFamilyData.dipole_results) {
+                    this.updateZonesLegend();
+                    this.createZonesCharts(this.currentFamilyData.dipole_results);
+                }
+            });
+        }
+        
+        // Event listener para el toggle del Rose Plot
+        if (this.rosePlotModeToggle) {
+            console.log('✅ Rose Plot toggle encontrado, agregando listener');
+            
+            // Guardar referencia para evitar múltiples listeners
+            let isUpdating = false;
+            
+            this.rosePlotModeToggle.addEventListener('change', () => {
+                // Prevenir ejecuciones simultáneas
+                if (isUpdating) {
+                    console.log('⏸️ Actualización en progreso, ignorando');
+                    return;
+                }
+                
+                isUpdating = true;
+                
+                // Cancelar cualquier actualización pendiente
+                if (this.rosePlotUpdateTimer) {
+                    clearTimeout(this.rosePlotUpdateTimer);
+                }
+                
+                // Pequeño delay para asegurar que el checkbox se actualizó
+                this.rosePlotUpdateTimer = setTimeout(() => {
+                    // Leer el estado actual del checkbox directamente
+                    const isChecked = this.rosePlotModeToggle.checked;
+                    const newMode = isChecked ? 'affinity' : 'frequency';
+                    
+                    console.log('🔄 Toggle estado:', isChecked, '→ modo:', newMode);
+                    console.log('📋 Modo actual antes del cambio:', this.currentRosePlotMode);
+                    
+                    // Verificar si realmente cambió
+                    if (this.currentRosePlotMode === newMode) {
+                        console.log('⚠️ Modo ya es', newMode, '- esto no debería pasar');
+                        isUpdating = false;
+                        return;
+                    }
+                    
+                    // Actualizar el modo
+                    this.currentRosePlotMode = newMode;
+                    console.log('✅ Modo actualizado a:', this.currentRosePlotMode);
+                    
+                    // Actualizar Rose Plots
+                    if (this.currentFamilyData && this.currentFamilyData.dipole_results) {
+                        console.log('🔨 Actualizando gráficos...');
+                        this.updateRosePlots(this.currentFamilyData.dipole_results);
+                    } else {
+                        console.warn('⚠️ No hay datos disponibles');
+                    }
+                    
+                    // Resetear el flag después de un pequeño delay
+                    setTimeout(() => {
+                        isUpdating = false;
+                    }, 200);
+                }, 50);
+            });
+        } else {
+            console.warn('⚠️ Rose Plot toggle NO encontrado en el DOM');
         }
     }
     
@@ -204,7 +343,7 @@ class DipoleFamilyAnalyzer {
                 }
                 this.visualizationReady = true;
                 this.enableHighlightControls();
-                // Restaurar resaltados desde cache
+                // Reaplicar resaltados guardados
                 if (cached.highlights && cached.highlights.size) {
                     const toggles = this.peptideList ? Array.from(this.peptideList.querySelectorAll('.highlight-toggle')) : [];
                     const toggleMap = new Map(toggles.map(input => [input.dataset.peptideCode, input]));
@@ -612,6 +751,10 @@ class DipoleFamilyAnalyzer {
                 this.currentFamilyData = data.data;
                 this.showingHighlightsOnly = false;
                 this.createDipoleGrid(data.data.dipole_results);
+                // Crear gráficos de análisis de ángulos
+                this.createAngleCharts(data.data.dipole_results);
+                // Crear gráficos de análisis de zonas funcionales
+                this.createZonesCharts(data.data.dipole_results);
                 // Cachear datos de la familia y estado de resaltado
                 this.cacheFamilyVisualization(selectedFamily, data.data);
                 
@@ -695,10 +838,6 @@ class DipoleFamilyAnalyzer {
                 return String(a.peptide_code || '').localeCompare(String(b.peptide_code || ''), 'es');
             });
         } catch (e) { /* si falla, se usa el orden original */ }
-
-        // Guardar orden original para sistema de reordenamiento
-        this.originalOrder = dipoleResults.map(r => r.peptide_code);
-        this.highlightedSet.clear(); // Reset de resaltados al cargar nueva familia
 
         // ✅ CAMBIO: CSS Grid puro sin Bootstrap
         let gridHTML = '';
@@ -889,60 +1028,6 @@ class DipoleFamilyAnalyzer {
         this.peptideList.addEventListener('click', this._sequenceClickHandler);
     }
 
-    // Sistema de reordenamiento dinámico
-    reorderDipoleGrid() {
-        // Filtrar resaltados manteniendo orden original
-        const highlightedInOrder = this.originalOrder.filter(code => 
-            this.highlightedSet.has(code)
-        );
-        
-        // Filtrar NO resaltados manteniendo orden original
-        const unhighlightedInOrder = this.originalOrder.filter(code => 
-            !this.highlightedSet.has(code)
-        );
-        
-        // Orden final: resaltados primero, luego no-resaltados
-        const finalOrder = [...highlightedInOrder, ...unhighlightedInOrder];
-        
-        // Crear fragmento para reordenamiento eficiente
-        const fragment = document.createDocumentFragment();
-        
-        finalOrder.forEach(code => {
-            const card = this.findCardByCode(code);
-            if (card) {
-                // Aplicar/quitar clase highlighted
-                if (this.highlightedSet.has(code)) {
-                    card.classList.add('highlighted-card');
-                } else {
-                    card.classList.remove('highlighted-card');
-                }
-                
-                // Mover al fragmento (automáticamente se quita del DOM)
-                fragment.appendChild(card);
-            }
-        });
-        
-        // Vaciar grid y reinsertar en nuevo orden
-        this.visualizationGrid.innerHTML = '';
-        this.visualizationGrid.appendChild(fragment);
-        
-        // Actualizar índices internos
-        this.updateCardIndexes(finalOrder);
-    }
-    
-    findCardByCode(peptideCode) {
-        return this.visualizationGrid.querySelector(
-            `.dipole-visualization-card[data-peptide-code="${peptideCode}"]`
-        );
-    }
-    
-    updateCardIndexes(newOrder) {
-        this.cardIndexByCode = {};
-        newOrder.forEach((code, index) => {
-            this.cardIndexByCode[code] = index;
-        });
-    }
-
     async initializeDipoleViewers(dipoleResults) {
         for (let i = 0; i < dipoleResults.length; i++) {
             const result = dipoleResults[i];
@@ -1060,6 +1145,680 @@ class DipoleFamilyAnalyzer {
         const ay = toDeg(Math.acos(clamp(v[1] / mag)));
         const az = toDeg(Math.acos(clamp(v[2] / mag)));
         return { x: ax.toFixed(1), y: ay.toFixed(1), z: az.toFixed(1) };
+    }
+
+    classifyAngleZone(angle, axis, family = null) {
+        const useFamily = this.currentZonesMode === 'family' && family && this.FAMILY_ZONES[family];
+        
+        if (useFamily) {
+            const familyZone = this.FAMILY_ZONES[family][axis];
+            if (familyZone === null) {
+                // Si la familia no tiene criterio para este eje, usar general
+                return this.classifyAngleZoneGeneral(angle, axis);
+            }
+            const [min, max] = familyZone;
+            if (angle >= min && angle <= max) {
+                return 'optimal';
+            }
+            // Para familias, todo lo que no es óptimo es desfavorable
+            return 'unfavorable';
+        }
+        
+        return this.classifyAngleZoneGeneral(angle, axis);
+    }
+
+    classifyAngleZoneGeneral(angle, axis) {
+        const zones = this.GENERAL_ZONES[axis];
+        
+        if (axis === 'Z') {
+            // Eje Z tiene dos rangos óptimos
+            if (angle >= zones.optimalA[0] && angle <= zones.optimalA[1]) {
+                return 'optimal';
+            }
+            if (angle >= zones.optimalB[0] && angle <= zones.optimalB[1]) {
+                return 'optimal';
+            }
+            // Revisar zona aceptable
+            for (const [min, max] of zones.acceptable) {
+                if (angle >= min && angle <= max) {
+                    return 'acceptable';
+                }
+            }
+            return 'unfavorable';
+        }
+        
+        // Ejes X e Y
+        if (angle >= zones.optimal[0] && angle <= zones.optimal[1]) {
+            return 'optimal';
+        }
+        
+        for (const [min, max] of zones.acceptable) {
+            if (angle >= min && angle <= max) {
+                return 'acceptable';
+            }
+        }
+        
+        return 'unfavorable';
+    }
+
+    updateZonesLegend() {
+        if (!this.zonesLegend) return;
+
+        const currentFamily = this.familySelector.value;
+        let legendHTML = '';
+
+        if (this.currentZonesMode === 'general') {
+            // Modo General: mostrar rangos generales por eje
+            legendHTML = `
+                <div class="legend-section">
+                    <h4 class="legend-axis-title"><i class="fas fa-arrows-alt-h"></i> Eje X</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #4CAF50;"></span>
+                            <span class="legend-text">Óptimo (28-32°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FFC107;"></span>
+                            <span class="legend-text">Aceptable (20-28°, 32-35°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #F44336;"></span>
+                            <span class="legend-text">Desfavorable (<20°, >35°)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="legend-section">
+                    <h4 class="legend-axis-title"><i class="fas fa-arrows-alt-v"></i> Eje Y</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #4CAF50;"></span>
+                            <span class="legend-text">Óptimo (110-122°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FFC107;"></span>
+                            <span class="legend-text">Aceptable (100-110°, 122-125°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #F44336;"></span>
+                            <span class="legend-text">Desfavorable (<100°, >125°)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="legend-section">
+                    <h4 class="legend-axis-title"><i class="fas fa-expand-arrows-alt"></i> Eje Z</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #4CAF50;"></span>
+                            <span class="legend-text">Óptimo (70-90°, 100-112°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FFC107;"></span>
+                            <span class="legend-text">Aceptable (90-100°)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #F44336;"></span>
+                            <span class="legend-text">Desfavorable (<70°, >112°)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Modo Por Familia: mostrar rangos específicos de la familia
+            const familyZones = this.FAMILY_ZONES[currentFamily];
+            if (familyZones) {
+                legendHTML = '<div class="legend-family-info"><i class="fas fa-dna"></i> Criterios para ' + currentFamily + '</div>';
+                
+                ['X', 'Y', 'Z'].forEach(axis => {
+                    const axisIcon = axis === 'X' ? 'fa-arrows-alt-h' : (axis === 'Y' ? 'fa-arrows-alt-v' : 'fa-expand-arrows-alt');
+                    const range = familyZones[axis];
+                    
+                    if (range === null) {
+                        legendHTML += `
+                            <div class="legend-section">
+                                <h4 class="legend-axis-title"><i class="fas ${axisIcon}"></i> Eje ${axis}</h4>
+                                <div class="legend-items">
+                                    <div class="legend-item legend-item-muted">
+                                        <span class="legend-text">Sin criterio específico (usa General)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        legendHTML += `
+                            <div class="legend-section">
+                                <h4 class="legend-axis-title"><i class="fas ${axisIcon}"></i> Eje ${axis}</h4>
+                                <div class="legend-items">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #4CAF50;"></span>
+                                        <span class="legend-text">Óptimo (${range[0]}-${range[1]}°)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #F44336;"></span>
+                                        <span class="legend-text">Desfavorable (<${range[0]}°, >${range[1]}°)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+        }
+
+        this.zonesLegend.innerHTML = legendHTML;
+    }
+
+    createAngleCharts(dipoleResults) {
+        if (!dipoleResults || dipoleResults.length === 0 || !this.angleAnalysisSection) {
+            return;
+        }
+
+        console.log('📊 Creando Rose Plots en modo:', this.currentRosePlotMode);
+
+        // Verificar que Plotly esté disponible
+        if (typeof Plotly === 'undefined') {
+            console.warn('Plotly no está disponible aún. Reintentando en 500ms...');
+            setTimeout(() => this.createAngleCharts(dipoleResults), 500);
+            return;
+        }
+
+        // Mostrar la sección de análisis
+        this.angleAnalysisSection.style.display = 'block';
+
+        // Crear Rose Plots para cada eje
+        const createRosePlotData = (axis) => {
+            // Crear bins para el rango 0-180°
+            const numBins = Math.ceil(180 / this.rosePlotBinSize);
+            const bins = [];
+            
+            // Inicializar bins
+            for (let i = 0; i < numBins; i++) {
+                const binStart = i * this.rosePlotBinSize;
+                const binEnd = Math.min((i + 1) * this.rosePlotBinSize, 180);
+                bins.push({
+                    start: binStart,
+                    end: binEnd,
+                    center: (binStart + binEnd) / 2,
+                    peptides: [],
+                    angles: [],
+                    ic50_values: []
+                });
+            }
+            
+            // Clasificar péptidos en bins
+            dipoleResults.forEach(result => {
+                const angles = this.computeAxisAngles(result.dipole_data);
+                let angle;
+                
+                if (axis === 'X') angle = parseFloat(angles.x);
+                else if (axis === 'Y') angle = parseFloat(angles.y);
+                else angle = parseFloat(angles.z);
+                
+                // Encontrar el bin correspondiente
+                const binIndex = Math.min(Math.floor(angle / this.rosePlotBinSize), numBins - 1);
+                
+                bins[binIndex].peptides.push(result.peptide_code);
+                bins[binIndex].angles.push(angle);
+                
+                // Extraer valor numérico de IC50
+                const ic50Value = parseFloat(result.ic50_value);
+                if (!isNaN(ic50Value) && ic50Value > 0) {
+                    bins[binIndex].ic50_values.push(ic50Value);
+                }
+            });
+            
+            // Calcular valores según el modo
+            const theta = []; // ángulos en grados
+            const r = []; // valores radiales
+            const customdata = [];
+            const colors = [];
+            const hovertext = [];
+            
+            bins.forEach(bin => {
+                if (bin.peptides.length > 0) {
+                    theta.push(bin.center);
+                    
+                    let radialValue;
+                    let medianIC50 = 0;
+                    let affinitySum = 0;
+                    
+                    if (this.currentRosePlotMode === 'frequency') {
+                        radialValue = bin.peptides.length;
+                    } else {
+                        // Modo afinidad: suma de 1/IC50
+                        bin.ic50_values.forEach(ic50 => {
+                            affinitySum += 1 / ic50;
+                        });
+                        radialValue = affinitySum;
+                    }
+                    
+                    r.push(radialValue);
+                    
+                    // Calcular mediana de IC50
+                    if (bin.ic50_values.length > 0) {
+                        const sortedIC50 = [...bin.ic50_values].sort((a, b) => a - b);
+                        const mid = Math.floor(sortedIC50.length / 2);
+                        medianIC50 = sortedIC50.length % 2 === 0 
+                            ? (sortedIC50[mid - 1] + sortedIC50[mid]) / 2 
+                            : sortedIC50[mid];
+                    }
+                    
+                    // Color basado en afinidad (verde = alta afinidad/bajo IC50, rojo = baja afinidad/alto IC50)
+                    const color = medianIC50 > 0 ? this.getAffinityColor(medianIC50) : '#808080';
+                    colors.push(color);
+                    
+                    // Formatear lista de péptidos
+                    const peptideList = '• ' + bin.peptides.join('<br>• ');
+                    
+                    // Información para tooltip
+                    const info = {
+                        peptideList: peptideList,
+                        count: bin.peptides.length,
+                        range: `${bin.start.toFixed(0)}°-${bin.end.toFixed(0)}°`,
+                        medianIC50: medianIC50.toFixed(2),
+                        value: radialValue.toFixed(3)
+                    };
+                    customdata.push(info);
+                    
+                    // Texto para hover
+                    const modeLabel = this.currentRosePlotMode === 'frequency' ? 'Frecuencia' : 'Afinidad Σ(1/IC50)';
+                    hovertext.push(
+                        `<b>Rango: ${info.range}</b><br>` +
+                        `Péptidos: ${info.count}<br>` +
+                        `${modeLabel}: ${info.value}<br>` +
+                        `IC50 Mediana: ${info.medianIC50} nM<br>` +
+                        `<br><b>Lista de péptidos:</b><br>${peptideList}`
+                    );
+                }
+            });
+            
+            return {
+                type: 'barpolar',
+                r: r,
+                theta: theta,
+                marker: {
+                    color: colors,
+                    line: {
+                        color: 'white',
+                        width: 1
+                    }
+                },
+                hovertext: hovertext,
+                hoverinfo: 'text',
+                hoverlabel: {
+                    align: 'left',
+                    bgcolor: 'white',
+                    font: { size: 12, family: 'monospace' }
+                }
+            };
+        };
+        
+        // Calcular dirección promedio para cada eje
+        const calculateMeanDirection = (axis) => {
+            let sumX = 0, sumY = 0;
+            
+            dipoleResults.forEach(result => {
+                const angles = this.computeAxisAngles(result.dipole_data);
+                let angle;
+                
+                if (axis === 'X') angle = parseFloat(angles.x);
+                else if (axis === 'Y') angle = parseFloat(angles.y);
+                else angle = parseFloat(angles.z);
+                
+                const rad = angle * Math.PI / 180;
+                sumX += Math.cos(rad);
+                sumY += Math.sin(rad);
+            });
+            
+            const meanAngle = Math.atan2(sumY, sumX) * 180 / Math.PI;
+            return meanAngle >= 0 ? meanAngle : meanAngle + 360;
+        };
+
+        const layout = {
+            polar: {
+                radialaxis: {
+                    visible: true,
+                    showline: true,
+                    showticklabels: true,
+                    tickfont: { size: 10 },
+                    title: this.currentRosePlotMode === 'frequency' ? 'Frecuencia' : 'Σ(1/IC50)'
+                },
+                angularaxis: {
+                    direction: 'clockwise',
+                    rotation: 90,
+                    thetaunit: 'degrees',
+                    range: [0, 180],
+                    showline: true,
+                    showticklabels: true,
+                    tickmode: 'linear',
+                    tick0: 0,
+                    dtick: 30
+                }
+            },
+            showlegend: false,
+            margin: { t: 40, b: 40, l: 60, r: 60 },
+            height: 400,
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)'
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            toImageButtonOptions: {
+                format: 'svg',
+                filename: 'rose_plot_dipole'
+            }
+        };
+
+        // Crear los 3 Rose Plots
+        if (this.angleChartX) {
+            const data = [createRosePlotData('X')];
+            Plotly.newPlot(this.angleChartX, data, layout, config);
+        }
+
+        if (this.angleChartY) {
+            const data = [createRosePlotData('Y')];
+            Plotly.newPlot(this.angleChartY, data, layout, config);
+        }
+
+        if (this.angleChartZ) {
+            const data = [createRosePlotData('Z')];
+            Plotly.newPlot(this.angleChartZ, data, layout, config);
+        }
+    }
+    
+    getAffinityColor(ic50Value) {
+        // Escala de colores: verde (alta afinidad/bajo IC50) → amarillo → rojo (baja afinidad/alto IC50)
+        // Rango típico de IC50: 1-1000 nM
+        // Usamos escala logarítmica para mejor distribución
+        const logIC50 = Math.log10(Math.max(ic50Value, 1));
+        const logMin = 0; // log10(1) = 0
+        const logMax = 3; // log10(1000) = 3
+        
+        // Normalizar entre 0 y 1
+        let normalized = (logIC50 - logMin) / (logMax - logMin);
+        normalized = Math.max(0, Math.min(1, normalized)); // Clamp entre 0-1
+        
+        // Interpolar color
+        if (normalized < 0.5) {
+            // Verde a Amarillo
+            const t = normalized * 2;
+            const r = Math.round(76 + (255 - 76) * t);
+            const g = Math.round(175 + (235 - 175) * t);
+            const b = Math.round(80 + (59 - 80) * t);
+            return `rgb(${r}, ${g}, ${b})`;
+        } else {
+            // Amarillo a Rojo
+            const t = (normalized - 0.5) * 2;
+            const r = Math.round(255);
+            const g = Math.round(235 - (235 - 87) * t);
+            const b = Math.round(59 - (59 - 34) * t);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+    }
+
+    updateRosePlots(dipoleResults) {
+        // Función optimizada que solo actualiza los datos sin recrear los gráficos
+        console.log('🔄 Actualizando Rose Plots (sin recrear DOM)');
+        
+        if (!dipoleResults || dipoleResults.length === 0) {
+            console.warn('⚠️ No hay datos para actualizar');
+            return;
+        }
+
+        // Helper para generar datos de un eje
+        const generateAxisData = (axis) => {
+            const numBins = Math.ceil(180 / this.rosePlotBinSize);
+            const bins = [];
+            
+            for (let i = 0; i < numBins; i++) {
+                const binStart = i * this.rosePlotBinSize;
+                const binEnd = Math.min((i + 1) * this.rosePlotBinSize, 180);
+                bins.push({
+                    start: binStart,
+                    end: binEnd,
+                    center: (binStart + binEnd) / 2,
+                    peptides: [],
+                    angles: [],
+                    ic50_values: []
+                });
+            }
+            
+            dipoleResults.forEach(result => {
+                const angles = this.computeAxisAngles(result.dipole_data);
+                let angle;
+                
+                if (axis === 'X') angle = parseFloat(angles.x);
+                else if (axis === 'Y') angle = parseFloat(angles.y);
+                else angle = parseFloat(angles.z);
+                
+                const binIndex = Math.min(Math.floor(angle / this.rosePlotBinSize), numBins - 1);
+                
+                bins[binIndex].peptides.push(result.peptide_code);
+                bins[binIndex].angles.push(angle);
+                
+                const ic50Value = parseFloat(result.ic50_value);
+                if (!isNaN(ic50Value) && ic50Value > 0) {
+                    bins[binIndex].ic50_values.push(ic50Value);
+                }
+            });
+            
+            const theta = [];
+            const r = [];
+            const colors = [];
+            const hovertext = [];
+            
+            bins.forEach(bin => {
+                if (bin.peptides.length > 0) {
+                    theta.push(bin.center);
+                    
+                    let radialValue;
+                    let medianIC50 = 0;
+                    
+                    if (this.currentRosePlotMode === 'frequency') {
+                        radialValue = bin.peptides.length;
+                    } else {
+                        let affinitySum = 0;
+                        bin.ic50_values.forEach(ic50 => {
+                            affinitySum += 1 / ic50;
+                        });
+                        radialValue = affinitySum;
+                    }
+                    
+                    r.push(radialValue);
+                    
+                    if (bin.ic50_values.length > 0) {
+                        const sortedIC50 = [...bin.ic50_values].sort((a, b) => a - b);
+                        const mid = Math.floor(sortedIC50.length / 2);
+                        medianIC50 = sortedIC50.length % 2 === 0 
+                            ? (sortedIC50[mid - 1] + sortedIC50[mid]) / 2 
+                            : sortedIC50[mid];
+                    }
+                    
+                    const color = medianIC50 > 0 ? this.getAffinityColor(medianIC50) : '#808080';
+                    colors.push(color);
+                    
+                    const peptideList = '• ' + bin.peptides.join('<br>• ');
+                    const modeLabel = this.currentRosePlotMode === 'frequency' ? 'Frecuencia' : 'Afinidad Σ(1/IC50)';
+                    
+                    hovertext.push(
+                        `<b>Rango: ${bin.start.toFixed(0)}°-${bin.end.toFixed(0)}°</b><br>` +
+                        `Péptidos: ${bin.peptides.length}<br>` +
+                        `${modeLabel}: ${radialValue.toFixed(3)}<br>` +
+                        `IC50 Mediana: ${medianIC50.toFixed(2)} nM<br>` +
+                        `<br><b>Lista de péptidos:</b><br>${peptideList}`
+                    );
+                }
+            });
+            
+            return { theta, r, colors, hovertext };
+        };
+
+        // Actualizar cada gráfico usando Plotly.update
+        const updateChart = (chartElement, axisName) => {
+            if (!chartElement) return;
+            
+            const data = generateAxisData(axisName);
+            const modeLabel = this.currentRosePlotMode === 'frequency' ? 'Frecuencia' : 'Σ(1/IC50)';
+            
+            Plotly.update(chartElement, {
+                r: [data.r],
+                theta: [data.theta],
+                'marker.color': [data.colors],
+                hovertext: [data.hovertext]
+            }, {
+                'polar.radialaxis.title': modeLabel
+            });
+        };
+
+        updateChart(this.angleChartX, 'X');
+        updateChart(this.angleChartY, 'Y');
+        updateChart(this.angleChartZ, 'Z');
+        
+        console.log('✅ Rose Plots actualizados en modo:', this.currentRosePlotMode);
+    }
+
+    createZonesCharts(dipoleResults) {
+        if (!dipoleResults || dipoleResults.length === 0 || !this.zonesAnalysisSection) {
+            return;
+        }
+
+        // Verificar que Plotly esté disponible
+        if (typeof Plotly === 'undefined') {
+            console.warn('Plotly no está disponible para zonas. Reintentando en 500ms...');
+            setTimeout(() => this.createZonesCharts(dipoleResults), 500);
+            return;
+        }
+
+        // Mostrar la sección de análisis
+        this.zonesAnalysisSection.style.display = 'block';
+
+        // Actualizar leyenda con rangos
+        this.updateZonesLegend();
+
+        // Obtener familia actual
+        const currentFamily = this.familySelector.value;
+
+        // Recolectar clasificaciones por eje
+        const classifications = { X: {}, Y: {}, Z: {} };
+        
+        ['X', 'Y', 'Z'].forEach(axis => {
+            classifications[axis] = {
+                optimal: [],
+                acceptable: [],
+                unfavorable: []
+            };
+        });
+
+        dipoleResults.forEach(result => {
+            const angles = this.computeAxisAngles(result.dipole_data);
+            const peptideCode = result.peptide_code;
+            
+            ['X', 'Y', 'Z'].forEach(axis => {
+                const angle = parseFloat(angles[axis.toLowerCase()]);
+                const zone = this.classifyAngleZone(angle, axis, currentFamily);
+                classifications[axis][zone].push(peptideCode);
+            });
+        });
+
+        // Crear datos para gráfico de torta
+        const createZonePieData = (axisData) => {
+            const labels = [];
+            const values = [];
+            const colors = [];
+            const customdata = [];
+
+            if (axisData.optimal.length > 0) {
+                labels.push('Óptimo');
+                values.push(axisData.optimal.length);
+                colors.push(this.ZONE_COLORS.optimal);
+                const formattedList = axisData.optimal.join('<br>• ');
+                customdata.push('• ' + formattedList);
+            }
+            if (axisData.acceptable.length > 0) {
+                labels.push('Aceptable');
+                values.push(axisData.acceptable.length);
+                colors.push(this.ZONE_COLORS.acceptable);
+                const formattedList = axisData.acceptable.join('<br>• ');
+                customdata.push('• ' + formattedList);
+            }
+            if (axisData.unfavorable.length > 0) {
+                labels.push('Desfavorable');
+                values.push(axisData.unfavorable.length);
+                colors.push(this.ZONE_COLORS.unfavorable);
+                const formattedList = axisData.unfavorable.join('<br>• ');
+                customdata.push('• ' + formattedList);
+            }
+
+            return [{
+                type: 'pie',
+                labels: labels,
+                values: values,
+                customdata: customdata,
+                marker: {
+                    colors: colors,
+                    line: {
+                        color: 'white',
+                        width: 2
+                    }
+                },
+                textinfo: 'label+percent',
+                textposition: 'auto',
+                textfont: {
+                    size: 14,
+                    color: 'white',
+                    family: 'Arial, sans-serif'
+                },
+                hovertemplate: '<b>%{label}</b><br>' +
+                              'Total: %{value} péptidos<br>' +
+                              'Porcentaje: %{percent}<br>' +
+                              '<br><b>Péptidos en esta zona:</b><br>%{customdata}<br>' +
+                              '<extra></extra>',
+                hoverlabel: {
+                    align: 'left',
+                    bgcolor: 'white',
+                    font: { size: 12, family: 'monospace' },
+                    bordercolor: colors
+                }
+            }];
+        };
+
+        const layout = {
+            showlegend: true,
+            legend: {
+                orientation: 'h',
+                y: -0.15,
+                x: 0.5,
+                xanchor: 'center',
+                font: {
+                    size: 12
+                }
+            },
+            margin: { t: 20, b: 60, l: 20, r: 20 },
+            height: 350,
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)'
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: false
+        };
+
+        // Renderizar los 3 gráficos
+        if (this.zoneChartX) {
+            Plotly.newPlot(this.zoneChartX, createZonePieData(classifications.X), layout, config);
+        }
+
+        if (this.zoneChartY) {
+            Plotly.newPlot(this.zoneChartY, createZonePieData(classifications.Y), layout, config);
+        }
+
+        if (this.zoneChartZ) {
+            Plotly.newPlot(this.zoneChartZ, createZonePieData(classifications.Z), layout, config);
+        }
     }
 
     displayFamilyStats() {

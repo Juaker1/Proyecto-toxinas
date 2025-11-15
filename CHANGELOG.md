@@ -2,29 +2,77 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
-## [2.9.0] – 2025-11-14
+
+---
+
+## [2.9.0] – 2025-11-15
 
 ### Added
-- Sistema de reordenamiento dinámico en la página de análisis de familias:
-  - Las visualizaciones resaltadas se mueven automáticamente al inicio del grid.
-  - El orden original se preserva: los péptidos resaltados mantienen su posición relativa inicial.
-  - Al desmarcar todos los resaltados, el grid vuelve al orden original.
-  - Animaciones suaves con transiciones CSS para mejor experiencia visual.
+- **Rose Plot (Diagramas Polares)** para análisis de distribución angular continua:
+  - Tres gráficos polares tipo `barpolar` (Plotly) para ejes X, Y, Z mostrando orientación direccional de dipolos.
+  - Bins configurables de 10° en rango 0–180° para proyección angular (mejora significativa vs. bins de 30° anteriores).
+  - **Modo Frecuencia**: Cuenta de péptidos por intervalo angular.
+  - **Modo Afinidad Ponderada**: Suma de afinidad (Σ 1/IC50) por bin, permitiendo identificar direcciones más eficaces funcionalmente.
+  - Toggle interactivo para alternar entre modos Frecuencia ↔ Afinidad con debouncing robusto para evitar múltiples disparos.
+  - Colores interpolados por densidad de afinidad: Verde (alta afinidad/bajo IC50) → Amarillo → Rojo (baja afinidad/alto IC50).
+  - Escala logarítmica de color para IC50 (rango 1-1000 nM).
+  - Tooltips mejorados mostrando: rango angular, cantidad de péptidos, valor de frecuencia/afinidad, IC50 mediana, y lista completa de péptidos con formato de viñetas.
+  - Exportación de gráficos a SVG de alta calidad.
+- **Módulo de Análisis de Zonas Funcionales del Dipolo**:
+  - Clasificación electrostática de péptidos en tres categorías: Óptimo (verde), Aceptable (amarillo), Desfavorable (rojo).
+  - Tres gráficos de torta mostrando distribución por eje (X, Y, Z) según zona funcional.
+  - Toggle para alternar entre modo "General" (criterios universales) y "Por Familia" (criterios específicos).
+  - Reglas de clasificación personalizadas por familia (μ-TRTX-Hh2a, μ-TRTX-Hhn2b, β-TRTX, ω-TRTX-Gr2a).
+  - Sistema de clasificación angular con rangos específicos:
+    - Eje X: Óptimo 28–32°, Aceptable 20–28° o 32–35°, Desfavorable <20° o >35°.
+    - Eje Y: Óptimo 110–122°, Aceptable 100–110° o 122–125°, Desfavorable <100° o >125°.
+    - Eje Z: Dos rangos óptimos (70–90° y 100–112°), Aceptable 90–100°, Desfavorable <70° o >112°.
+  - Banner informativo explicando diferencias entre modos de análisis.
+  - Leyenda dinámica con códigos de colores y rangos específicos según el modo activo.
+  - Tooltips con lista de péptidos en cada zona funcional.
 
 ### Changed
-- Eliminado scroll automático al seleccionar visualizaciones para facilitar la selección múltiple de péptidos.
+- **Rose Plot**:
+  - Reemplazados gráficos de torta por Rose Plots con 3x más resolución angular.
+  - Título de sección actualizado a "Análisis de Distribución Angular (Rose Plot)".
+  - Ícono cambiado de `fa-chart-pie` a `fa-chart-area`.
+  - Sistema de actualización optimizado: usa `Plotly.update()` en lugar de `Plotly.newPlot()` para cambios de modo, evitando recreación completa del DOM.
+- **UI/UX de Familias**:
+  - Unificación de controles de filtrado: botones "Resaltar vistas" y "Ver todo" reemplazados por un único botón toggle.
+  - Botón de filtrado con texto e ícono dinámicos: alterna entre "Resaltar vistas" (filtro) y "Mostrar todas" (grid) según el estado activo.
+  - Contador de visualizaciones resaltadas permanentemente visible en badge del botón con estilo mejorado (borde blanco, sombra).
+  - Estilos actualizados para coherencia con sistema de diseño: uso de clases `.btn` y `.btn-primary` en lugar de `.action-chip`.
+
+### Fixed
+- **Toggle del Rose Plot**: 
+  - Corrección de múltiples disparos del evento change con un solo clic mediante sistema de debouncing con timeout de 100ms.
+  - Solución de problema donde el checkbox no cambiaba de estado: input ahora cubre todo el área del toggle con `width: 100%; height: 100%; z-index: 2;`.
+  - Prevención de actualizaciones redundantes verificando si el modo realmente cambió antes de regenerar gráficos.
+  - Flag `isUpdating` para evitar ejecuciones simultáneas durante actualizaciones.
+- Estado visual del botón de filtrado sincronizado con modo de visualización activo mediante `aria-pressed`.
+- Responsive mejorado: botón de filtrado ocupa ancho completo en pantallas móviles.
 
 ### Technical Details
 - Archivos modificados:
   - `static/js/dipole_family_analysis.js`:
-    * Nuevas propiedades: `originalOrder` (array inmutable), `highlightedSet` (Set de códigos resaltados).
-    * Nueva función `reorderDipoleGrid()`: reordena tarjetas manteniendo orden original.
-    * Funciones auxiliares: `findCardByCode()`, `updateCardIndexes()`.
-    * Modificado `createDipoleGrid()`: guarda orden original al cargar familia.
-    * Modificado `toggleCardHighlight()`: usa `highlightedSet` y llama a `reorderDipoleGrid()`.
-    * Modificado `onFamilySelected()`: restaura `highlightedSet` desde cache.
-  - `static/css/families-page.css`:
-    * Animaciones: `transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)` en grid y tarjetas.
+    - **Rose Plot**: Nuevas propiedades `rosePlotModeToggle`, `currentRosePlotMode`, `rosePlotBinSize`, `rosePlotUpdateTimer`.
+    - Event listener con debouncing robusto (100ms) y verificación de cambio real de modo.
+    - Función `createAngleCharts()` completamente reescrita con lógica de Rose Plot.
+    - Nueva función `updateRosePlots()` para actualización optimizada sin recrear DOM.
+    - Nueva función `getAffinityColor(ic50Value)` para interpolación de colores RGB con escala logarítmica.
+    - Cálculo de mediana de IC50 por bin y generación de tooltips enriquecidos.
+    - Configuración Plotly con `type: 'barpolar'`, ejes polares, y exportación SVG.
+    - **Zonas Funcionales**: Constantes `GENERAL_ZONES`, `FAMILY_ZONES`, `ZONE_COLORS`; funciones `classifyAngleZone()`, `classifyAngleZoneGeneral()`, `createZonesCharts()`, `updateZonesLegend()`.
+    - **Filtrado**: Método `onToggleFilterClicked()` unificado, actualización dinámica de texto/ícono en `updateFilterButtonsState()`.
+  - `templates/dipole_families.html`:
+    - **Rose Plot**: Nuevo control `rosePlotModeToggle` con toggle switch en header de sección, estructura `.rose-plot-controls` → `.toggle-switch-container` → `.toggle-switch`.
+    - **Zonas**: Nueva sección `zonesAnalysisSection` con toggle de modo, banner info, leyenda dinámica y grid de 3 gráficos.
+    - **Filtrado**: Botón único `#toggleFilterBtn` con elementos dinámicos (`#toggleFilterText`, `#toggleFilterIcon`, badge contador).
+  - `static/css/dipole_families.css`:
+    - **Rose Plot**: Estilos para `.rose-plot-controls`, `.toggle-switch-container`, `.toggle-switch`, `.toggle-slider`; header flexible con `.header-left` y `.header-right`; fix crítico del input del toggle (`width: 100%; height: 100%; z-index: 2; cursor: pointer;`).
+    - **Zonas**: Estilos para `.zones-analysis-card`, `.zones-mode-toggle`, `.switch`, `.zones-info-banner`, `.zones-legend`, `.zones-charts-grid`.
+    - **Filtrado**: Estilos `.btn-toggle-filter` con estado activo (gradiente oscuro, sombra aumentada) y `.btn-badge` con mejor contraste.
+    - Responsive: 3 columnas (desktop), 2 columnas (tablet), 1 columna (móvil) con media queries específicas para cada componente.
 
 ---
 
