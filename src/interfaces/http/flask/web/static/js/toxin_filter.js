@@ -22,6 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const EXCLUDED_ACCESSIONS = new Set(["P83303","P84507","P0DL84","P84508","D2Y1X8","P0DL72","P0CH54"]);
   let currentMode = 'all'; // modes: all, with_nav, without_nav, with_ic50, without_ic50
 
+  // Glosario toggle functionality
+  const glossaryToggle = document.getElementById('glossary-toggle');
+  const glossaryContent = document.getElementById('glossary-content');
+  if (glossaryToggle && glossaryContent) {
+    glossaryToggle.addEventListener('click', () => {
+      const isExpanded = glossaryToggle.getAttribute('aria-expanded') === 'true';
+      glossaryToggle.setAttribute('aria-expanded', !isExpanded);
+      glossaryContent.classList.toggle('collapsed');
+    });
+  }
+
   // SheetJS loader (on-demand)
   let _sheetJsLoading = null;
   async function loadSheetJsOnce() {
@@ -93,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!bodyEl) return;
     const rows = [];
     for (let i = 0; i < tblPageSize; i++) {
-      rows.push('<tr class="skeleton-row">' + '<td></td>'.repeat(10) + '</tr>');
+      rows.push('<tr class="skeleton-row">' + '<td></td>'.repeat(9) + '</tr>');
     }
     bodyEl.innerHTML = rows.join('');
   }
@@ -106,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < tblPageSize; i++) {
       const r = pageRows[i] || null;
       if (!r) {
-        // Fila skeleton vacía
-        rowsHtml.push('<tr class="skeleton-row">' + '<td></td>'.repeat(10) + '</tr>');
+        // Fila skeleton vacía (9 columnas ahora, sin Score)
+        rowsHtml.push('<tr class="skeleton-row">' + '<td></td>'.repeat(9) + '</tr>');
       } else {
         // Fila con datos reales
         const seqHtml = highlightSequence(r.sequence, r);
@@ -115,14 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <td title="${r.peptide_id || ''}">${r.peptide_id || '—'}</td>
             <td title="${r.name || 'Sin nombre'}">${r.name || '<em class="text-muted">Sin nombre</em>'}</td>
-            <td title="Score: ${r.score || 0}"><strong>${r.score || 0}</strong></td>
             <td title="Gap: ${r.gap || 0}">${r.gap || 0}</td>
             <td title="Residuo X3: ${r.X3 || 'N/A'}">${r.X3 || '—'}</td>
             <td title="${r.has_hydrophobic_pair ? 'Tiene par hidrofóbico' : 'Sin par hidrofóbico'}">${r.has_hydrophobic_pair ? '<span class="table-cell-badge">✓</span>' : '—'}</td>
             <td title="Par: ${r.hydrophobic_pair || 'N/A'}">${r.hydrophobic_pair || '—'}</td>
             <td title="Score par: ${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : 'N/A'}">${r.hydrophobic_pair_score != null ? r.hydrophobic_pair_score.toFixed(2) : '—'}</td>
             <td title="Longitud: ${r.length || 0} aminoácidos">${r.length || 0}</td>
-            <td title="Secuencia completa con residuos destacados"><code class="table-cell-mono">${seqHtml}</code></td>
+            <td title="Secuencia completa con residuos destacados">
+              <div class="sequence-container">
+                <code class="table-cell-mono">${seqHtml}</code>
+              </div>
+            </td>
           </tr>
         `);
       }
@@ -139,6 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setStatus('🔍 Buscando toxinas...');
     toggleEmptyState(false);
     ensureSkeletonRows();
+    
+    // Ocultar glosario mientras se busca
+    const glossary = document.getElementById('residue-glossary');
+    if (glossary) glossary.style.display = 'none';
+    
     try {
       const res = await fetch(url);
       const data = await res.json();
@@ -152,8 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.count === 0) {
         setStatus('⚠️ No se encontraron resultados con estos filtros.');
         toggleEmptyState(true);
+        if (glossary) glossary.style.display = 'none';
       } else {
         setStatus(`✅ Se encontraron ${data.count} toxina${data.count !== 1 ? 's' : ''}.`);
+        // Mostrar glosario cuando hay resultados
+        if (glossary) glossary.style.display = 'block';
       }
       
       // store for export
@@ -162,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setStatus('❌ Error al cargar. Por favor, intenta de nuevo.');
       console.error(e);
       toggleEmptyState(true);
+      if (glossary) glossary.style.display = 'none';
     }
   }
 
@@ -229,23 +252,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function highlightSequence(seq, meta) {
     const s = seq.split('');
+    
+    // Primero, identificar todas las cisteínas y marcarlas según su posición
+    let cysCount = 0;
+    const cysPositions = new Map();
+    s.forEach((ch, i) => {
+      if (ch === 'C') {
+        cysCount++;
+        // 5ta Cys = morado, 6ta Cys = verde, resto = rojo
+        if (cysCount === 5) {
+          cysPositions.set(i, 'C5');
+        } else if (cysCount === 6) {
+          cysPositions.set(i, 'C6');
+        } else {
+          cysPositions.set(i, 'CICK');
+        }
+      }
+    });
+    
+    // Ahora marcar los residuos del motivo farmacofórico
     const marks = new Map();
-    ['iC5','iS','iW','iK','iX3','iHP1','iHP2'].forEach(k => {
+    
+    // Agregar las cisteínas identificadas
+    cysPositions.forEach((type, pos) => {
+      marks.set(pos, type);
+    });
+    
+    // Agregar los otros residuos del motivo (pueden sobrescribir cisteínas si es necesario)
+    ['iS','iW','iK','iX3','iHP1','iHP2'].forEach(k => {
       if (meta[k] !== null && meta[k] !== undefined) marks.set(meta[k], k);
     });
-    return s.map((ch,i) => {
+    
+    // Si hay iC5 en meta, asegurarse de usarlo (por si acaso)
+    if (meta['iC5'] !== null && meta['iC5'] !== undefined) {
+      marks.set(meta['iC5'], 'C5');
+    }
+    
+    return s.map((ch, i) => {
       if (!marks.has(i)) return ch;
       const cls = marks.get(i);
-      const color = ({
-        iC5:'#DC2626',    // Rojo más oscuro y visible
-        iS:'#2563EB',     // Azul más oscuro
-        iW:'#0891B2',     // Cyan más oscuro
-        iK:'#EA580C',     // Naranja más oscuro
-        iX3:'#7C3AED',    // Púrpura más oscuro
-        iHP1:'#059669',   // Verde más oscuro
-        iHP2:'#059669'    // Verde más oscuro
-      })[cls] || '#475569';
-      return `<span style="color:${color};font-weight:bold;background-color:rgba(255,255,255,0.3);padding:1px 2px;border-radius:2px;">${ch}</span>`;
+      
+      // Colores según el tipo de residuo
+      const colorMap = {
+        'C5': { bg: '#9333EA', text: '#FFFFFF' },      // Morado - Quinta Cys
+        'C6': { bg: '#10B981', text: '#FFFFFF' },      // Verde - Sexta Cys (del motivo WCK)
+        'CICK': { bg: '#DC2626', text: '#FFFFFF' },    // Rojo - Otras Cys del ICK
+        'iS': { bg: '#2563EB', text: '#FFFFFF' },      // Azul - Serina
+        'iW': { bg: '#EA580C', text: '#FFFFFF' },      // Naranja - Triptófano
+        'iK': { bg: '#EAB308', text: '#000000' },      // Amarillo - Lisina
+        'iX3': { bg: '#84CC16', text: '#000000' },     // Verde claro - X3
+        'iHP1': { bg: '#92400E', text: '#FFFFFF' },    // Café - X1
+        'iHP2': { bg: '#92400E', text: '#FFFFFF' }     // Café - X2
+      };
+      
+      const colors = colorMap[cls] || { bg: '#6B7280', text: '#FFFFFF' };
+      return `<span style="background-color:${colors.bg};color:${colors.text};font-weight:800;padding:2px 4px;border-radius:3px;margin:0 1px;display:inline-block;box-shadow:0 1px 2px rgba(0,0,0,0.2);">${ch}</span>`;
     }).join('');
   }
 

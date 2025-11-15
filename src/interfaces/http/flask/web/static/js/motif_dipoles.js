@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let referenceVector = null;
   let referenceSource = null;
   let referencePaths = { pdb: null, psf: null };
-  let selectedReferenceCode = 'WT';
+  let selectedReferenceCode = null;
   let referenceOptions = [];
-  let referenceDisplayName = 'Proteína WT';
+  let referenceDisplayName = '';
   let cardObserver = null; // IntersectionObserver para render perezoso de viewers
 
   // Optimización: cache de resultados agregados para gráficos y actualización diferida
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gap_min: lastParams.gap_min,
       gap_max: lastParams.gap_max,
       require_pair: !!lastParams.require_pair,
-      ref: selectedReferenceCode || 'WT',
+      ref: selectedReferenceCode || '',
     });
   }
 
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gap_max: String(lastParams.gap_max),
         require_pair: lastParams.require_pair ? '1' : '0',
       });
-      if (selectedReferenceCode && selectedReferenceCode !== 'WT') {
+      if (selectedReferenceCode) {
         params.set('peptide_code', selectedReferenceCode);
       }
       const res = await fetch(`/v2/motif_dipoles/page?${params.toString()}`);
@@ -444,9 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function formatReferenceOption(option) {
     if (!option) return '';
-    if (option.value === 'WT') {
-      return option.label || 'Proteína WT';
-    }
     const base = option.label || option.peptide_code || option.value;
     const norm = (typeof option.normalized_ic50 === 'number' && Number.isFinite(option.normalized_ic50))
       ? option.normalized_ic50.toFixed(3)
@@ -759,7 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gap_max: String(lastParams.gap_max),
       require_pair: lastParams.require_pair ? '1' : '0',
     });
-    if (selectedReferenceCode && selectedReferenceCode !== 'WT') {
+    if (selectedReferenceCode) {
       paramsBase.set('peptide_code', selectedReferenceCode);
     }
     // Loop pages until we collect all items
@@ -1385,9 +1382,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadReference(peptideCode = selectedReferenceCode) {
-    const desiredCode = peptideCode || 'WT';
+    const desiredCode = peptideCode || selectedReferenceCode;
     const params = new URLSearchParams();
-    if (desiredCode && desiredCode !== 'WT') {
+    if (desiredCode) {
       params.set('peptide_code', desiredCode);
     }
     const url = params.toString() ? `/v2/motif_dipoles/reference?${params.toString()}` : '/v2/motif_dipoles/reference';
@@ -1402,8 +1399,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
-      selectedReferenceCode = data.selected_reference_code || desiredCode || 'WT';
-      referenceDisplayName = data.display_name || (selectedReferenceCode === 'WT' ? 'Proteína WT' : selectedReferenceCode);
+      // Si hay opciones de referencia disponibles y no hay código seleccionado, usar la primera
+      if (Array.isArray(data.reference_options) && data.reference_options.length > 0) {
+        if (!selectedReferenceCode && !data.selected_reference_code) {
+          selectedReferenceCode = data.reference_options[0].value || data.reference_options[0].peptide_code;
+        } else {
+          selectedReferenceCode = data.selected_reference_code || desiredCode || selectedReferenceCode;
+        }
+      } else {
+        selectedReferenceCode = data.selected_reference_code || desiredCode || selectedReferenceCode;
+      }
+      referenceDisplayName = data.display_name || selectedReferenceCode || '';
 
       // Mostrar la secuencia de la referencia junto al selector si existe el elemento
       try {
@@ -1496,8 +1502,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (referenceSelector) {
     referenceSelector.addEventListener('change', async (event) => {
-      const newValue = event.target.value || 'WT';
-      if (newValue === selectedReferenceCode) return;
+      const newValue = event.target.value;
+      if (!newValue || newValue === selectedReferenceCode) return;
       const previousValue = selectedReferenceCode;
       selectedReferenceCode = newValue;
       try {
@@ -1520,7 +1526,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (downloadRefBtn) {
     downloadRefBtn.addEventListener('click', async (ev) => {
       ev.preventDefault();
-      const code = selectedReferenceCode || 'WT';
+      const code = selectedReferenceCode;
+      if (!code) {
+        alert('No hay referencia seleccionada');
+        return;
+      }
       downloadRefBtn.disabled = true;
       const originalHtml = downloadRefBtn.innerHTML;
   downloadRefBtn.innerHTML = '⏳ Descargando...';

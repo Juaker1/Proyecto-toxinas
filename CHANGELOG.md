@@ -2,6 +2,97 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
+## [2.8.0] – 2025-11-13
+
+### Added
+- Glosario interactivo de residuos clave del motivo farmacofórico en la página de filtros:
+  - 8 residuos con código de color específico: Cisteína ICK estructural (rojo), 5.ª Cisteína (morado), 6.ª Cisteína del motivo WCK (verde), Serina (azul), Triptófano (naranja), Lisina (amarillo), Par Hidrofóbico X₁X₂ (café), X₃ Hidrofóbico (verde lima).
+  - Diseño de tarjetas horizontales con badges de colores (48×48px) y formato "Nombre — Descripción".
+  - Funcionalidad de colapsar/expandir con botón toggle y animación de chevron.
+  - Fondo con color de botón activo (#3B82F6) para consistencia visual con el sistema de diseño.
+- Resaltado automático de cisteínas en secuencias de la tabla de resultados:
+  - Sistema de conteo inteligente que identifica todas las cisteínas (C) en la secuencia.
+  - Coloreado diferenciado: 5.ª cisteína en morado, 6.ª en verde (parte del motivo WCK), resto en rojo (estructura ICK).
+  - Overlay de colores de motivo farmacofórico sobre las cisteínas estructurales.
+- Visualización mejorada de residuos en secuencias:
+  - Badges con fondo de color sólido en lugar de solo texto coloreado.
+  - Contraste optimizado con pares de color de fondo/texto para cada tipo de residuo.
+  - Estilo consistente con padding, border-radius y box-shadow.
+
+### Changed
+- Actualización del apartado "Motivo de Búsqueda" a "Motivo Farmacofórico":
+  - Patrón actualizado a X₁X₂–S–WCK–X₃ con explicación científica completa.
+  - Referencia a estructura tipo NaSpTx1 del marco ICK con descripción de cada componente del motivo.
+- Enlaces a artículo científico actualizados en ambas páginas (Familias y Filtros):
+  - Nueva URL: https://febs.onlinelibrary.wiley.com/doi/epdf/10.1002/1873-3468.70036
+- Tabla de resultados optimizada:
+  - Eliminación de la columna "Score" (no relevante tras cambios en backend).
+  - Contenedor de secuencias con scroll horizontal para evitar desbordamiento.
+  - Scrollbar personalizado (6px de altura, azul #3B82F6) para mejor UX.
+  - Mejora de contraste en celdas de secuencia con fondo degradado sutil.
+- Glosario muestra/oculta automáticamente según presencia de resultados en la tabla.
+- Título de sección actualizado: "Dipolos de Toxinas Filtradas" → "Dipolos de Toxinas Filtradas de UniProt" para mayor claridad del origen de datos.
+- Sistema de referencia de dipolos completamente rediseñado:
+  - Eliminación total de la proteína WT (hwt4_Hh2a) como referencia.
+  - Selector de referencia ahora usa automáticamente la primera toxina disponible de Nav1_7_InhibitorPeptides (ordenada por IC50 normalizado).
+  - Secuencias de referencias obtenidas correctamente desde el campo `sequence` de la tabla Nav1_7_InhibitorPeptides.
+
+### Removed
+- Botones de exportación del navbar en las páginas de Filtros y Visualizador para simplificar la interfaz.
+- Proteína WT (hwt4_Hh2a) completamente removida del sistema:
+  - Eliminada de la lista de opciones de referencia en el selector.
+  - Removida la opción hardcodeada en el HTML del selector de referencia.
+  - Eliminados todos los fallbacks y lógica especial para WT en el frontend y backend.
+
+### Fixed
+- Problema de visibilidad en diseños previos del glosario (texto gris sobre fondo claro).
+- Overflow horizontal en secuencias largas de la tabla de resultados.
+- Cisteínas sin marcar o con colores incorrectos en la visualización de secuencias.
+- Lógica de resaltado de residuos ahora procesa la secuencia completa en dos pasadas:
+  - Primera pasada: identifica y cuenta todas las cisteínas, asigna tipos (C5/C6/CICK).
+  - Segunda pasada: overlay de residuos del motivo farmacofórico sobre la estructura base.
+
+### Technical Details
+- Archivos modificados:
+  - `templates/dipole_families.html`: actualización de enlace científico (línea ~80).
+  - `templates/toxin_filter.html`: 
+    * Sección "Motivo Farmacofórico" reescrita (líneas 66-85).
+    * Estructura completa del glosario con collapse (líneas 291-362).
+    * Tabla con 9 columnas (Score removido), secuencias en contenedor scrolleable.
+    * Selector de referencia sin opción WT hardcodeada (se puebla dinámicamente desde JS).
+    * Eliminado bloque navbar_actions con botón de exportar.
+  - `templates/viewer.html`:
+    * Eliminado bloque navbar_actions con botón de exportar.
+  - `static/css/filter-page.css`:
+    * Estilos del glosario completo (.residue-glossary-full, .glossary-header-full, .glossary-grid-full).
+    * Cards horizontales con badges (.glossary-card, .residue-badge-full, .residue-text).
+    * Contenedor de secuencias con scroll personalizado (.sequence-container).
+    * Mejoras de contraste en celdas de tabla (.table-cell-mono).
+  - `static/js/toxin_filter.js`:
+    * Event listener para toggle del glosario (líneas 23-30).
+    * Función paintRows() actualizada a 9 columnas.
+    * Función highlightSequence() completamente reescrita (líneas 253-305):
+      - Algoritmo de doble pasada para cisteínas + motivo.
+      - Map de colores con 9 tipos: C5, C6, CICK, iS, iW, iK, iX3, iHP1, iHP2.
+      - Retorna spans con estilos inline (background-color, color, padding, border-radius).
+    * Lógica para mostrar/ocultar glosario basada en resultados.
+  - `static/js/motif_dipoles.js`:
+    * Variable selectedReferenceCode inicializada en null en lugar de 'WT'.
+    * Eliminado caso especial para WT en formatReferenceOption().
+    * Eliminadas todas las condiciones que verificaban si no es 'WT' (6 ocurrencias).
+    * Eliminados todos los fallbacks a 'WT' (3 ocurrencias).
+    * Función loadReference() actualizada para usar primera opción disponible si no hay código seleccionado.
+    * Agregada validación en botón de descarga para verificar existencia de referencia seleccionada.
+  - `controllers/v2/motif_dipoles_controller.py`:
+    * Función _get_reference_options() ya no incluye opción WT en la lista.
+    * Función _get_reference_data() completamente reescrita:
+      - Eliminada lógica de carga desde filesystem para WT.
+      - Si no se especifica código, usa primera opción disponible de Nav1_7_InhibitorPeptides.
+      - Siempre carga referencias desde base de datos.
+    * Función _load_reference_from_db() corregida para obtener secuencia desde Nav1_7_InhibitorPeptides.sequence (antes buscaba en Peptides.sequence).
+
+---
+
 ## [2.7.2] – 2025-11-10
 
 ### Added

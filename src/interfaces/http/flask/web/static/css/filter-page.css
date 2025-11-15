@@ -501,6 +501,155 @@
     border-bottom: 2px solid var(--gray-100);
 }
 
+/* === GLOSARIO DE RESIDUOS (Diseño completo con toda la información) === */
+.residue-glossary-full {
+    background: #3B82F6;
+    border-radius: var(--radius-lg);
+    margin: 0 0 var(--space-6) 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease-out;
+    overflow: hidden;
+}
+
+.glossary-header-full {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    background: #2563EB;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.glossary-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.glossary-title-row i {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.glossary-title-row h3 {
+    margin: 0;
+    color: white;
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.glossary-toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.glossary-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.glossary-toggle-btn i {
+    transition: transform 0.3s ease;
+}
+
+.glossary-toggle-btn[aria-expanded="false"] i {
+    transform: rotate(180deg);
+}
+
+.glossary-content {
+    padding: var(--space-5);
+    background: #3B82F6;
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+}
+
+.glossary-content.collapsed {
+    max-height: 0;
+    padding: 0 var(--space-5);
+}
+
+.glossary-grid-full {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+}
+
+.glossary-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.glossary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.residue-badge-full {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 48px;
+    padding: 0 var(--space-2);
+    font-weight: 800;
+    font-size: 1.125rem;
+    border-radius: var(--radius-lg);
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.residue-text {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--gray-700);
+    margin: 0;
+}
+
+.residue-text strong {
+    color: var(--gray-900);
+    font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+    .glossary-grid-full {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .glossary-grid-full {
+        grid-template-columns: 1fr;
+    }
+    
+    .glossary-title-row h3 {
+        font-size: var(--text-base);
+    }
+    
+    .residue-glossary-full {
+        margin-bottom: var(--space-4);
+    }
+}
+
 .results-table-controls {
     display: flex;
     align-items: center;
@@ -703,13 +852,40 @@
 
 .results-table td:last-child {
     padding-right: var(--space-4);
-    min-width: 600px;
-    overflow: visible;
-    white-space: nowrap;
+    max-width: 500px;
+    min-width: 300px;
+    position: relative;
+}
+
+/* Contenedor de secuencia con scroll horizontal */
+.sequence-container {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-1) 0;
+}
+
+.sequence-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.sequence-container::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 3px;
+}
+
+.sequence-container::-webkit-scrollbar-thumb {
+    background: #60A5FA;
+    border-radius: 3px;
+}
+
+.sequence-container::-webkit-scrollbar-thumb:hover {
+    background: #3B82F6;
 }
 
 .results-table th:last-child {
-    min-width: 600px;
+    max-width: 500px;
+    min-width: 300px;
 }
 
 .results-table tbody tr {
@@ -742,16 +918,17 @@
 /* Células especiales con badges modernos */
 .table-cell-mono {
     font-family: var(--font-mono);
-    color: var(--gray-900);
+    color: #1F2937;
     font-weight: 600;
-    font-size: 12px;
-    background: var(--gray-100);
+    font-size: 13px;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
     padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     display: inline-block;
-    line-height: 1.5;
+    line-height: 1.6;
     white-space: nowrap;
-    overflow: visible;
+    border: 1px solid #D1D5DB;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .table-cell-badge {

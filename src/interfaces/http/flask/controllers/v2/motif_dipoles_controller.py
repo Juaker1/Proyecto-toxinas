@@ -214,15 +214,6 @@ def _get_reference_options() -> List[Dict[str, Any]]:
         })
 
     options: List[Dict[str, Any]] = []
-    options.append({
-        "value": "WT",
-        "label": "Proteína WT",
-        "peptide_code": "WT",
-        "ic50_value": None,
-        "ic50_unit": None,
-        "normalized_ic50": None,
-        "ic50_nm": None,
-    })
 
     if finite_values:
         min_value = min(finite_values)
@@ -458,12 +449,12 @@ def _load_reference_from_db(peptide_code: str = "μ-TRTX-Cg4a") -> Optional[Dict
         "ic50_value_nm": _convert_ic50_to_nm(ic50_value, ic50_unit) if ic50_value is not None else None,
         "display_name": code,
     }
-    # intentar recuperar secuencia asociada al peptide_code desde la tabla Peptides
+    # intentar recuperar secuencia asociada al peptide_code desde la tabla Nav1_7_InhibitorPeptides
     try:
         conn = sqlite3.connect(_DB_PATH)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("SELECT sequence FROM Peptides WHERE accession_number = ?", (code,))
+        cur.execute("SELECT sequence FROM Nav1_7_InhibitorPeptides WHERE peptide_code = ?", (code,))
         prow = cur.fetchone()
         if prow and "sequence" in prow.keys():
             cache["sequence"] = prow["sequence"]
@@ -491,14 +482,19 @@ def _load_reference_from_db(peptide_code: str = "μ-TRTX-Cg4a") -> Optional[Dict
 
 def _get_reference_data(peptide_code: Optional[str] = None) -> Tuple[Optional[Dict[str, Any]], str]:
     requested = (peptide_code or "").strip()
-    selected_code = requested if requested else "WT"
-
-    if selected_code.upper() == "WT":
-        ref = _load_reference_from_files()
-        if ref:
-            return ref, "WT"
-        selected_code = _DEFAULT_DB_REFERENCE_CODE
-
+    
+    # Si no se especifica un código, usar la primera opción disponible
+    if not requested:
+        options = _get_reference_options()
+        if options and len(options) > 0:
+            first_option = options[0]
+            requested = first_option.get("value") or first_option.get("peptide_code")
+            if not requested:
+                return None, ""
+        else:
+            return None, ""
+    
+    selected_code = requested
     ref = _load_reference_from_db(selected_code)
     return ref, selected_code
 

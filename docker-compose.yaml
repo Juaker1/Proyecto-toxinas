@@ -24,9 +24,9 @@ services:
       - "8087:5001"
 
     volumes:
-      - toxinas_db:/app/database
-      - toxinas_pdbs:/app/pdbs:ro
-      - toxinas_psfs:/app/psfs:ro
+      - ./database:/app/database
+      - ./pdbs:/app/pdbs:ro
+      - ./psfs:/app/psfs:ro
 
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:5001/v2/health || exit 1"]

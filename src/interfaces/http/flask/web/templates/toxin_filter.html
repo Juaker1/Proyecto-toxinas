@@ -27,12 +27,6 @@
 </head>
 <body class="filter-page">
     <!-- NAVBAR -->
-    {% set navbar_actions %}
-      <button class="action-btn" id="navbar-export-xlsx">
-        <span aria-hidden="true"><i class="fa-solid fa-file-excel"></i></span>
-        <span>Exportar</span>
-      </button>
-    {% endset %}
     {% include 'partials/navbar.html' %}
 
     <!-- CONTENIDO PRINCIPAL -->
@@ -67,9 +61,13 @@
                     <div class="intro-section-icon" aria-hidden="true"><i class="fa-solid fa-dna"></i></div>
                     <h2 class="intro-section-title">Motivo de Búsqueda</h2>
                     <p class="intro-section-text">
-                        Se aplica el patrón estructural <span class="motif-badge">CX<sub>3-6</sub>CX<sub>n</sub>C</span> con residuos hidrofóbicos clave 
-                        (posición X<sub>3</sub>) y parejas conservadas (X<sub>3</sub>X<sub>4</sub>), según el modelo de <em>screening in silico</em> 
-                        combinado con ingeniería racional.
+                        El patrón <span class="motif-badge">X<sub>1</sub>X<sub>2</sub>–S–WCK–X<sub>3</sub></span> identifica toxinas 
+                        <strong>NaSpTx1</strong> con capacidad inhibidora de el canal <strong>NaV1.7</strong>. Localizado en el bucle posterior al quinto residuo <strong>Cys</strong> del andamiaje <em>ICK</em>, 
+                        combina: <strong>S</strong> (inicio del bucle), <strong>W</strong> (residuo aromático crítico para orientar el farmacóforo), <strong>C</strong> (parte del sistema de puentes disulfuro del ICK), 
+                        <strong>K</strong> (contacto electrostático con E810/D815/E817 del canal), y <strong>X<sub>1-3</sub></strong> (residuos hidrofóbicos que estabilizan la conformación del bucle).
+                    </p>
+                    <p class="intro-section-text" style="margin-top: 0.5rem; font-size: 0.9em; opacity: 0.9;">
+                        Este motivo permite filtrar en UniProt secuencias que conservan la arquitectura mínima necesaria para presentar afinidad funcional hacia NaV1.7.
                     </p>
                 </div>
 
@@ -81,10 +79,10 @@
                         Basado en el estudio publicado en <strong>FEBS Letters</strong>:
                     </p>
                     <div class="paper-reference">
-                        <cite class="paper-title">
+                    <cite class="paper-title">
                             "Refining the NaV1.7 pharmacophore of a class of venom-derived peptide inhibitors via a combination of in silico screening and rational engineering"
                         </cite>
-                        <a href="https://febs.onlinelibrary.wiley.com/toc/18733468/2025/599/12" 
+                        <a href="https://febs.onlinelibrary.wiley.com/doi/epdf/10.1002/1873-3468.70036" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            class="paper-link"
@@ -146,7 +144,6 @@
                         <span aria-hidden="true"><i class="fa-solid fa-magnet"></i></span>
                         <span>Dipolo de Referencia:</span>
                         <select id="reference-selector" class="reference-selector-dropdown">
-                            <option value="WT" selected>Proteína WT</option>
                         </select>
                         <code id="reference-sequence" class="reference-sequence">-</code>
                     </h2>
@@ -169,7 +166,7 @@
 
             <div class="visualization-card" id="filtered-dipoles-card">
                 <div class="card-header card-header-row">
-                    <h2 class="section-title"><span aria-hidden="true"><i class="fa-solid fa-bolt"></i></span> Dipolos de Toxinas Filtradas</h2>
+                    <h2 class="section-title"><span aria-hidden="true"><i class="fa-solid fa-bolt"></i></span> Dipolos de Toxinas Filtradas de UniProt</h2>
                     <div>
                         <button id="prev-page" class="btn btn-secondary" aria-label="Anterior"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> Anterior</button>
                         <span id="page-indicator" class="page-indicator">Página 1</span>
@@ -309,6 +306,62 @@
                 </button>
             </div>
             
+            <!-- Glosario de Residuos - Diseño completo con información detallada -->
+            <div class="residue-glossary-full" style="display: none;" id="residue-glossary">
+                <div class="glossary-header-full">
+                    <div class="glossary-title-row">
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        <h3>Glosario de Residuos Clave del Motivo Farmacofórico</h3>
+                    </div>
+                    <button class="glossary-toggle-btn" id="glossary-toggle" aria-expanded="true">
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="glossary-content" id="glossary-content">
+                    <div class="glossary-grid-full">
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #DC2626; color: white;">C</span>
+                            <p class="residue-text"><strong>Cisteínas ICK</strong> — Puentes disulfuro I–IV, II–V, III–VI (6 Cys obligatorias)</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #9333EA; color: white;">C₅</span>
+                            <p class="residue-text"><strong>Quinta Cys</strong> — Marca inicio del loop farmacofórico</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #10B981; color: white;">C</span>
+                            <p class="residue-text"><strong>C del motivo WCK</strong> — Sexta Cys, parte del farmacóforo</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #2563EB; color: white;">S</span>
+                            <p class="residue-text"><strong>Serina</strong> — Inicio del bucle funcional post-Cys₅</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #EA580C; color: white;">W</span>
+                            <p class="residue-text"><strong>Triptófano</strong> — Ancla aromática crítica para VSD-II</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #EAB308; color: #000;">K</span>
+                            <p class="residue-text"><strong>Lisina</strong> — Contacto electrostático (E810, D815, E817)</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #92400E; color: white;">X₁X₂</span>
+                            <p class="residue-text"><strong>Par hidrofóbico</strong> — Estabilizan orientación del W</p>
+                        </div>
+                        
+                        <div class="glossary-card">
+                            <span class="residue-badge-full" style="background: #84CC16; color: #000;">X₃</span>
+                            <p class="residue-text"><strong>Hidrofóbico final</strong> — Completa geometría del loop</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="results-table-wrapper" id="results-body">
                 <!-- Estado vacío inicial -->
                 <div id="empty-state" class="empty-state" style="display: none;">
@@ -338,10 +391,6 @@
                                 <span class="header-help-icon" title="Nombre sistemático de la toxina según nomenclatura estándar. Ejemplo: μ-TRTX-Hh2a indica tipo μ (mu), familia TRTX (tarantula toxin), especie Hh (Haplopelma hainanum), variante 2a">?</span>
                             </th>
                             <th>
-                                Score
-                                <span class="header-help-icon" title="Puntuación del motivo CXCX encontrado (rango 0-10). Valores mayores indican mejor coincidencia con el patrón de búsqueda. Score 9 es excelente">?</span>
-                            </th>
-                            <th>
                                 Gap
                                 <span class="header-help-icon" title="Distancia en aminoácidos entre las cisteínas clave del motivo. Rango configurado: 3-6 residuos. Importante para la estructura terciaria">?</span>
                             </th>
@@ -367,7 +416,7 @@
                             </th>
                             <th>
                                 Secuencia
-                                <span class="header-help-icon" title="Secuencia primaria completa (código 1 letra). Residuos coloreados: Rojo=C5 (Cys), Azul=Ser, Cyan=Trp, Naranja=Lys, Púrpura=X3, Verde=Par hidrofóbico">?</span>
+                                <span class="header-help-icon" title="Secuencia primaria completa (código 1 letra). Residuos coloreados según glosario: Rojo=Cys ICK, Morado=Cys₅, Verde=C del WCK, Azul=S, Naranja=W, Amarillo=K, Café=X₁X₂, Verde claro=X₃">?</span>
                             </th>
                         </tr>
                     </thead>

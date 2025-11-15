@@ -63,114 +63,66 @@ class DualViewManager {
         }
     }
 
-    toggleAnalysisView(viewType) {
-        const detailedAnalysis = document.getElementById('detailed-analysis');
-        const exportDataSection = document.getElementById('export-data-section');
-        const dipoleCalculations = document.getElementById('dipole-calculations');
-        const toggleAnalysisBtn = document.getElementById('toggle-analysis');
-        const toggleExportBtn = document.getElementById('toggle-export');
-        const toggleDipoleBtn = document.getElementById('toggle-dipole-analysis');
-
-        if (this.currentAnalysisView === viewType) {
-            // Si es la misma vista, ocultarla
-            this.hideAllAnalysisViews();
-            this.currentAnalysisView = null;
-        } else {
-            // Cambiar a nueva vista
-            this.hideAllAnalysisViews();
-            
-            if (viewType === 'graph') {
-                detailedAnalysis.style.display = 'block';
-                detailedAnalysis.classList.add('show');
-                toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Ocultar Análisis Detallado <i class="fas fa-chevron-up toggle-icon"></i>';
-                toggleAnalysisBtn.classList.add('expanded');
-                
-                // Reset other buttons
-                if (toggleExportBtn) {
-                    toggleExportBtn.innerHTML = '<i class="fas fa-file-export"></i> Mostrar Exportar Datos Completos <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleExportBtn.classList.remove('expanded');
-                }
-                if (toggleDipoleBtn) {
-                    toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Mostrar Cálculos del Dipolo <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleDipoleBtn.classList.remove('expanded');
-                }
-                
-            } else if (viewType === 'export') {
-                exportDataSection.style.display = 'block';
-                exportDataSection.classList.add('show');
-                toggleExportBtn.innerHTML = '<i class="fas fa-file-export"></i> Ocultar Exportar Datos Completos <i class="fas fa-chevron-up toggle-icon"></i>';
-                toggleExportBtn.classList.add('expanded');
-                
-                // Reset other buttons
-                if (toggleAnalysisBtn) {
-                    toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Análisis Detallado <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleAnalysisBtn.classList.remove('expanded');
-                }
-                if (toggleDipoleBtn) {
-                    toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Mostrar Cálculos del Dipolo <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleDipoleBtn.classList.remove('expanded');
-                }
-                
-            } else if (viewType === 'dipole') {
-                dipoleCalculations.style.display = 'block';
-                dipoleCalculations.classList.add('show');
-                toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Ocultar Cálculos del Dipolo <i class="fas fa-chevron-up toggle-icon"></i>';
-                toggleDipoleBtn.classList.add('expanded');
-                
-                // Reset other buttons
-                if (toggleAnalysisBtn) {
-                    toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Análisis Detallado <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleAnalysisBtn.classList.remove('expanded');
-                }
-                if (toggleExportBtn) {
-                    toggleExportBtn.innerHTML = '<i class="fas fa-file-export"></i> Mostrar Exportar Datos Completos <i class="fas fa-chevron-down toggle-icon"></i>';
-                    toggleExportBtn.classList.remove('expanded');
-                }
+    getAnalysisSections() {
+        return {
+            graph: {
+                button: document.getElementById('toggle-analysis'),
+                panel: document.getElementById('detailed-analysis')
+            },
+            export: {
+                button: document.getElementById('toggle-export'),
+                panel: document.getElementById('export-data-section')
+            },
+            dipole: {
+                button: document.getElementById('toggle-dipole-analysis'),
+                panel: document.getElementById('dipole-calculations')
             }
-            
-            this.currentAnalysisView = viewType;
+        };
+    }
+
+    showAnalysisView(section) {
+        if (!section || !section.panel || !section.button) return;
+        section.panel.style.display = 'block';
+        section.panel.classList.add('show');
+        section.button.classList.add('active', 'expanded');
+        section.button.setAttribute('aria-expanded', 'true');
+    }
+
+    hideAnalysisView(section) {
+        if (!section) return;
+        if (section.panel) {
+            section.panel.style.display = 'none';
+            section.panel.classList.remove('show');
+        }
+        if (section.button) {
+            section.button.classList.remove('active', 'expanded');
+            section.button.setAttribute('aria-expanded', 'false');
         }
     }
 
+    toggleAnalysisView(viewType) {
+        const sections = this.getAnalysisSections();
+        const target = sections[viewType];
+        if (!target || !target.button || !target.panel) {
+            return;
+        }
+
+        const isActive = target.button.classList.contains('active');
+
+        if (isActive) {
+            this.hideAnalysisView(target);
+            this.currentAnalysisView = null;
+            return;
+        }
+
+        this.hideAllAnalysisViews();
+        this.showAnalysisView(target);
+        this.currentAnalysisView = viewType;
+    }
+
     hideAllAnalysisViews() {
-        const detailedAnalysis = document.getElementById('detailed-analysis');
-        const exportDataSection = document.getElementById('export-data-section');
-        const dipoleCalculations = document.getElementById('dipole-calculations');
-        const toggleAnalysisBtn = document.getElementById('toggle-analysis');
-        const toggleExportBtn = document.getElementById('toggle-export');
-        const toggleDipoleBtn = document.getElementById('toggle-dipole-analysis');
-
-        // Hide all analysis views
-        if (detailedAnalysis) {
-            detailedAnalysis.style.display = 'none';
-            detailedAnalysis.classList.remove('show');
-        }
-        
-        if (exportDataSection) {
-            exportDataSection.style.display = 'none';
-            exportDataSection.classList.remove('show');
-        }
-        
-        if (dipoleCalculations) {
-            dipoleCalculations.style.display = 'none';
-            dipoleCalculations.classList.remove('show');
-        }
-
-        // Reset all buttons
-        if (toggleAnalysisBtn) {
-            toggleAnalysisBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Análisis Detallado <i class="fas fa-chevron-down toggle-icon"></i>';
-            toggleAnalysisBtn.classList.remove('expanded');
-        }
-        
-        if (toggleExportBtn) {
-            toggleExportBtn.innerHTML = '<i class="fas fa-file-export"></i> Mostrar Exportar Datos Completos <i class="fas fa-chevron-down toggle-icon"></i>';
-            toggleExportBtn.classList.remove('expanded');
-        }
-        
-        if (toggleDipoleBtn) {
-            toggleDipoleBtn.innerHTML = '<i class="fas fa-bolt"></i> Mostrar Cálculos del Dipolo <i class="fas fa-chevron-down toggle-icon"></i>';
-            toggleDipoleBtn.classList.remove('expanded');
-        }
+        const sections = this.getAnalysisSections();
+        Object.values(sections).forEach(section => this.hideAnalysisView(section));
     }
 
     switchStructureView(viewType) {
@@ -262,7 +214,7 @@ class DualViewManager {
         const dipoleStatusContainer = document.getElementById('dipole-status-container');
         
         if (group === 'nav1_7') {
-            if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'block';
+            if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'flex';
             if (dipoleStatusContainer) dipoleStatusContainer.style.display = 'flex';
         } else {
             if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'none';
@@ -294,7 +246,7 @@ class DualViewManager {
         const dipoleToggleBtn = document.getElementById('toggle-dipole-analysis');
         const dipoleStatusContainer = document.getElementById('dipole-status-container');
         
-        if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'none';
+    if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'none';
         if (dipoleStatusContainer) dipoleStatusContainer.style.display = 'none';
     }
     
@@ -304,7 +256,7 @@ class DualViewManager {
         const dipoleToggleBtn = document.getElementById('toggle-dipole-analysis');
         const dipoleStatusContainer = document.getElementById('dipole-status-container');
         
-        if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'block';
+    if (dipoleToggleBtn) dipoleToggleBtn.style.display = 'flex';
         if (dipoleStatusContainer) dipoleStatusContainer.style.display = 'flex';
     }
 
@@ -368,12 +320,6 @@ class DualViewManager {
         
         // Actualizar los detalles del dipolo en la interfaz
         this.updateDipoleDetails(dipoleData);
-        
-        // Mostrar la vista de análisis del dipolo si no está visible
-        if (this.currentAnalysisView !== 'dipole') {
-            this.toggleAnalysisView('dipole');
-        }
-        
     }
 
     // Create py3Dmol visualization with dipole automatically
