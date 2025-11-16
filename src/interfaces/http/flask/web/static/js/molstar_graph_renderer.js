@@ -945,13 +945,9 @@ class MolstarGraphRenderer {
     nodeColor(node) {
         const type = node.element || node.type || null;
         const label = node.label || '';
-        // Intenta extraer el nombre de residuo del label tipo "A:HIS:28:CA"
-        let residue = null;
         const parts = typeof label === 'string' ? label.split(':') : [];
-        if (parts.length >= 2) residue = parts[1];
         const atomName = parts.length >= 4 ? parts[3] : null;
 
-        // Paleta CPK mínima por elemento
         const cpk = {
             H: [255, 255, 255],
             C: [80, 80, 80],
@@ -962,35 +958,43 @@ class MolstarGraphRenderer {
         };
         if (type && cpk[type]) return cpk[type];
 
-        // Colores por residuo (HIS amarillo como se solicitó)
-        const residueMap = {
-            HIS: [255, 220, 100],
-            PHE: [180, 120, 200],
-            TYR: [200, 160, 60],
-            TRP: [120, 60, 200],
-            LYS: [0, 102, 255],
-            ARG: [0, 150, 255],
-            ASP: [255, 80, 80],
-            GLU: [255, 100, 100],
-            SER: [220, 220, 255],
-            THR: [200, 220, 255],
-            GLY: [220, 220, 220],
-            ALA: [200, 200, 200],
-            CYS: [255, 230, 120],
-            MET: [255, 200, 80],
-            PRO: [170, 170, 170],
-            ASN: [120, 200, 255],
-            GLN: [120, 200, 255],
-            ILE: [200, 200, 0],
-            LEU: [200, 200, 0],
-            VAL: [200, 200, 0]
+        const aminoAcidPalette = {
+            A: [148, 163, 84],
+            G: [120, 143, 71],
+            V: [102, 110, 45],
+            L: [114, 102, 76],
+            I: [136, 109, 63],
+            F: [101, 73, 150],
+            W: [65, 45, 122],
+            M: [217, 119, 6],
+            P: [248, 113, 113],
+            S: [14, 165, 233],
+            T: [6, 182, 212],
+            Y: [233, 214, 107],
+            N: [34, 197, 94],
+            C: [253, 224, 71],
+            Q: [45, 212, 191],
+            K: [37, 99, 235],
+            R: [29, 78, 216],
+            H: [244, 114, 182],
+            D: [239, 68, 68],
+            E: [244, 63, 94]
         };
-        if (residue && residueMap[residue]) return residueMap[residue];
 
-        // Diferenciar CA en vista de residuos
+        const threeLetterToSingle = {
+            ALA: 'A', ARG: 'R', ASN: 'N', ASP: 'D', CYS: 'C', GLN: 'Q', GLU: 'E', GLY: 'G', HIS: 'H',
+            ILE: 'I', LEU: 'L', LYS: 'K', MET: 'M', PHE: 'F', PRO: 'P', SER: 'S', THR: 'T', TRP: 'W',
+            TYR: 'Y', VAL: 'V'
+        };
+
+        const residue = (parts.length >= 2 ? parts[1] : '').toUpperCase();
+        const normalizedResidue = threeLetterToSingle[residue] || residue;
+        if (normalizedResidue && aminoAcidPalette[normalizedResidue]) {
+            return aminoAcidPalette[normalizedResidue];
+        }
+
         if (atomName === 'CA') return [255, 105, 180];
 
-        // Fallback agradable púrpura
         return [210, 120, 210];
     }
 }

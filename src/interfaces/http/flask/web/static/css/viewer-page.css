@@ -225,6 +225,113 @@
     margin-bottom: var(--space-4);
 }
 
+.aa-color-legend {
+    background: rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-4);
+}
+
+.aa-legend-toggle {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--gray-700);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: var(--text-base);
+    cursor: pointer;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+}
+
+.aa-legend-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--gray-700);
+}
+
+.aa-legend-toggle i.fa-chevron-down {
+    transition: transform var(--transition-fast);
+}
+
+.aa-legend-toggle[aria-expanded="true"] i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.aa-color-legend-content {
+    margin-top: var(--space-3);
+}
+
+.aa-color-legend-content[hidden] {
+    display: none;
+}
+
+.aa-color-group {
+    margin-bottom: var(--space-5);
+}
+
+.aa-color-group-title {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.aa-color-group-meta {
+    margin: var(--space-1) 0 var(--space-3) 0;
+    font-size: var(--text-xs);
+    color: var(--gray-500);
+    text-transform: capitalize;
+}
+
+.aa-color-legend h4 {
+    margin: 0 0 var(--space-3) 0;
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--gray-700);
+}
+
+.aa-color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-2);
+}
+
+.aa-color-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-2) 0;
+}
+
+.aa-color-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    flex-shrink: 0;
+}
+
+.aa-color-label {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.aa-color-meta {
+    font-size: var(--text-xs);
+    color: var(--gray-500);
+    text-transform: capitalize;
+}
+
 .controls-hint {
     display: flex;
     align-items: center;
