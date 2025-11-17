@@ -396,6 +396,8 @@
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: var(--space-6);
     margin-bottom: var(--space-8);
+    /* Animación suave al reordenar grid */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dipole-card,
@@ -404,7 +406,8 @@
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    transition: all var(--transition-base);
+    /* Animación suave al mover y resaltar */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid transparent;
 }
 

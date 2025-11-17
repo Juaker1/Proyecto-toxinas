@@ -2,94 +2,110 @@
 Todas las modificaciones significativas del proyecto se documentan aquí.  
 El historial se organiza en "versiones" retrospectivas según hitos de desarrollo.
 
-## [2.8.0] – 2025-11-13
+
+---
+
+## [2.9.0] – 2025-11-15
 
 ### Added
-- Glosario interactivo de residuos clave del motivo farmacofórico en la página de filtros:
-  - 8 residuos con código de color específico: Cisteína ICK estructural (rojo), 5.ª Cisteína (morado), 6.ª Cisteína del motivo WCK (verde), Serina (azul), Triptófano (naranja), Lisina (amarillo), Par Hidrofóbico X₁X₂ (café), X₃ Hidrofóbico (verde lima).
-  - Diseño de tarjetas horizontales con badges de colores (48×48px) y formato "Nombre — Descripción".
-  - Funcionalidad de colapsar/expandir con botón toggle y animación de chevron.
-  - Fondo con color de botón activo (#3B82F6) para consistencia visual con el sistema de diseño.
-- Resaltado automático de cisteínas en secuencias de la tabla de resultados:
-  - Sistema de conteo inteligente que identifica todas las cisteínas (C) en la secuencia.
-  - Coloreado diferenciado: 5.ª cisteína en morado, 6.ª en verde (parte del motivo WCK), resto en rojo (estructura ICK).
-  - Overlay de colores de motivo farmacofórico sobre las cisteínas estructurales.
-- Visualización mejorada de residuos en secuencias:
-  - Badges con fondo de color sólido en lugar de solo texto coloreado.
-  - Contraste optimizado con pares de color de fondo/texto para cada tipo de residuo.
-  - Estilo consistente con padding, border-radius y box-shadow.
+- **Rose Plot (Diagramas Polares)** para análisis de distribución angular continua:
+  - Tres gráficos polares tipo `barpolar` (Plotly) para ejes X, Y, Z mostrando orientación direccional de dipolos.
+  - Bins configurables de 10° en rango 0–180° para proyección angular (mejora significativa vs. bins de 30° anteriores).
+  - **Modo Frecuencia**: Cuenta de péptidos por intervalo angular.
+  - **Modo Afinidad Ponderada**: Suma de afinidad (Σ 1/IC50) por bin, permitiendo identificar direcciones más eficaces funcionalmente.
+  - Toggle interactivo para alternar entre modos Frecuencia ↔ Afinidad con debouncing robusto para evitar múltiples disparos.
+  - Colores interpolados por densidad de afinidad: Verde (alta afinidad/bajo IC50) → Amarillo → Rojo (baja afinidad/alto IC50).
+  - Escala logarítmica de color para IC50 (rango 1-1000 nM).
+  - Tooltips mejorados mostrando: rango angular, cantidad de péptidos, valor de frecuencia/afinidad, IC50 mediana, y lista completa de péptidos con formato de viñetas.
+  - Exportación de gráficos a SVG de alta calidad.
+- **Módulo de Análisis de Zonas Funcionales del Dipolo**:
+  - Clasificación electrostática de péptidos en tres categorías: Óptimo (verde), Aceptable (amarillo), Desfavorable (rojo).
+  - Tres gráficos de torta mostrando distribución por eje (X, Y, Z) según zona funcional.
+  - Toggle para alternar entre modo "General" (criterios universales) y "Por Familia" (criterios específicos).
+  - Reglas de clasificación personalizadas por familia (μ-TRTX-Hh2a, μ-TRTX-Hhn2b, β-TRTX, ω-TRTX-Gr2a).
+  - Sistema de clasificación angular con rangos específicos:
+    - Eje X: Óptimo 28–32°, Aceptable 20–28° o 32–35°, Desfavorable <20° o >35°.
+    - Eje Y: Óptimo 110–122°, Aceptable 100–110° o 122–125°, Desfavorable <100° o >125°.
+    - Eje Z: Dos rangos óptimos (70–90° y 100–112°), Aceptable 90–100°, Desfavorable <70° o >112°.
+  - Banner informativo explicando diferencias entre modos de análisis.
+  - Leyenda dinámica con códigos de colores y rangos específicos según el modo activo.
+  - Tooltips con lista de péptidos en cada zona funcional.
 
 ### Changed
-- Actualización del apartado "Motivo de Búsqueda" a "Motivo Farmacofórico":
-  - Patrón actualizado a X₁X₂–S–WCK–X₃ con explicación científica completa.
-  - Referencia a estructura tipo NaSpTx1 del marco ICK con descripción de cada componente del motivo.
-- Enlaces a artículo científico actualizados en ambas páginas (Familias y Filtros):
-  - Nueva URL: https://febs.onlinelibrary.wiley.com/doi/epdf/10.1002/1873-3468.70036
-- Tabla de resultados optimizada:
-  - Eliminación de la columna "Score" (no relevante tras cambios en backend).
-  - Contenedor de secuencias con scroll horizontal para evitar desbordamiento.
-  - Scrollbar personalizado (6px de altura, azul #3B82F6) para mejor UX.
-  - Mejora de contraste en celdas de secuencia con fondo degradado sutil.
-- Glosario muestra/oculta automáticamente según presencia de resultados en la tabla.
-- Título de sección actualizado: "Dipolos de Toxinas Filtradas" → "Dipolos de Toxinas Filtradas de UniProt" para mayor claridad del origen de datos.
-- Sistema de referencia de dipolos completamente rediseñado:
-  - Eliminación total de la proteína WT (hwt4_Hh2a) como referencia.
-  - Selector de referencia ahora usa automáticamente la primera toxina disponible de Nav1_7_InhibitorPeptides (ordenada por IC50 normalizado).
-  - Secuencias de referencias obtenidas correctamente desde el campo `sequence` de la tabla Nav1_7_InhibitorPeptides.
-
-### Removed
-- Botones de exportación del navbar en las páginas de Filtros y Visualizador para simplificar la interfaz.
-- Proteína WT (hwt4_Hh2a) completamente removida del sistema:
-  - Eliminada de la lista de opciones de referencia en el selector.
-  - Removida la opción hardcodeada en el HTML del selector de referencia.
-  - Eliminados todos los fallbacks y lógica especial para WT en el frontend y backend.
+- **Rose Plot**:
+  - Reemplazados gráficos de torta por Rose Plots con 3x más resolución angular.
+  - Título de sección actualizado a "Análisis de Distribución Angular (Rose Plot)".
+  - Ícono cambiado de `fa-chart-pie` a `fa-chart-area`.
+  - Sistema de actualización optimizado: usa `Plotly.update()` en lugar de `Plotly.newPlot()` para cambios de modo, evitando recreación completa del DOM.
+- **UI/UX de Familias**:
+  - Unificación de controles de filtrado: botones "Resaltar vistas" y "Ver todo" reemplazados por un único botón toggle.
+  - Botón de filtrado con texto e ícono dinámicos: alterna entre "Resaltar vistas" (filtro) y "Mostrar todas" (grid) según el estado activo.
+  - Contador de visualizaciones resaltadas permanentemente visible en badge del botón con estilo mejorado (borde blanco, sombra).
+  - Estilos actualizados para coherencia con sistema de diseño: uso de clases `.btn` y `.btn-primary` en lugar de `.action-chip`.
 
 ### Fixed
-- Problema de visibilidad en diseños previos del glosario (texto gris sobre fondo claro).
-- Overflow horizontal en secuencias largas de la tabla de resultados.
-- Cisteínas sin marcar o con colores incorrectos en la visualización de secuencias.
-- Lógica de resaltado de residuos ahora procesa la secuencia completa en dos pasadas:
-  - Primera pasada: identifica y cuenta todas las cisteínas, asigna tipos (C5/C6/CICK).
-  - Segunda pasada: overlay de residuos del motivo farmacofórico sobre la estructura base.
+- **Toggle del Rose Plot**: 
+  - Corrección de múltiples disparos del evento change con un solo clic mediante sistema de debouncing con timeout de 100ms.
+  - Solución de problema donde el checkbox no cambiaba de estado: input ahora cubre todo el área del toggle con `width: 100%; height: 100%; z-index: 2;`.
+  - Prevención de actualizaciones redundantes verificando si el modo realmente cambió antes de regenerar gráficos.
+  - Flag `isUpdating` para evitar ejecuciones simultáneas durante actualizaciones.
+- Estado visual del botón de filtrado sincronizado con modo de visualización activo mediante `aria-pressed`.
+- Responsive mejorado: botón de filtrado ocupa ancho completo en pantallas móviles.
 
 ### Technical Details
 - Archivos modificados:
-  - `templates/dipole_families.html`: actualización de enlace científico (línea ~80).
-  - `templates/toxin_filter.html`: 
-    * Sección "Motivo Farmacofórico" reescrita (líneas 66-85).
-    * Estructura completa del glosario con collapse (líneas 291-362).
-    * Tabla con 9 columnas (Score removido), secuencias en contenedor scrolleable.
-    * Selector de referencia sin opción WT hardcodeada (se puebla dinámicamente desde JS).
-    * Eliminado bloque navbar_actions con botón de exportar.
-  - `templates/viewer.html`:
-    * Eliminado bloque navbar_actions con botón de exportar.
-  - `static/css/filter-page.css`:
-    * Estilos del glosario completo (.residue-glossary-full, .glossary-header-full, .glossary-grid-full).
-    * Cards horizontales con badges (.glossary-card, .residue-badge-full, .residue-text).
-    * Contenedor de secuencias con scroll personalizado (.sequence-container).
-    * Mejoras de contraste en celdas de tabla (.table-cell-mono).
-  - `static/js/toxin_filter.js`:
-    * Event listener para toggle del glosario (líneas 23-30).
-    * Función paintRows() actualizada a 9 columnas.
-    * Función highlightSequence() completamente reescrita (líneas 253-305):
-      - Algoritmo de doble pasada para cisteínas + motivo.
-      - Map de colores con 9 tipos: C5, C6, CICK, iS, iW, iK, iX3, iHP1, iHP2.
-      - Retorna spans con estilos inline (background-color, color, padding, border-radius).
-    * Lógica para mostrar/ocultar glosario basada en resultados.
-  - `static/js/motif_dipoles.js`:
-    * Variable selectedReferenceCode inicializada en null en lugar de 'WT'.
-    * Eliminado caso especial para WT en formatReferenceOption().
-    * Eliminadas todas las condiciones que verificaban si no es 'WT' (6 ocurrencias).
-    * Eliminados todos los fallbacks a 'WT' (3 ocurrencias).
-    * Función loadReference() actualizada para usar primera opción disponible si no hay código seleccionado.
-    * Agregada validación en botón de descarga para verificar existencia de referencia seleccionada.
-  - `controllers/v2/motif_dipoles_controller.py`:
-    * Función _get_reference_options() ya no incluye opción WT en la lista.
-    * Función _get_reference_data() completamente reescrita:
-      - Eliminada lógica de carga desde filesystem para WT.
-      - Si no se especifica código, usa primera opción disponible de Nav1_7_InhibitorPeptides.
-      - Siempre carga referencias desde base de datos.
-    * Función _load_reference_from_db() corregida para obtener secuencia desde Nav1_7_InhibitorPeptides.sequence (antes buscaba en Peptides.sequence).
+  - `static/js/dipole_family_analysis.js`:
+    - **Rose Plot**: Nuevas propiedades `rosePlotModeToggle`, `currentRosePlotMode`, `rosePlotBinSize`, `rosePlotUpdateTimer`.
+    - Event listener con debouncing robusto (100ms) y verificación de cambio real de modo.
+    - Función `createAngleCharts()` completamente reescrita con lógica de Rose Plot.
+    - Nueva función `updateRosePlots()` para actualización optimizada sin recrear DOM.
+    - Nueva función `getAffinityColor(ic50Value)` para interpolación de colores RGB con escala logarítmica.
+    - Cálculo de mediana de IC50 por bin y generación de tooltips enriquecidos.
+    - Configuración Plotly con `type: 'barpolar'`, ejes polares, y exportación SVG.
+    - **Zonas Funcionales**: Constantes `GENERAL_ZONES`, `FAMILY_ZONES`, `ZONE_COLORS`; funciones `classifyAngleZone()`, `classifyAngleZoneGeneral()`, `createZonesCharts()`, `updateZonesLegend()`.
+    - **Filtrado**: Método `onToggleFilterClicked()` unificado, actualización dinámica de texto/ícono en `updateFilterButtonsState()`.
+  - `templates/dipole_families.html`:
+    - **Rose Plot**: Nuevo control `rosePlotModeToggle` con toggle switch en header de sección, estructura `.rose-plot-controls` → `.toggle-switch-container` → `.toggle-switch`.
+    - **Zonas**: Nueva sección `zonesAnalysisSection` con toggle de modo, banner info, leyenda dinámica y grid de 3 gráficos.
+    - **Filtrado**: Botón único `#toggleFilterBtn` con elementos dinámicos (`#toggleFilterText`, `#toggleFilterIcon`, badge contador).
+  - `static/css/dipole_families.css`:
+    - **Rose Plot**: Estilos para `.rose-plot-controls`, `.toggle-switch-container`, `.toggle-switch`, `.toggle-slider`; header flexible con `.header-left` y `.header-right`; fix crítico del input del toggle (`width: 100%; height: 100%; z-index: 2; cursor: pointer;`).
+    - **Zonas**: Estilos para `.zones-analysis-card`, `.zones-mode-toggle`, `.switch`, `.zones-info-banner`, `.zones-legend`, `.zones-charts-grid`.
+    - **Filtrado**: Estilos `.btn-toggle-filter` con estado activo (gradiente oscuro, sombra aumentada) y `.btn-badge` con mejor contraste.
+    - Responsive: 3 columnas (desktop), 2 columnas (tablet), 1 columna (móvil) con media queries específicas para cada componente.
+
+---
+
+## [2.8.0] – 2025-11-13
+
+### Added
+- Glosario interactivo de residuos del motivo farmacofórico en la página de filtros con 8 residuos clave coloreados.
+- Resaltado automático de cisteínas en secuencias: 5.ª cisteína (morado), 6.ª cisteína (verde), resto (rojo).
+- Visualización mejorada de residuos con badges de colores y contraste optimizado.
+
+### Changed
+- Actualización del apartado "Motivo de Búsqueda" a "Motivo Farmacofórico" con patrón X₁X₂–S–WCK–X₃.
+- Enlaces a artículo científico actualizados (nueva URL FEBS Letters).
+- Tabla de resultados optimizada: columna "Score" eliminada, scroll horizontal personalizado.
+- Sistema de referencia de dipolos: eliminada proteína WT, ahora usa automáticamente primera toxina de Nav1_7_InhibitorPeptides.
+- Título actualizado: "Dipolos de Toxinas Filtradas de UniProt" para mayor claridad.
+
+### Removed
+- Botones de exportación del navbar en páginas de Filtros y Visualizador.
+- Proteína WT (hwt4_Hh2a) completamente removida del sistema.
+
+### Fixed
+- Overflow horizontal en secuencias largas.
+- Cisteínas sin marcar o con colores incorrectos.
+
+### Technical Details
+- Archivos modificados:
+  - `templates/toxin_filter.html`: sección "Motivo Farmacofórico", glosario con collapse, tabla sin columna Score.
+  - `templates/dipole_families.html`, `templates/viewer.html`: enlaces actualizados, botones de exportación removidos.
+  - `static/css/filter-page.css`: estilos del glosario y badges de residuos.
+  - `static/js/toxin_filter.js`: función `highlightSequence()` reescrita con algoritmo de doble pasada.
+  - `static/js/motif_dipoles.js`: eliminados fallbacks a WT, referencia dinámica desde base de datos.
+  - `controllers/v2/motif_dipoles_controller.py`: funciones `_get_reference_data()` y `_load_reference_from_db()` reescritas.
 
 ---
 

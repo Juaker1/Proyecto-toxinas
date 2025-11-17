@@ -165,19 +165,110 @@
                             Marca «Resaltar» en la tabla para enfocar sólo esas visualizaciones.
                         </p>
                         <div class="visualization-actions__buttons">
-                            <button type="button" class="action-chip action-chip--primary" id="showHighlightsBtn" disabled aria-pressed="false">
-                                <i class="fas fa-filter"></i>
-                                <span>Resaltar vistas</span>
-                                <span class="action-chip__badge" id="highlightedCountBadge" hidden>0</span>
-                            </button>
-                            <button type="button" class="action-chip action-chip--ghost" id="showAllBtn" disabled>
-                                <i class="fas fa-th-large"></i>
-                                <span>Ver todo</span>
+                            <button type="button" class="btn btn-primary btn-toggle-filter" id="toggleFilterBtn" disabled aria-pressed="false">
+                                <i class="fas fa-filter" id="toggleFilterIcon"></i>
+                                <span id="toggleFilterText">Resaltar vistas</span>
+                                <span class="btn-badge" id="highlightedCountBadge" hidden>0</span>
                             </button>
                         </div>
                     </div>
                     <!-- Grid de visualizaciones -->
                     <div id="visualizationGrid" class="visualization-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de análisis de ángulos -->
+        <div class="angle-analysis-section" id="angleAnalysisSection" style="display: none;">
+            <div class="angle-analysis-card">
+                <div class="card-header">
+                    <div class="header-left">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-area"></i> Análisis de Distribución Angular (Rose Plot)
+                        </h2>
+                        <p class="section-subtitle">Distribución direccional de los dipolos en coordenadas polares</p>
+                    </div>
+                    <div class="header-right">
+                        <div class="rose-plot-controls">
+                            <label class="control-label">
+                                <i class="fas fa-sliders-h"></i> Modo de visualización:
+                            </label>
+                            <div class="toggle-switch-container">
+                                <span class="toggle-label">Frecuencia</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="rosePlotModeToggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label">Afinidad (1/IC50)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="angle-charts-grid">
+                        <div class="angle-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-arrows-alt-h"></i> Eje X</h3>
+                            <div id="angleChartX" class="angle-chart"></div>
+                        </div>
+                        <div class="angle-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-arrows-alt-v"></i> Eje Y</h3>
+                            <div id="angleChartY" class="angle-chart"></div>
+                        </div>
+                        <div class="angle-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-expand-arrows-alt"></i> Eje Z</h3>
+                            <div id="angleChartZ" class="angle-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de análisis de zonas funcionales -->
+        <div class="zones-analysis-section" id="zonesAnalysisSection" style="display: none;">
+            <div class="zones-analysis-card">
+                <div class="card-header">
+                    <div class="header-left">
+                        <h2 class="section-title">
+                            <i class="fas fa-bullseye"></i> Análisis de Zonas Funcionales del Dipolo
+                        </h2>
+                        <p class="section-subtitle">Clasificación electrostática de los péptidos según zona funcional (Óptimo/Aceptable/Desfavorable)</p>
+                    </div>
+                    <div class="header-right">
+                        <div class="zones-mode-toggle">
+                            <span class="toggle-label">General</span>
+                            <label class="switch">
+                                <input type="checkbox" id="zonesModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="toggle-label">Por Familia</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="zones-info-banner">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="banner-content">
+                            <strong>Modo General:</strong> Aplica rangos óptimos universales para todos los péptidos.
+                            <strong>Modo Por Familia:</strong> Usa criterios específicos para cada familia de toxinas.
+                        </div>
+                    </div>
+                    <div class="zones-legend" id="zonesLegend">
+                        <!-- La leyenda se generará dinámicamente con JavaScript -->
+                    </div>
+                    <div class="zones-charts-grid">
+                        <div class="zone-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-arrows-alt-h"></i> Eje X</h3>
+                            <div id="zoneChartX" class="zone-chart"></div>
+                        </div>
+                        <div class="zone-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-arrows-alt-v"></i> Eje Y</h3>
+                            <div id="zoneChartY" class="zone-chart"></div>
+                        </div>
+                        <div class="zone-chart-container">
+                            <h3 class="chart-title"><i class="fas fa-expand-arrows-alt"></i> Eje Z</h3>
+                            <div id="zoneChartZ" class="zone-chart"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
