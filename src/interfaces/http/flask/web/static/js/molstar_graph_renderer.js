@@ -10,6 +10,8 @@ class MolstarGraphRenderer {
         this.canvas = null;
         this.ctx = null;
         this.graphData = null;
+        this.visibility = { nodes: true, edges: true };
+        this.defaultCameraState = null;
         // Node state: selectedNode (CLICK), hoveredNode (MOUSE OVER)
         this.selectedNode = null; // nodo seleccionado con CLICK (muestra conexiones en panel)
         this.hoveredNode = null; // nodo bajo el cursor (solo resalta colores)
@@ -20,6 +22,8 @@ class MolstarGraphRenderer {
             target: { x: 0, y: 0, z: 0 }
         };
         this.isDragging = false;
+        this.isRotating = false;
+        this.isPanning = false;
         this.lastMouse = { x: 0, y: 0 };
         this.initialZoom = 1;
         this.initialDistance = 150;
@@ -160,9 +164,19 @@ class MolstarGraphRenderer {
     
     setupInteraction() {
         // Mouse controls for rotation
+        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
         this.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0) {
+                this.isRotating = true;
+                this.canvas.style.cursor = 'grabbing';
+            } else if (e.button === 2) {
+                this.isPanning = true;
+                this.canvas.style.cursor = 'move';
+            } else {
+                return;
+            }
             this.isDragging = true;
-            this.canvas.style.cursor = 'grabbing';
             this.lastMouse = { x: e.clientX, y: e.clientY };
         });
         
@@ -171,15 +185,21 @@ class MolstarGraphRenderer {
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
             
-            if (this.isDragging) {
+            if (this.isRotating || this.isPanning) {
                 const dx = e.clientX - this.lastMouse.x;
                 const dy = e.clientY - this.lastMouse.y;
                 
-                this.camera.rotation.y += dx * 0.01;
-                this.camera.rotation.x += dy * 0.01;
+                if (this.isRotating) {
+                    this.camera.rotation.y += dx * 0.01;
+                    this.camera.rotation.x += dy * 0.01;
+                    this.render();
+                }
+
+                if (this.isPanning) {
+                    this.panCamera(dx, dy);
+                }
                 
                 this.lastMouse = { x: e.clientX, y: e.clientY };
-                this.render();
             } else {
                 // Check for hover over nodes (visual only, no panel update)
                 if (this.graphData && this.projectedNodes) {
@@ -191,7 +211,7 @@ class MolstarGraphRenderer {
         // Click to select a node
         this.canvas.addEventListener('click', (e) => {
             // Ignore clicks while dragging
-            if (this.isDragging) return;
+            if (this.isDragging || this.isRotating || this.isPanning) return;
             
             const rect = this.canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
@@ -202,11 +222,15 @@ class MolstarGraphRenderer {
         
         this.canvas.addEventListener('mouseup', () => {
             this.isDragging = false;
+            this.isRotating = false;
+            this.isPanning = false;
             this.canvas.style.cursor = 'grab';
         });
         
         this.canvas.addEventListener('mouseleave', () => {
             this.isDragging = false;
+            this.isRotating = false;
+            this.isPanning = false;
             this.canvas.style.cursor = 'grab';
             // Reset hover visual (but keep selected panel if exists)
             this.hoveredNode = null;
@@ -532,9 +556,16 @@ class MolstarGraphRenderer {
      * Reset camera to initial view
      */
     resetView() {
-        this.camera.rotation = { x: 0.2, y: 0.2 };
-        this.camera.distance = this.initialDistance;
-        this.camera.zoom = this.initialZoom;
+        if (this.defaultCameraState) {
+            this.camera.rotation = { ...this.defaultCameraState.rotation };
+            this.camera.target = { ...this.defaultCameraState.target };
+            this.camera.distance = this.defaultCameraState.distance;
+            this.camera.zoom = this.defaultCameraState.zoom;
+        } else {
+            this.camera.rotation = { x: 0.2, y: 0.2 };
+            this.camera.distance = this.initialDistance;
+            this.camera.zoom = this.initialZoom;
+        }
         // Reset the info panel and selection
         this.selectedNode = null;
         this.hoveredNode = null;
@@ -614,6 +645,7 @@ class MolstarGraphRenderer {
             // Initial distance: CLOSER to see all connections clearly
             this.camera.distance = size * 1.8; // Reduced from 2.5 to 1.8
             this.initialDistance = this.camera.distance;
+            this.baselineDistance = this.camera.distance;
             this.camera.zoom = Math.min(this.canvas.width, this.canvas.height) / (size * 1.5);
             this.initialZoom = this.camera.zoom;
             // Update focal length relative to viewport for sensible scaling
@@ -622,8 +654,18 @@ class MolstarGraphRenderer {
         
         // Reset rotation for better initial view
         this.camera.rotation = { x: 0.2, y: 0.2 };
+        this.saveCameraDefaults();
         
         this.render();
+    }
+
+    saveCameraDefaults() {
+        this.defaultCameraState = {
+            target: { ...this.camera.target },
+            rotation: { ...this.camera.rotation },
+            distance: this.camera.distance,
+            zoom: this.camera.zoom
+        };
     }
     
     /**
@@ -668,6 +710,20 @@ class MolstarGraphRenderer {
         
         return { x: screenX, y: screenY, z: pz, scale };
     }
+
+    panCamera(dx, dy) {
+        const yaw = this.camera.rotation.y;
+        const pitch = this.camera.rotation.x;
+        const panFactor = Math.max(0.15, this.camera.distance / 600);
+        const moveX = (-dx * Math.cos(yaw) + dy * Math.sin(pitch) * Math.sin(yaw)) * panFactor;
+        const moveY = (dy * Math.cos(pitch)) * panFactor;
+        const moveZ = (-dx * Math.sin(yaw) - dy * Math.sin(pitch) * Math.cos(yaw)) * panFactor;
+
+        this.camera.target.x += moveX;
+        this.camera.target.y += moveY;
+        this.camera.target.z += moveZ;
+        this.render();
+    }
     
     /**
      * Render the graph
@@ -683,6 +739,9 @@ class MolstarGraphRenderer {
         if (!nodes || !edges) {
             return;
         }
+
+        const showNodes = this.visibility?.nodes !== false;
+        const showEdges = this.visibility?.edges !== false;
         
       
         
@@ -740,144 +799,148 @@ class MolstarGraphRenderer {
             .sort((a, b) => a.z - b.z)
             .map(item => item.i);
         
-        // Draw ALL edges - MÁXIMA VISIBILIDAD
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        
-        // Sort edges by average depth for better rendering
-        const edgesWithDepth = edges.map(([i, j]) => {
-            const p1 = this.projectedNodes[i];
-            const p2 = this.projectedNodes[j];
-            if (!p1 || !p2) return null;
-            const avgZ = (p1.z + p2.z) / 2;
-            return { i, j, p1, p2, avgZ };
-        }).filter(e => e !== null);
-        
-        edgesWithDepth.sort((a, b) => a.avgZ - b.avgZ);
-        
-        // Draw ALL edges with highlighting for selected/hovered nodes
-        for (const edge of edgesWithDepth) {
-            const { p1, p2, avgZ } = edge;
+        if (showEdges) {
+            // Draw ALL edges - MÁXIMA VISIBILIDAD
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             
-            // Depth factor for subtle 3D effect
-            const depthFactor = Math.max(0.3, Math.min(1, (avgZ + 150) / 300));
+            // Sort edges by average depth for better rendering
+            const edgesWithDepth = edges.map(([i, j]) => {
+                const p1 = this.projectedNodes[i];
+                const p2 = this.projectedNodes[j];
+                if (!p1 || !p2) return null;
+                const avgZ = (p1.z + p2.z) / 2;
+                return { i, j, p1, p2, avgZ };
+            }).filter(e => e !== null);
             
-            // Detectar si esta arista está conectada al nodo seleccionado o hovado
-            const isSelectedEdge = this.selectedNode !== null && (edge.i === this.selectedNode || edge.j === this.selectedNode);
-            const isHoveredEdge = this.hoveredNode !== null && (edge.i === this.hoveredNode || edge.j === this.hoveredNode);
+            edgesWithDepth.sort((a, b) => a.avgZ - b.avgZ);
             
-            let lineWidth, opacity, color;
-            
-            if (isSelectedEdge) {
-                // Rojo/magenta para aristas del nodo seleccionado (MÁS VISIBLE)
-                lineWidth = 4.0 + (depthFactor * 0.8);
-                opacity = 0.95;
-                color = `rgba(255, 100, 150, ${opacity})`;
-            } else if (isHoveredEdge) {
-                // Amarillo/naranja para aristas del nodo hovado
-                lineWidth = 3.0 + (depthFactor * 0.8);
-                opacity = 0.9;
-                color = `rgba(255, 220, 100, ${opacity})`;
-            } else {
-                // Cyan/azul por defecto
-                lineWidth = 2.0 + (depthFactor * 0.8);
-                opacity = 0.5 + depthFactor * 0.3;
-                color = `rgba(99, 179, 237, ${opacity})`;
+            // Draw ALL edges with highlighting for selected/hovered nodes
+            for (const edge of edgesWithDepth) {
+                const { p1, p2, avgZ } = edge;
+                
+                // Depth factor for subtle 3D effect
+                const depthFactor = Math.max(0.3, Math.min(1, (avgZ + 150) / 300));
+                
+                // Detectar si esta arista está conectada al nodo seleccionado o hovado
+                const isSelectedEdge = this.selectedNode !== null && (edge.i === this.selectedNode || edge.j === this.selectedNode);
+                const isHoveredEdge = this.hoveredNode !== null && (edge.i === this.hoveredNode || edge.j === this.hoveredNode);
+                
+                let lineWidth, opacity, color;
+                
+                if (isSelectedEdge) {
+                    // Rojo/magenta para aristas del nodo seleccionado (MÁS VISIBLE)
+                    lineWidth = 4.0 + (depthFactor * 0.8);
+                    opacity = 0.95;
+                    color = `rgba(255, 100, 150, ${opacity})`;
+                } else if (isHoveredEdge) {
+                    // Amarillo/naranja para aristas del nodo hovado
+                    lineWidth = 3.0 + (depthFactor * 0.8);
+                    opacity = 0.9;
+                    color = `rgba(255, 220, 100, ${opacity})`;
+                } else {
+                    // Cyan/azul por defecto
+                    lineWidth = 2.0 + (depthFactor * 0.8);
+                    opacity = 0.5 + depthFactor * 0.3;
+                    color = `rgba(99, 179, 237, ${opacity})`;
+                }
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
             }
-            
-            ctx.strokeStyle = color;
-            ctx.lineWidth = lineWidth;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
         }
         
         // Draw nodes - SIMILAR A PLOTLY CON HOVER + SELECTION HIGHLIGHT
-        for (const idx of sortedIndices) {
-            const p = this.projectedNodes[idx];
-            if (!p) continue;
-            
-            // Node size varies with depth
-            const baseSizeScale = p.scale / this.camera.zoom * 0.015;
-            const size = Math.max(4, 9 * baseSizeScale);
-            
-            const isSelected = (this.selectedNode === idx);
-            const isHovered = (this.hoveredNode === idx);
-            const isNeighborOfSelected = this.selectedNode !== null && this.adj && this.adj.get(this.selectedNode) && this.adj.get(this.selectedNode).has(idx);
-            const isNeighborOfHovered = this.hoveredNode !== null && this.adj && this.adj.get(this.hoveredNode) && this.adj.get(this.hoveredNode).has(idx);
-            
-            const selectedScale = isSelected ? 1.6 : 1.0;
-            const hoverScale = isHovered ? 1.4 : 1.0;
-            const neighbourScale = (isNeighborOfSelected || isNeighborOfHovered) ? 1.2 : 1.0;
-            const finalSize = size * selectedScale * hoverScale * neighbourScale;
-            
-            // Depth factor for color
-            const depthFactor = Math.max(0.3, Math.min(1, (p.z + 150) / 300));
-            
-            // Validar que finalSize sea válido y finito
-            const validSize = (isFinite(finalSize) && finalSize > 0) ? finalSize : 5;
-            const validX = isFinite(p.x) ? p.x : 0;
-            const validY = isFinite(p.y) ? p.y : 0;
-            
-            // Create radial gradient for 3D sphere effect
-            const gradient = ctx.createRadialGradient(
-                validX - validSize * 0.3, validY - validSize * 0.3, 0,
-                validX, validY, validSize
-            );
-            
-            if (isSelected) {
-                // Selected node - rojo/magenta brillante (CLICK)
-                gradient.addColorStop(0, 'rgba(255, 100, 150, 1)');
-                gradient.addColorStop(0.6, 'rgba(255, 80, 120, 0.95)');
-                gradient.addColorStop(1, 'rgba(220, 50, 100, 0.8)');
-            } else if (isHovered) {
-                // Hovered node - amarillo/naranja brillante (MOUSE)
-                gradient.addColorStop(0, 'rgba(255, 220, 100, 1)');
-                gradient.addColorStop(0.6, 'rgba(255, 180, 50, 0.95)');
-                gradient.addColorStop(1, 'rgba(230, 140, 30, 0.8)');
-            } else {
-                // Color por clasificación (átomo/residuo)
-                const base = this.projectedNodes[idx].color;
-                const [r, g, b] = base;
-                gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.95)`);
-                gradient.addColorStop(0.7, `rgba(${Math.max(0,r-30)}, ${Math.max(0,g-20)}, ${Math.max(0,b-30)}, 0.9)`);
-                gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
-            }
-            
-            // Draw node con valores validados
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(validX, validY, validSize, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Border - grueso si está seleccionado o hovado
-            let borderWidth = 1.5;
-            let borderColor = `rgba(255, 255, 255, ${0.5 + depthFactor * 0.3})`;
-            
-            if (isSelected) {
-                borderWidth = 3.5;
-                borderColor = 'rgba(255, 255, 255, 1)';
-            } else if (isHovered) {
-                borderWidth = 3.0;
-                borderColor = 'rgba(255, 255, 255, 1)';
-            } else if (isNeighborOfSelected || isNeighborOfHovered) {
-                borderWidth = 2.0;
-                borderColor = 'rgba(255, 220, 100, 0.9)';
-            }
-            
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
-
-            
-            // Inner glow sutil
-            if (!isHovered) {
-                ctx.strokeStyle = `rgba(255, 200, 255, ${0.3 + depthFactor * 0.2})`;
-                ctx.lineWidth = 1;
+        if (showNodes) {
+            for (const idx of sortedIndices) {
+                const p = this.projectedNodes[idx];
+                if (!p) continue;
+                
+                // Node size varies with depth
+                const baseSizeScale = p.scale / this.camera.zoom * 0.015;
+                const size = Math.max(4, 9 * baseSizeScale);
+                
+                const isSelected = (this.selectedNode === idx);
+                const isHovered = (this.hoveredNode === idx);
+                const isNeighborOfSelected = this.selectedNode !== null && this.adj && this.adj.get(this.selectedNode) && this.adj.get(this.selectedNode).has(idx);
+                const isNeighborOfHovered = this.hoveredNode !== null && this.adj && this.adj.get(this.hoveredNode) && this.adj.get(this.hoveredNode).has(idx);
+                
+                const selectedScale = isSelected ? 1.6 : 1.0;
+                const hoverScale = isHovered ? 1.4 : 1.0;
+                const neighbourScale = (isNeighborOfSelected || isNeighborOfHovered) ? 1.2 : 1.0;
+                const finalSize = size * selectedScale * hoverScale * neighbourScale;
+                
+                // Depth factor for color
+                const depthFactor = Math.max(0.3, Math.min(1, (p.z + 150) / 300));
+                
+                // Validar que finalSize sea válido y finito
+                const validSize = (isFinite(finalSize) && finalSize > 0) ? finalSize : 5;
+                const validX = isFinite(p.x) ? p.x : 0;
+                const validY = isFinite(p.y) ? p.y : 0;
+                
+                // Create radial gradient for 3D sphere effect
+                const gradient = ctx.createRadialGradient(
+                    validX - validSize * 0.3, validY - validSize * 0.3, 0,
+                    validX, validY, validSize
+                );
+                
+                if (isSelected) {
+                    // Selected node - rojo/magenta brillante (CLICK)
+                    gradient.addColorStop(0, 'rgba(255, 100, 150, 1)');
+                    gradient.addColorStop(0.6, 'rgba(255, 80, 120, 0.95)');
+                    gradient.addColorStop(1, 'rgba(220, 50, 100, 0.8)');
+                } else if (isHovered) {
+                    // Hovered node - amarillo/naranja brillante (MOUSE)
+                    gradient.addColorStop(0, 'rgba(255, 220, 100, 1)');
+                    gradient.addColorStop(0.6, 'rgba(255, 180, 50, 0.95)');
+                    gradient.addColorStop(1, 'rgba(230, 140, 30, 0.8)');
+                } else {
+                    // Color por clasificación (átomo/residuo)
+                    const base = this.projectedNodes[idx].color;
+                    const [r, g, b] = base;
+                    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.95)`);
+                    gradient.addColorStop(0.7, `rgba(${Math.max(0,r-30)}, ${Math.max(0,g-20)}, ${Math.max(0,b-30)}, 0.9)`);
+                    gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
+                }
+                
+                // Draw node con valores validados
+                ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, finalSize * 0.5, 0, Math.PI * 2);
+                ctx.arc(validX, validY, validSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Border - grueso si está seleccionado o hovado
+                let borderWidth = 1.5;
+                let borderColor = `rgba(255, 255, 255, ${0.5 + depthFactor * 0.3})`;
+                
+                if (isSelected) {
+                    borderWidth = 3.5;
+                    borderColor = 'rgba(255, 255, 255, 1)';
+                } else if (isHovered) {
+                    borderWidth = 3.0;
+                    borderColor = 'rgba(255, 255, 255, 1)';
+                } else if (isNeighborOfSelected || isNeighborOfHovered) {
+                    borderWidth = 2.0;
+                    borderColor = 'rgba(255, 220, 100, 0.9)';
+                }
+                
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = borderWidth;
                 ctx.stroke();
+
+                
+                // Inner glow sutil
+                if (!isHovered) {
+                    ctx.strokeStyle = `rgba(255, 200, 255, ${0.3 + depthFactor * 0.2})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, finalSize * 0.5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
             }
         }
         
@@ -939,6 +1002,14 @@ class MolstarGraphRenderer {
         this.projectedNodes = null;
         this.infoPanelElement = null;
         this.adj = null;
+    }
+
+    setVisibility(options = {}) {
+        this.visibility = {
+            nodes: options.nodes !== undefined ? options.nodes : this.visibility.nodes,
+            edges: options.edges !== undefined ? options.edges : this.visibility.edges
+        };
+        this.render();
     }
 
     // === Utility: color mapping based on atom/residue classification ===

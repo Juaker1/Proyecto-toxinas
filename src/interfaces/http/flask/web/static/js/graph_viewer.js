@@ -40,6 +40,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     const distInput = document.getElementById('dist-input');
     const granularityToggle = document.getElementById('granularity-toggle');
     const granularityToggleWrapper = document.getElementById('granularity-toggle-wrapper');
+    const nodeVisibilityToggle = document.getElementById('toggle-nodes');
+    const edgeVisibilityToggle = document.getElementById('toggle-edges');
+    const graphExpandBtn = document.getElementById('graph-expand-btn');
+    const graphCollapseBtn = document.getElementById('graph-collapse-btn');
+    const graphPanel = document.querySelector('.graph-panel');
+    const visibilityState = {
+        nodes: nodeVisibilityToggle ? nodeVisibilityToggle.checked : true,
+        edges: edgeVisibilityToggle ? edgeVisibilityToggle.checked : true
+    };
+    let pendingVisibility = { ...visibilityState };
+
+    function syncVisibilityChipState(checkbox) {
+        if (!checkbox) return;
+        const chip = checkbox.closest('.visibility-chip');
+        if (chip) {
+            chip.classList.toggle('is-active', checkbox.checked);
+        }
+    }
+
+    function updateRendererVisibility() {
+        pendingVisibility = { ...visibilityState };
+        if (graphRenderer && typeof graphRenderer.setVisibility === 'function') {
+            graphRenderer.setVisibility(pendingVisibility);
+        }
+    }
+
+    [nodeVisibilityToggle, edgeVisibilityToggle].forEach((checkbox) => {
+        if (!checkbox) return;
+        syncVisibilityChipState(checkbox);
+        checkbox.addEventListener('change', () => {
+            if (checkbox === nodeVisibilityToggle) {
+                visibilityState.nodes = checkbox.checked;
+            } else if (checkbox === edgeVisibilityToggle) {
+                visibilityState.edges = checkbox.checked;
+            }
+            syncVisibilityChipState(checkbox);
+            updateRendererVisibility();
+        });
+    });
+
+    function syncExpandButtons(expanded) {
+        if (graphExpandBtn) {
+            graphExpandBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+            graphExpandBtn.title = 'Expandir el grafo a pantalla completa';
+            graphExpandBtn.hidden = expanded;
+        }
+        if (graphCollapseBtn) {
+            graphCollapseBtn.hidden = !expanded;
+            graphCollapseBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+        }
+    }
+
+    function setGraphExpansion(expanded) {
+        if (graphPanel) {
+            graphPanel.classList.toggle('graph-panel-expanded', expanded);
+        }
+        syncExpandButtons(expanded);
+        setTimeout(() => {
+            if (graphRenderer && typeof graphRenderer.handleResize === 'function') {
+                graphRenderer.handleResize();
+            }
+        }, 60);
+    }
+
+    if (graphExpandBtn) {
+        graphExpandBtn.addEventListener('click', () => {
+            if (graphPanel && !graphPanel.classList.contains('graph-panel-expanded')) {
+                setGraphExpansion(true);
+            }
+        });
+    }
+
+    if (graphCollapseBtn) {
+        graphCollapseBtn.addEventListener('click', () => {
+            if (graphPanel && graphPanel.classList.contains('graph-panel-expanded')) {
+                setGraphExpansion(false);
+            }
+        });
+    }
     
     let currentProteinGroup = null;
     let currentProteinId = null;
@@ -47,6 +126,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize WebGL graph renderer with safety check
     if (typeof MolstarGraphRenderer !== 'undefined') {
         graphRenderer = new MolstarGraphRenderer(graphPlotElement);
+        updateRendererVisibility();
+        syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
     } else {
         // Fallback if renderer not loaded yet
         console.warn('MolstarGraphRenderer not loaded yet, will retry...');
@@ -60,12 +141,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 graphRenderer = new MolstarGraphRenderer(graphPlotElement);
                 window.graphRenderer = graphRenderer;
                 console.log('MolstarGraphRenderer loaded successfully');
+                updateRendererVisibility();
+                syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
             }
         }, 500);
     }
     
     // Exponer globalmente para debugging
     window.graphRenderer = graphRenderer;
+    updateRendererVisibility();
+    syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
     
     // Función para sincronizar el estado visual del toggle con el checkbox
     function syncGranularityToggleVisual() {

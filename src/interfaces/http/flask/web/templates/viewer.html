@@ -188,6 +188,14 @@
                     </h3>
                     <div class="panel-controls">
                         <span class="badge badge-primary" id="graph-analysis-protein">Esperando...</span>
+                        <button id="graph-expand-btn" class="panel-icon-btn" type="button" aria-pressed="false" title="Expandir el grafo a pantalla completa">
+                            <i class="fas fa-maximize" aria-hidden="true"></i>
+                            <span>Expandir</span>
+                        </button>
+                        <button id="graph-collapse-btn" class="panel-icon-btn" type="button" aria-pressed="true" title="Volver a la vista predeterminada" hidden>
+                            <i class="fas fa-minimize" aria-hidden="true"></i>
+                            <span>Minimizar</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -222,25 +230,53 @@
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label">
-                                <i class="fas fa-search control-icon"></i>
-                                Buscar Residuo
-                                <span class="help-tooltip" title="Formato: Cadena:Aminoácido:Posición:Átomo. Ejemplo: P:ASN:19:HD22"><i class="fas fa-question-circle"></i></span>
+                            <label class="control-label" for="toggle-nodes">
+                                <i class="fas fa-eye control-icon"></i>
+                                Visibilidad del grafo
+                                <span class="help-tooltip" title="Oculta temporalmente nodos o aristas para enfocarte en la información relevante"><i class="fas fa-question-circle"></i></span>
                             </label>
-                            <div class="residue-search-container">
-                                <input type="text" id="chain-input" class="residue-input" placeholder="C" maxlength="1" required title="Letra de la cadena">
-                                <span class="residue-separator">:</span>
-                                <input type="text" id="aa-input" class="residue-input" placeholder="ASN" maxlength="3" required title="Código de 3 letras del aminoácido">
-                                <span class="residue-separator">:</span>
-                                <input type="number" id="pos-input" class="residue-input" placeholder="19" min="1" required title="Número de posición en la secuencia">
-                                <span class="residue-separator">:</span>
-                                <input type="text" id="atom-input" class="residue-input" placeholder="HD22" required title="Nombre del átomo">
-                                <button id="search-residue-btn" class="residue-search-btn" type="button">
-                                    <i class="fas fa-search"></i>
-                                    Buscar
-                                </button>
+                            <div class="graph-visibility-toggle" role="group" aria-label="Visibilidad del grafo">
+                                <label class="visibility-chip" for="toggle-nodes">
+                                    <input type="checkbox" id="toggle-nodes" checked>
+                                    <span class="chip-icon" aria-hidden="true"><i class="fas fa-circle"></i></span>
+                                    <span class="chip-text">Nodos</span>
+                                </label>
+                                <label class="visibility-chip" for="toggle-edges">
+                                    <input type="checkbox" id="toggle-edges" checked>
+                                    <span class="chip-icon" aria-hidden="true"><i class="fas fa-link"></i></span>
+                                    <span class="chip-text">Aristas</span>
+                                </label>
                             </div>
+                            <span class="control-hint">Activa solo lo que necesites ver</span>
                         </div>
+
+
+                    <div class="residue-search-card" role="region" aria-labelledby="residue-search-title">
+                        <div class="residue-search-card-header">
+                            <div>
+                                <p class="residue-search-eyebrow">
+                                    <i class="fas fa-search"></i>
+                                    Buscar Residuo
+                                </p>
+                                <h4 id="residue-search-title">Localiza cadenas o átomos específicos</h4>
+                                <p class="residue-search-copy">Formato: Cadena:Aminoácido:Posición:Átomo. Ejemplo: P:ASN:19:HD22</p>
+                            </div>
+                            <span class="help-tooltip" title="Introduce los cuatro datos para centrar y resaltar el residuo requerido"><i class="fas fa-question-circle"></i></span>
+                        </div>
+                        <div class="residue-search-container">
+                            <input type="text" id="chain-input" class="residue-input" placeholder="C" maxlength="1" required title="Letra de la cadena">
+                            <span class="residue-separator">:</span>
+                            <input type="text" id="aa-input" class="residue-input" placeholder="ASN" maxlength="3" required title="Código de 3 letras del aminoácido">
+                            <span class="residue-separator">:</span>
+                            <input type="number" id="pos-input" class="residue-input" placeholder="19" min="1" required title="Número de posición en la secuencia">
+                            <span class="residue-separator">:</span>
+                            <input type="text" id="atom-input" class="residue-input" placeholder="HD22" required title="Nombre del átomo">
+                            <button id="search-residue-btn" class="residue-search-btn" type="button">
+                                <i class="fas fa-search"></i>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
                     </div>
                     <div class="aa-color-legend graph-controls-legend" aria-label="Colores por aminoácido">
                         <button type="button" class="aa-legend-toggle" aria-expanded="false" aria-controls="aa-color-content">
