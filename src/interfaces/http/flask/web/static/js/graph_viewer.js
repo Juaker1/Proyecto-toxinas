@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     const graphPlotElement = document.getElementById('graph-plot');
-    const longInput = document.getElementById('long-input');
     const distInput = document.getElementById('dist-input');
     const granularityToggle = document.getElementById('granularity-toggle');
     const granularityToggleWrapper = document.getElementById('granularity-toggle-wrapper');
@@ -90,7 +89,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     graphPlotElement.appendChild(initialMsg);
     
     // Eventos para actualizar automaticamente el grafo
-    longInput.addEventListener('change', updateGraphVisualization);
     distInput.addEventListener('change', updateGraphVisualization);
     granularityToggle.addEventListener('change', () => {
         syncGranularityToggleVisual();
@@ -143,7 +141,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         try {
-            const longValue = longInput.value;
             const distValue = distInput.value;
             const granularity = granularityToggle.checked ? 'atom' : 'CA';
             
@@ -152,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             showLoading(graphPlotElement);
             
-            const url = `/v2/proteins/${currentProteinGroup}/${currentProteinId}/graph?long=${longValue}&threshold=${distValue}&granularity=${granularity}&edges=${edgesParam}`;
+            const url = `/v2/proteins/${currentProteinGroup}/${currentProteinId}/graph?threshold=${distValue}&granularity=${granularity}&edges=${edgesParam}`;
             console.time('fetch-graph');
             const response = await fetch(url);
             console.timeEnd('fetch-graph');
@@ -307,7 +304,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Top 5 residuos
         const top5 = analysis.top_5_residues;
-        
         if (top5) {
             populateTop5List('top-degree-list', top5.degree_centrality);
             populateTop5List('top-between-list', top5.betweenness_centrality);
@@ -398,7 +394,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             
             try {
-                const longValue = longInput.value;
                 const distValue = distInput.value;
                 const granularity = granularityToggle.checked ? 'atom' : 'CA';
                 
@@ -434,7 +429,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (exportType === 'segments_atomicos') {
                     // Segmentación atómica (solo Nav1.7)
                     filename = `Nav1.7-${cleanName}-Segmentos-Atomicos.xlsx`;
-                    url = `/v2/export/segments_atomicos/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    url = `/v2/export/segments_atomicos/${currentProteinId}?threshold=${distValue}&granularity=${granularity}`;
                 } else {
                     // Análisis por residuos (normal)
                     const exportTypeText = 'Residuos';
@@ -443,7 +438,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     } else {
                         filename = `Toxinas-${cleanName}-${exportTypeText}.xlsx`;
                     }
-                    url = `/v2/export/residues/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=residues`;
+                    url = `/v2/export/residues/${currentProteinGroup}/${currentProteinId}?threshold=${distValue}&granularity=${granularity}&export_type=residues`;
                 }
                 
                 // Simulate delay to show progress
@@ -531,7 +526,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 try {
-                    const longValue = longInput.value;
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
@@ -564,7 +558,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     
                     // Add export_type parameter to URL
-                    const url = `/v2/export/family/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${familyExportType}`;
+                    const url = `/v2/export/family/${encodeURIComponent(selectedFamily)}?threshold=${distValue}&granularity=${granularity}&export_type=${familyExportType}`;
                     
                     // Simulate delay for family processing (longer time for atomic segmentation)
                     const delay = familyExportType === 'segments_atomicos' ? 3500 : 2500;
@@ -654,7 +648,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 try {
-                    const longValue = longInput.value;
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
@@ -684,7 +677,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     
                     // Add export_type parameter to URL
-                    const url = `/v2/export/wt_comparison/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${wtExportType}`;
+                    const url = `/v2/export/wt_comparison/${encodeURIComponent(selectedWtFamily)}?threshold=${distValue}&granularity=${granularity}&export_type=${wtExportType}`;
                     
                     // Simulate delay for WT comparison (longer for atomic segmentation)
                     const delay = wtExportType === 'segments_atomicos' ? 3000 : 2000;

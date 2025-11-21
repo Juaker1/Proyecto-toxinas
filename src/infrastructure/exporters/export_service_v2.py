@@ -182,7 +182,7 @@ class ExportService:
 
     @staticmethod
     def create_metadata(toxin_name: str, source: str, protein_id: int, granularity: str,
-                        distance_threshold: float, long_threshold: int, G,
+                        distance_threshold: float, G,
                         ic50_value: Optional[float] = None, ic50_unit: Optional[str] = None) -> Dict[str, Any]:
         meta: Dict[str, Any] = {
             'Toxina': toxin_name,
@@ -190,7 +190,7 @@ class ExportService:
             'ID': protein_id,
             'Granularidad': granularity,
             'Umbral_Distancia': distance_threshold,
-            'Umbral_Interaccion_Larga': long_threshold,
+            'Umbral_Interaccion_Larga': 0,
             'Densidad_del_grafo': round(nx.density(G), 6) if G.number_of_nodes() else 0,
             'Numero_de_nodos': G.number_of_nodes(),
             'Numero_de_aristas': G.number_of_edges(),

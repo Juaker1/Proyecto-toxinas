@@ -17,13 +17,12 @@ from src.infrastructure.fs.temp_file_service import TempFileService
 from src.infrastructure.exporters.excel_export_adapter import ExcelExportAdapter
 import pandas as pd
 import networkx as nx
-from src.domain.models.value_objects import Granularity, DistanceThreshold, SequenceSeparation
+from src.domain.models.value_objects import Granularity, DistanceThreshold
 
 
 @dataclass
 class ExportAtomicSegmentsInput:
     pid: int
-    long_threshold: Union[int, SequenceSeparation] = 5
     distance_threshold: Union[float, DistanceThreshold] = 10.0
     granularity: Union[str, Granularity] = 'atom'
 
@@ -59,10 +58,9 @@ class ExportAtomicSegments:
 
         tmp_path = self.pdb.prepare_temp_pdb(pdb_bytes)
         try:
-            long_thr = int(inp.long_threshold.value) if isinstance(inp.long_threshold, SequenceSeparation) else int(inp.long_threshold)
             dist_thr = float(inp.distance_threshold.value) if isinstance(inp.distance_threshold, DistanceThreshold) else float(inp.distance_threshold)
             GA = _graph_api().GraphAnalyzer
-            cfg = GA.create_graph_config(gran, long_thr, dist_thr)
+            cfg = GA.create_graph_config(gran, dist_thr)
             G = GA.construct_protein_graph(tmp_path, cfg)
             if G.number_of_nodes() == 0:
                 raise RuntimeError('El grafo no tiene nodos')
@@ -79,7 +77,7 @@ class ExportAtomicSegments:
                 'Tipo_Analisis': 'Segmentación Atómica',
                 'Granularidad': 'atom',
                 'Umbral_Distancia': dist_thr,
-                'Umbral_Interaccion_Larga': long_thr,
+                'Umbral_Interaccion_Larga': 0,
                 'Total_Atomos_Grafo': G.number_of_nodes(),
                 'Total_Conexiones_Grafo': G.number_of_edges(),
                 'Densidad_Grafo': round(nx.density(G), 6),

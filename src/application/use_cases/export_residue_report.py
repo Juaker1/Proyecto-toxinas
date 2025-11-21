@@ -6,7 +6,7 @@ from src.infrastructure.exporters.export_service_v2 import ExportService
 from src.infrastructure.exporters.excel_export_adapter import ExcelExportAdapter
 from src.infrastructure.pdb.pdb_preprocessor_adapter import PDBPreprocessorAdapter
 from src.infrastructure.fs.temp_file_service import TempFileService
-from src.domain.models.value_objects import Granularity, DistanceThreshold, SequenceSeparation
+from src.domain.models.value_objects import Granularity, DistanceThreshold
 
 
 @dataclass
@@ -14,7 +14,6 @@ class ExportResidueReportInput:
     source: str
     pid: int
     granularity: Union[str, Granularity] = 'CA'
-    long_threshold: Union[int, SequenceSeparation] = 5
     distance_threshold: Union[float, DistanceThreshold] = 10.0
 
 
@@ -46,9 +45,8 @@ class ExportResidueReport:
         tmp_path = self.pdb.prepare_temp_pdb(pdb_bytes)
         try:
             gran = inp.granularity.value if isinstance(inp.granularity, Granularity) else inp.granularity
-            long_thr = int(inp.long_threshold.value) if isinstance(inp.long_threshold, SequenceSeparation) else int(inp.long_threshold)
             dist_thr = float(inp.distance_threshold.value) if isinstance(inp.distance_threshold, DistanceThreshold) else float(inp.distance_threshold)
-            cfg = GraphAnalyzer.create_graph_config(gran, long_thr, dist_thr)
+            cfg = GraphAnalyzer.create_graph_config(gran, dist_thr)
             G = GraphAnalyzer.construct_protein_graph(tmp_path, cfg)
             residue_data = ExportService.prepare_residue_export_data(G, toxin_name, ic50_value, ic50_unit, gran)
             metadata = ExportService.create_metadata(
@@ -57,7 +55,6 @@ class ExportResidueReport:
                 inp.pid,
                 gran,
                 dist_thr,
-                long_thr,
                 G,
                 ic50_value,
                 ic50_unit,

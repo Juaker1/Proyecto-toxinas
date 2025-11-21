@@ -10,7 +10,7 @@ from src.infrastructure.db.sqlite.metadata_repository_sqlite import SqliteMetada
 from src.application.use_cases.export_atomic_segments import ExportAtomicSegments, ExportAtomicSegmentsInput
 from src.application.use_cases.export_family_reports import ExportFamilyReports, ExportFamilyInput
 from src.application.use_cases.export_wt_comparison import ExportWTComparison, ExportWTComparisonInput
-from src.domain.models import Granularity, SequenceSeparation, DistanceThreshold
+from src.domain.models import Granularity, DistanceThreshold
 
 export_v2 = Blueprint("export_v2", __name__)
 _pdb = PDBPreprocessorAdapter()
@@ -64,20 +64,17 @@ def configure_export_dependencies(
 @export_v2.get("/v2/export/residues/<string:source>/<int:pid>")
 def export_residues_v2(source, pid):
     try:
-        long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
 
         # Wrap into Value Objects
         granularity_vo = Granularity.from_string(granularity)
-        long_vo = SequenceSeparation(long_threshold)
         dist_vo = DistanceThreshold(distance_threshold)
 
         inp = ExportResidueReportInput(
             source=source,
             pid=pid,
             granularity=granularity_vo,
-            long_threshold=long_vo,
             distance_threshold=dist_vo,
         )
         try:
@@ -108,19 +105,16 @@ def export_residues_v2(source, pid):
 @export_v2.get("/v2/export/segments_atomicos/<int:pid>")
 def export_segments_atomicos_v2(pid):
     try:
-        long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'atom')
         # Wrap into Value Objects
         granularity_vo = Granularity.from_string(granularity)
-        long_vo = SequenceSeparation(long_threshold)
         dist_vo = DistanceThreshold(distance_threshold)
         if granularity_vo != Granularity.ATOM:
             return jsonify({"error": "La segmentación atómica requiere granularidad 'atom'"}), 400
 
         inp = ExportAtomicSegmentsInput(
             pid=pid,
-            long_threshold=long_vo,
             distance_threshold=dist_vo,
             granularity=granularity_vo,
         )
@@ -146,14 +140,12 @@ def export_segments_atomicos_v2(pid):
 @export_v2.get("/v2/export/family/<string:family_prefix>")
 def export_family_v2(family_prefix: str):
     try:
-        long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         export_type = request.args.get('export_type', 'residues')  # 'residues' | 'segments_atomicos'
 
         # Wrap into Value Objects
         granularity_vo = Granularity.from_string(granularity)
-        long_vo = SequenceSeparation(long_threshold)
         dist_vo = DistanceThreshold(distance_threshold)
 
         if export_type == 'segments_atomicos' and granularity_vo != Granularity.ATOM:
@@ -163,7 +155,6 @@ def export_family_v2(family_prefix: str):
             family_prefix=family_prefix,
             export_type=export_type,
             granularity=granularity_vo,
-            long_threshold=long_vo,
             distance_threshold=dist_vo,
         )
         excel_data, excel_filename, metadata = _family_uc.execute(inp)
@@ -188,7 +179,6 @@ def export_family_v2(family_prefix: str):
 @export_v2.get("/v2/export/wt_comparison/<string:wt_family>")
 def export_wt_comparison_v2(wt_family: str):
     try:
-        long_threshold = int(request.args.get('long', 5))
         distance_threshold = float(request.args.get('threshold', 10.0))
         granularity = request.args.get('granularity', 'CA')
         export_type = request.args.get('export_type', 'residues')
@@ -196,7 +186,6 @@ def export_wt_comparison_v2(wt_family: str):
 
         # Wrap into Value Objects
         granularity_vo = Granularity.from_string(granularity)
-        long_vo = SequenceSeparation(long_threshold)
         dist_vo = DistanceThreshold(distance_threshold)
 
         if export_type == 'segments_atomicos' and granularity_vo != Granularity.ATOM:
@@ -206,7 +195,6 @@ def export_wt_comparison_v2(wt_family: str):
             wt_family=wt_family,
             export_type=export_type,
             granularity=granularity_vo,
-            long_threshold=long_vo,
             distance_threshold=dist_vo,
             reference_path=reference_path,
         )

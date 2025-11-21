@@ -92,7 +92,7 @@ sequenceDiagram
   participant Viz as PlotlyAdapter
   participant Pres as GraphPresenter
 
-  C->>B: GET /v2/proteins/{source}/{pid}/graph?granularity=CA&long=5&threshold=10
+  C->>B: GET /v2/proteins/{source}/{pid}/graph?granularity=CA&threshold=10
   B->>Repo: get_complete_toxin_data
   Repo-->>B: {pdb_data,...}
   B->>PDB: prepare_temp_pdb(pdb_data)

@@ -25,7 +25,6 @@ class GrapheinGraphAdapter:
         self,
         pdb_path: str,
         granularity: str,
-        long_threshold: int,
         distance_threshold: float,
     ) -> Any:
         # When atom-level granularity is requested, use Graphein for construction like legacy
@@ -39,7 +38,6 @@ class GrapheinGraphAdapter:
             edge_fns = [
                 partial(
                     add_distance_threshold,
-                    long_interaction_threshold=int(long_threshold),
                     threshold=float(distance_threshold),
                 )
             ]

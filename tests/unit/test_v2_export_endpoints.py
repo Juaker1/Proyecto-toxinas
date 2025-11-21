@@ -22,7 +22,7 @@ def assert_excel_meta(resp_json):
 
 
 def test_export_residues_json_meta(client):
-    r = client.get("/v2/export/residues/nav1_7/7?granularity=CA&long=5&threshold=10.0&format=json")
+    r = client.get("/v2/export/residues/nav1_7/7?granularity=CA&threshold=10.0&format=json")
     assert r.status_code == 200
     data = r.get_json()
     assert_excel_meta(data)
@@ -31,7 +31,7 @@ def test_export_residues_json_meta(client):
 
 
 def test_export_segments_atomicos_json_meta(client):
-    r = client.get("/v2/export/segments_atomicos/7?granularity=atom&long=5&threshold=10.0&format=json")
+    r = client.get("/v2/export/segments_atomicos/7?granularity=atom&threshold=10.0&format=json")
     assert r.status_code == 200
     data = r.get_json()
     assert_excel_meta(data)
@@ -39,7 +39,7 @@ def test_export_segments_atomicos_json_meta(client):
 
 
 def test_export_segments_atomicos_validation_error(client):
-    r = client.get("/v2/export/segments_atomicos/7?granularity=CA&long=5&threshold=10.0")
+    r = client.get("/v2/export/segments_atomicos/7?granularity=CA&threshold=10.0")
     assert r.status_code == 400
     j = r.get_json()
     assert j and "error" in j
@@ -47,7 +47,7 @@ def test_export_segments_atomicos_validation_error(client):
 
 def test_export_family_residues_json_meta(client):
     r = client.get(
-        "/v2/export/family/%CE%BC-TRTX-Hh2a?export_type=residues&granularity=CA&long=5&threshold=10.0&format=json"
+        "/v2/export/family/%CE%BC-TRTX-Hh2a?export_type=residues&granularity=CA&threshold=10.0&format=json"
     )
     assert r.status_code == 200
     data = r.get_json()
@@ -59,7 +59,7 @@ def test_export_wt_comparison_json_meta(client):
     # Ensure reference file exists where the use case expects
     assert os.path.exists("pdbs/WT/hwt4_Hh2a_WT.pdb")
     r = client.get(
-        "/v2/export/wt_comparison/%CE%BC-TRTX-Hh2a?export_type=residues&granularity=CA&long=5&threshold=10.0&reference_path=pdbs/WT/hwt4_Hh2a_WT.pdb&format=json"
+        "/v2/export/wt_comparison/%CE%BC-TRTX-Hh2a?export_type=residues&granularity=CA&threshold=10.0&reference_path=pdbs/WT/hwt4_Hh2a_WT.pdb&format=json"
     )
     assert r.status_code == 200
     data = r.get_json()

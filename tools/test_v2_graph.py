@@ -18,7 +18,7 @@ assert peptides, 'No peptides found in database.'
 peptide_id = peptides[0][0]
 
 with app.test_client() as c:
-    resp = c.get(f"/v2/proteins/{source}/{peptide_id}/graph?granularity=CA&long=5&threshold=10.0")
+    resp = c.get(f"/v2/proteins/{source}/{peptide_id}/graph?granularity=CA&threshold=10.0")
     # response received; inspect in debugger if needed
     if resp.is_json:
         data = resp.get_json()

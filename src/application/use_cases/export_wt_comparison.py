@@ -8,7 +8,7 @@ from src.application.ports.repositories import MetadataRepository, StructureRepo
 from src.infrastructure.exporters.excel_export_adapter import ExcelExportAdapter
 from src.infrastructure.pdb.pdb_preprocessor_adapter import PDBPreprocessorAdapter
 from src.domain.services.segmentation_service import agrupar_por_segmentos_atomicos
-from src.domain.models.value_objects import Granularity, DistanceThreshold, SequenceSeparation
+from src.domain.models.value_objects import Granularity, DistanceThreshold
 from src.infrastructure.graphein.graph_export_service import GraphExportService as GraphAnalyzer
 from src.infrastructure.exporters.export_service_v2 import ExportService
 
@@ -18,7 +18,6 @@ class ExportWTComparisonInput:
     wt_family: str
     export_type: str = 'residues'  # 'residues' | 'segments_atomicos'
     granularity: Union[str, Granularity] = 'CA'
-    long_threshold: Union[int, SequenceSeparation] = 5
     distance_threshold: Union[float, DistanceThreshold] = 10.0
     reference_path: str = "pdbs/WT/hwt4_Hh2a_WT.pdb"
 
@@ -31,11 +30,11 @@ class ExportWTComparison:
         self.pdb = PDBPreprocessorAdapter()
 
     def _process_single(self, pdb_data, toxin_name: str, ic50_value: Optional[float], ic50_unit: Optional[str],
-                         granularity: str, long_threshold: int, distance_threshold: float, toxin_type: str,
+                         granularity: str, distance_threshold: float, toxin_type: str,
                          export_type: str):
         pdb_path = self.pdb.prepare_temp_pdb_from_any(pdb_data)
         try:
-            cfg = GraphAnalyzer.create_graph_config(granularity, long_threshold, distance_threshold)
+            cfg = GraphAnalyzer.create_graph_config(granularity, distance_threshold)
             G = GraphAnalyzer.construct_protein_graph(pdb_path, cfg)
             if export_type == 'segments_atomicos':
                 df = agrupar_por_segmentos_atomicos(G, granularity)
@@ -79,7 +78,6 @@ class ExportWTComparison:
             raise RuntimeError(f"Toxina WT no encontrada: {wt_peptide_code}")
 
         gran = inp.granularity.value if isinstance(inp.granularity, Granularity) else inp.granularity
-        long_thr = int(inp.long_threshold.value) if isinstance(inp.long_threshold, SequenceSeparation) else int(inp.long_threshold)
         dist_thr = float(inp.distance_threshold.value) if isinstance(inp.distance_threshold, DistanceThreshold) else float(inp.distance_threshold)
 
         if inp.export_type == 'segments_atomicos' and gran != 'atom':
@@ -96,7 +94,7 @@ class ExportWTComparison:
         # Process WT target
         wt_df, wt_G = self._process_single(
             wt_toxin['pdb_data'], wt_toxin['name'], wt_toxin['ic50_value'], wt_toxin['ic50_unit'],
-            gran, long_thr, dist_thr, "WT_Target", inp.export_type
+            gran, dist_thr, "WT_Target", inp.export_type
         )
         if wt_df is not None:
             comparison_frames['WT_Target'] = wt_df
@@ -104,7 +102,7 @@ class ExportWTComparison:
         # Process reference
         ref_df, ref_G = self._process_single(
             reference_pdb, "hwt4_Hh2a_WT", None, None,
-            gran, long_thr, dist_thr, "Reference", inp.export_type
+            gran, dist_thr, "Reference", inp.export_type
         )
         if ref_df is not None:
             comparison_frames['Reference'] = ref_df
@@ -128,7 +126,6 @@ class ExportWTComparison:
             'IC50_WT': f"{wt_toxin['ic50_value']} {wt_toxin['ic50_unit']}" if wt_toxin['ic50_value'] and wt_toxin['ic50_unit'] else 'No disponible',
             'Granularidad': gran,
             'Umbral_Distancia': dist_thr,
-            'Umbral_Interaccion_Larga': long_thr,
             'Fecha_Exportacion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
