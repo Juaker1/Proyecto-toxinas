@@ -13,6 +13,9 @@ def _import_numpy():
     return np
 
 
+from src.utils.disulfide import count_disulfide_bridges_from_pdb
+
+
 def calculate_centrality_metrics(G):
     """
     Calcula métricas de centralidad de manera eficiente.
@@ -261,7 +264,19 @@ def compute_comprehensive_metrics(G):
 
     # Propiedades básicas
     properties = calculate_basic_graph_properties(G)
-    properties['disulfide_count'] = G.graph.get('disulfide_count', 0)
+
+    # Si el grafo ya trae el conteo, lo respetamos; si no, lo calculamos
+    if 'disulfide_count' in G.graph:
+        properties['disulfide_count'] = G.graph.get('disulfide_count', 0)
+    else:
+        pdb_path = G.graph.get('pdb_path') or G.graph.get('source_pdb')
+        if pdb_path:
+            try:
+                properties['disulfide_count'] = count_disulfide_bridges_from_pdb(pdb_path)
+            except Exception:
+                properties['disulfide_count'] = 0
+        else:
+            properties['disulfide_count'] = 0
     properties['dipole_magnitude'] = float(G.graph.get('dipole_magnitude', 0))
 
     # Métricas de centralidad

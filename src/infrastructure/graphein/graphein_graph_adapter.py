@@ -7,6 +7,7 @@ import numpy as np
 from Bio.PDB import PDBParser
 from Bio.PDB.Polypeptide import is_aa
 from Bio.SeqUtils import seq1
+from src.utils.disulfide import find_disulfide_pairs
 
 
 HYDROPHOBICITY = {
@@ -41,6 +42,7 @@ class GrapheinGraphAdapter:
     def __init__(self) -> None:
         self._parser = PDBParser(QUIET=True)
 
+
     def build_graph(
         self,
         pdb_path: str,
@@ -69,11 +71,15 @@ class GrapheinGraphAdapter:
 
     def _build_ca_graph(self, structure, distance_threshold: float) -> nx.Graph:
         """Builds a CA-only graph reusing the atom pipeline for consistent metadata."""
-        return self._build_atom_graph(
+        G = self._build_atom_graph(
             structure,
             distance_threshold,
             atom_selector=lambda atom: atom.get_name().strip().upper() == "CA",
         )
+        # Add disulfide count
+        disulfide_bridges = find_disulfide_pairs(structure)
+        G.graph['disulfide_count'] = len(disulfide_bridges)
+        return G
 
     def _build_residue_graph(self, structure, distance_threshold: float) -> nx.Graph:
         model = structure[0]
@@ -127,6 +133,16 @@ class GrapheinGraphAdapter:
                 dist = float(np.linalg.norm(coords_arr[i] - coords_arr[j]))
                 if dist <= cutoff:
                     G.add_edge(residue_ids[i], residue_ids[j], weight=dist)
+
+        # Add disulfide count and edges
+        disulfide_bridges = find_disulfide_pairs(structure)
+        G.graph['disulfide_count'] = len(disulfide_bridges)
+        # Add disulfide edges between residues
+        for res1, res2 in disulfide_bridges:
+            node1 = next((nid for nid in residue_ids if f":{res1}" in nid), None)
+            node2 = next((nid for nid in residue_ids if f":{res2}" in nid), None)
+            if node1 and node2 and node1 != node2:
+                G.add_edge(node1, node2, weight=1.0, type='disulfide', interaction_strength=10.0)
 
         return G
 
@@ -185,6 +201,10 @@ class GrapheinGraphAdapter:
             for j in range(i + 1, n):
                 if dists[i, j] <= cutoff:
                     G.add_edge(node_ids[i], node_ids[j], weight=float(dists[i, j]))
+
+        # Add disulfide count
+        disulfide_bridges = find_disulfide_pairs(structure)
+        G.graph['disulfide_count'] = len(disulfide_bridges)
 
         return G
 

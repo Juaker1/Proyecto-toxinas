@@ -8,6 +8,7 @@ from Bio.SeqUtils import seq3, seq1
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 import MDAnalysis as mda
 from scipy.spatial.distance import pdist, squareform
+from src.utils.disulfide import find_disulfide_pairs
 
 # Diccionarios de propiedades fisicoquímicas relevantes para interacción con Nav1.7
 HYDROPHOBICITY = {'A': 1.8, 'R': -4.5, 'N': -3.5, 'D': -3.5, 'C': 2.5, 'Q': -3.5, 'E': -3.5, 
@@ -93,29 +94,6 @@ class Nav17ToxinGraphAnalyzer:
             # Failed to compute DSSP; return empty maps
             return {}, {}
     
-    def find_disulfide_bridges(self, structure):
-        """Identifica puentes disulfuro entre cisteínas (críticos para estructura de toxinas Nav1.7)"""
-        cys_sg_atoms = []
-        for model in structure:
-            for chain in model:
-                for residue in chain:
-                    if residue.get_resname() == "CYS":
-                        for atom in residue:
-                            if atom.get_name() == "SG":
-                                cys_sg_atoms.append((residue.get_id()[1], atom))
-        
-        # Búsqueda de pares de átomos SG dentro de distancia de enlace
-        disulfide_bridges = []
-        ss_bond_max_distance = 2.2  # Angstroms - distancia típica en toxinas ICK
-        
-        for i, (res_i, atom_i) in enumerate(cys_sg_atoms):
-            for j, (res_j, atom_j) in enumerate(cys_sg_atoms):
-                if i < j:  # evita duplicados
-                    distance = atom_i - atom_j
-                    if distance < ss_bond_max_distance:
-                        disulfide_bridges.append((res_i, res_j))
-        
-        return disulfide_bridges
     
     def calculate_dipole_moment(self, structure):
         """Calcula momento dipolar (crítico para interacciones con VSD de Nav1.7)"""
@@ -416,8 +394,8 @@ class Nav17ToxinGraphAnalyzer:
         # Obtención de estructura secundaria y SASA si es posible
         ss_info, sasa_values = self.calculate_secondary_structure(structure)
         
-        # Búsqueda de puentes disulfuro 
-        disulfide_bridges = self.find_disulfide_bridges(structure)
+        # Búsqueda de puentes disulfuro centralizada
+        disulfide_bridges = find_disulfide_pairs(structure)
     # number of disulfide bridges computed
         
         # Cálculo de momento dipolar

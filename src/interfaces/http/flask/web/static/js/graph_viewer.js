@@ -533,6 +533,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Actualizar datos básicos del grafo
         updateElementText('num-nodes', properties.num_nodes || '-');
         updateElementText('num-edges', properties.num_edges || '-');
+
+        // Puentes disulfuro directamente desde las propiedades del grafo
+        if (typeof properties.disulfide_count === 'number') {
+            updateElementText('disulfide-bridges', properties.disulfide_count.toString());
+        } else if (properties.graph_properties?.disulfide_bridges !== undefined) {
+            updateElementText('disulfide-bridges', properties.graph_properties.disulfide_bridges);
+        }
         
         // Densidad del grafo
         updateElementText('graph-density', (properties.density || 0).toFixed(4));
