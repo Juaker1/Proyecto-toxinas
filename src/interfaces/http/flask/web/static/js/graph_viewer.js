@@ -55,6 +55,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const modalCloseBtn = document.getElementById('modal-close-btn');
     // Advanced actions FAB and overlay removed
     const graphPanel = document.querySelector('.graph-panel');
+    const segmentInput = document.getElementById('segment-input');
+    const segmentSearchBtn = document.getElementById('segment-search-btn');
+    const segmentClearBtn = document.getElementById('segment-clear-btn');
+    const segmentFeedback = document.getElementById('segment-search-feedback');
     const visibilityState = {
         nodes: nodeVisibilityToggle ? nodeVisibilityToggle.checked : true,
         edges: edgeVisibilityToggle ? edgeVisibilityToggle.checked : true
@@ -315,6 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     let currentProteinGroup = null;
     let currentProteinId = null;
+    let currentSegmentFilter = null;
     
     // Initialize WebGL graph renderer with safety check
     if (typeof MolstarGraphRenderer !== 'undefined') {
@@ -400,6 +405,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentProteinId = proteinSelect.value;
         updateGraphVisualization();
     });
+
+    if (segmentSearchBtn) {
+        segmentSearchBtn.addEventListener('click', handleSegmentSearch);
+    }
+
+    if (segmentInput) {
+        segmentInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                handleSegmentSearch(event);
+            }
+        });
+    }
+
+    if (segmentClearBtn) {
+        segmentClearBtn.addEventListener('click', () => clearSegmentFilter(true));
+    }
     
     currentProteinGroup = groupSelect.value;
     
@@ -461,6 +482,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
                 
                 graphRenderer.loadGraph(data);
+                reapplySegmentFilter(true);
             }
             console.timeEnd('webgl-render');
             
@@ -524,6 +546,72 @@ document.addEventListener("DOMContentLoaded", async () => {
         const infoElement = document.getElementById('graph-info');
         if (infoElement) {
             infoElement.textContent = `Grafo visualizado en: ${granularityText}`;
+        }
+    }
+
+    function handleSegmentSearch(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        const value = (segmentInput?.value || '').trim();
+        if (!value) {
+            clearSegmentFilter(true);
+            return;
+        }
+        if (!graphRenderer || !graphRenderer.graphData || typeof graphRenderer.highlightSegment !== 'function') {
+            updateSegmentFeedback({ state: 'error', message: 'Carga una proteína antes de resaltar un segmento.' });
+            return;
+        }
+        const result = graphRenderer.highlightSegment(value);
+        if (!result || !result.found) {
+            currentSegmentFilter = null;
+            updateSegmentFeedback({ state: 'warning', message: `No se encontraron nodos para el segmento ${value}.` });
+            return;
+        }
+        currentSegmentFilter = value;
+        updateSegmentFeedback({ state: 'success', message: `Segmento ${value} resaltado (${result.count} nodos, ${result.neighborCount} conexiones).` });
+    }
+
+    function clearSegmentFilter(showMessage = false) {
+        currentSegmentFilter = null;
+        if (segmentInput) {
+            segmentInput.value = '';
+        }
+        if (graphRenderer && typeof graphRenderer.clearSegmentHighlight === 'function') {
+            graphRenderer.clearSegmentHighlight();
+        }
+        if (showMessage) {
+            updateSegmentFeedback({ state: '', message: 'Filtro de segmento desactivado.' });
+        }
+    }
+
+    function reapplySegmentFilter(fromReload = false) {
+        if (!currentSegmentFilter) {
+            if (fromReload && segmentFeedback) {
+                segmentFeedback.textContent = '';
+                segmentFeedback.removeAttribute('data-state');
+            }
+            return;
+        }
+        if (!graphRenderer || typeof graphRenderer.highlightSegment !== 'function') {
+            return;
+        }
+        const result = graphRenderer.highlightSegment(currentSegmentFilter);
+        if (!result || !result.found) {
+            updateSegmentFeedback({ state: 'warning', message: `El segmento ${currentSegmentFilter} no está presente en este grafo.` });
+            currentSegmentFilter = null;
+        } else if (fromReload) {
+            updateSegmentFeedback({ state: 'success', message: `Segmento ${currentSegmentFilter} activo (${result.count} nodos, ${result.neighborCount} conexiones).` });
+        }
+    }
+
+    function updateSegmentFeedback({ state, message }) {
+        if (!segmentFeedback) return;
+        segmentFeedback.textContent = message || '';
+        if (state) {
+            segmentFeedback.setAttribute('data-state', state);
+        } else {
+            segmentFeedback.removeAttribute('data-state');
         }
     }
 

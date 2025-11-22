@@ -66,7 +66,7 @@ def test_export_family_residues_monkeypatched(monkeypatch):
     exporter = StubExcelExporter()
 
     uc = mod.ExportFamilyReports(metadata, structures, exporter)
-    inp = mod.ExportFamilyInput(family_prefix='mu-TRTX', export_type='residues', granularity='CA', long_threshold=5, distance_threshold=10.0)
+    inp = mod.ExportFamilyInput(family_prefix='mu-TRTX', export_type='residues', granularity='CA', distance_threshold=10.0)
     excel_data, excel_filename, meta = uc.execute(inp)
 
     assert hasattr(excel_data, 'read')
@@ -103,7 +103,7 @@ def test_export_family_segments_monkeypatched(monkeypatch):
     exporter = StubExcelExporter()
 
     uc = mod.ExportFamilyReports(metadata, structures, exporter)
-    inp = mod.ExportFamilyInput(family_prefix='beta-TRTX', export_type='segments_atomicos', granularity='atom', long_threshold=5, distance_threshold=10.0)
+    inp = mod.ExportFamilyInput(family_prefix='beta-TRTX', export_type='segments_atomicos', granularity='atom', distance_threshold=10.0)
     excel_data, excel_filename, meta = uc.execute(inp)
 
     assert hasattr(excel_data, 'read')

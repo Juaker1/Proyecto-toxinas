@@ -40,7 +40,6 @@ class ExportFamilyReports:
             'Tipo_Analisis': 'Segmentación Atómica' if inp.export_type == 'segments_atomicos' else 'Análisis por Residuos',
             'Numero_Toxinas_Procesadas': len(family_toxins),
             'Umbral_Distancia': dist_thr,
-            'Umbral_Interaccion_Larga': long_thr,
             'Granularidad': gran,
             'Fecha_Exportacion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }

@@ -288,6 +288,41 @@
                                 </div>
                             </div>
 
+                            <button class="advanced-subtoggle" type="button" aria-expanded="false" aria-controls="advanced-segment-panel" data-subpanel-target="advanced-segment-panel">
+                                <div class="advanced-subtoggle-text">
+                                    <span class="advanced-subtoggle-title"><i class="fas fa-crosshairs"></i> Segmentos conectados</span>
+                                    <span class="advanced-subtoggle-copy">Resalta todos los nodos de un segmento</span>
+                                </div>
+                                <i class="fas fa-chevron-down advanced-subtoggle-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div id="advanced-segment-panel" class="advanced-subpanel" aria-hidden="true">
+                                <div class="residue-search-card segment-search-card" role="region" aria-labelledby="segment-search-title">
+                                    <div class="residue-search-card-header">
+                                        <div>
+                                            <p class="residue-search-eyebrow">
+                                                <i class="fas fa-project-diagram"></i>
+                                                Segmentar conexiones
+                                            </p>
+                                            <h4 id="segment-search-title">Filtra por identificador de segmento</h4>
+                                            <p class="residue-search-copy">Ingresa el número del segmento (tercera posición del ID, ej. "6" en P:ALY:6:HH3) para resaltar todas sus conexiones.</p>
+                                        </div>
+                                        <span class="help-tooltip" title="Se resaltan los nodos del segmento y sus enlaces directos"><i class="fas fa-question-circle"></i></span>
+                                    </div>
+                                    <div class="segment-search-controls">
+                                        <input type="number" id="segment-input" class="residue-input segment-input" placeholder="6" min="1" aria-label="Número de segmento">
+                                        <button id="segment-search-btn" class="residue-search-btn" type="button">
+                                            <i class="fas fa-crosshairs"></i>
+                                            Enfocar segmento
+                                        </button>
+                                        <button id="segment-clear-btn" class="segment-clear-btn" type="button" aria-label="Limpiar filtro de segmento">
+                                            <i class="fas fa-times"></i>
+                                            Limpiar
+                                        </button>
+                                    </div>
+                                    <p id="segment-search-feedback" class="segment-search-feedback" aria-live="polite"></p>
+                                </div>
+                            </div>
+
                             <button class="advanced-subtoggle" type="button" aria-expanded="false" aria-controls="advanced-colors-panel" data-subpanel-target="advanced-colors-panel">
                                 <div class="advanced-subtoggle-text">
                                     <span class="advanced-subtoggle-title"><i class="fas fa-palette"></i> Colores de aminoácidos</span>

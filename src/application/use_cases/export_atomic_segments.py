@@ -77,7 +77,6 @@ class ExportAtomicSegments:
                 'Tipo_Analisis': 'Segmentación Atómica',
                 'Granularidad': 'atom',
                 'Umbral_Distancia': dist_thr,
-                'Umbral_Interaccion_Larga': 0,
                 'Total_Atomos_Grafo': G.number_of_nodes(),
                 'Total_Conexiones_Grafo': G.number_of_edges(),
                 'Densidad_Grafo': round(nx.density(G), 6),

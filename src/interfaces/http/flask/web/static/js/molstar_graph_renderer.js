@@ -21,6 +21,9 @@ class MolstarGraphRenderer {
             distance: 150,
             target: { x: 0, y: 0, z: 0 }
         };
+        this.segmentHighlight = null;
+        this.segmentNeighborHighlight = null;
+        this.activeSegmentId = null;
         this.isDragging = false;
         this.isRotating = false;
         this.isPanning = false;
@@ -763,6 +766,107 @@ class MolstarGraphRenderer {
         this.selectNodeByIndex(foundIndex);
         return true;
     }
+
+    highlightSegment(segmentId) {
+        const normalized = segmentId?.toString().trim();
+        if (!normalized || !this.graphData || !Array.isArray(this.graphData.nodes)) {
+            this.clearSegmentHighlight();
+            return { found: false, count: 0, neighborCount: 0 };
+        }
+
+        const nodes = [];
+        this.graphData.nodes.forEach((node, index) => {
+            const residueNumber = this.getResidueNumber(node);
+            if (residueNumber !== null && normalized === residueNumber.toString().trim()) {
+                nodes.push(index);
+            }
+        });
+
+        if (!nodes.length) {
+            this.clearSegmentHighlight();
+            return { found: false, count: 0, neighborCount: 0 };
+        }
+
+        this.activeSegmentId = normalized;
+        this.segmentHighlight = new Set(nodes);
+        const neighbors = new Set();
+        nodes.forEach((idx) => {
+            const adjacency = this.adj?.get(idx);
+            if (!adjacency) return;
+            adjacency.forEach((neighborIdx) => {
+                if (!this.segmentHighlight.has(neighborIdx)) {
+                    neighbors.add(neighborIdx);
+                }
+            });
+        });
+        this.segmentNeighborHighlight = neighbors;
+        this.focusOnNodes(nodes);
+        this.render();
+        return { found: true, count: nodes.length, neighborCount: neighbors.size };
+    }
+
+    clearSegmentHighlight() {
+        if (!this.segmentHighlight && !this.segmentNeighborHighlight && !this.activeSegmentId) {
+            return;
+        }
+        this.segmentHighlight = null;
+        this.segmentNeighborHighlight = null;
+        this.activeSegmentId = null;
+        this.render();
+    }
+
+    getResidueNumber(node) {
+        if (!node) return null;
+        if (node.residueNumber !== undefined && node.residueNumber !== null) {
+            return node.residueNumber;
+        }
+        if (node.residue_number !== undefined && node.residue_number !== null) {
+            return node.residue_number;
+        }
+        const label = node.label || node.name || node.id;
+        if (typeof label === 'string') {
+            const parts = label.split(':');
+            if (parts.length >= 3 && parts[2]) {
+                return parts[2];
+            }
+        }
+        return null;
+    }
+
+    focusOnNodes(indices) {
+        if (!this.graphData || !Array.isArray(this.graphData.nodes) || !indices.length) {
+            return;
+        }
+        const coords = indices
+            .map((idx) => this.graphData.nodes[idx])
+            .filter((node) => node && isFinite(node.x) && isFinite(node.y) && isFinite(node.z));
+        if (!coords.length) {
+            return;
+        }
+        const center = coords.reduce((acc, node) => {
+            acc.x += node.x;
+            acc.y += node.y;
+            acc.z += node.z;
+            return acc;
+        }, { x: 0, y: 0, z: 0 });
+        center.x /= coords.length;
+        center.y /= coords.length;
+        center.z /= coords.length;
+        this.camera.target = center;
+        let maxRadius = 0;
+        coords.forEach((node) => {
+            const dx = node.x - center.x;
+            const dy = node.y - center.y;
+            const dz = node.z - center.z;
+            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist > maxRadius) {
+                maxRadius = dist;
+            }
+        });
+        if (isFinite(maxRadius) && maxRadius > 0) {
+            this.camera.distance = Math.max(30, maxRadius * 6);
+        }
+    }
     
     /**
      * Reset camera to initial view
@@ -840,6 +944,10 @@ class MolstarGraphRenderer {
         } else {
             this.adj = new Map();
         }
+
+        this.segmentHighlight = null;
+        this.segmentNeighborHighlight = null;
+        this.activeSegmentId = null;
         
         // Set camera to center of bounding box
         if (data.graphMetadata && data.graphMetadata.bbox) {
@@ -954,6 +1062,9 @@ class MolstarGraphRenderer {
 
         const showNodes = this.visibility?.nodes !== false;
         const showEdges = this.visibility?.edges !== false;
+        const hasSegmentFilter = Boolean(this.segmentHighlight && this.segmentHighlight.size);
+        const segmentNodes = hasSegmentFilter ? this.segmentHighlight : null;
+        const neighborNodes = hasSegmentFilter ? this.segmentNeighborHighlight : null;
         
       
         
@@ -1037,7 +1148,10 @@ class MolstarGraphRenderer {
                 // Detectar si esta arista está conectada al nodo seleccionado o hovado
                 const isSelectedEdge = this.selectedNode !== null && (edge.i === this.selectedNode || edge.j === this.selectedNode);
                 const isHoveredEdge = this.hoveredNode !== null && (edge.i === this.hoveredNode || edge.j === this.hoveredNode);
-                
+                const touchesSegment = hasSegmentFilter && segmentNodes && (segmentNodes.has(edge.i) || segmentNodes.has(edge.j));
+                const isSegmentEdge = touchesSegment && segmentNodes && segmentNodes.has(edge.i) && segmentNodes.has(edge.j);
+                const mutedBySegment = hasSegmentFilter && !touchesSegment;
+
                 let lineWidth, opacity, color;
                 
                 if (isSelectedEdge) {
@@ -1050,6 +1164,18 @@ class MolstarGraphRenderer {
                     lineWidth = 3.0 + (depthFactor * 0.8);
                     opacity = 0.9;
                     color = `rgba(255, 220, 100, ${opacity})`;
+                } else if (isSegmentEdge) {
+                    lineWidth = 4.2;
+                    opacity = 0.95;
+                    color = `rgba(34, 197, 94, ${opacity})`;
+                } else if (touchesSegment) {
+                    lineWidth = 3.5;
+                    opacity = 0.85;
+                    color = `rgba(16, 185, 129, ${opacity})`;
+                } else if (mutedBySegment) {
+                    lineWidth = 1.2;
+                    opacity = 0.12;
+                    color = `rgba(99, 179, 237, ${opacity})`;
                 } else {
                     // Cyan/azul por defecto
                     lineWidth = 2.0 + (depthFactor * 0.8);
@@ -1080,6 +1206,9 @@ class MolstarGraphRenderer {
                 const isHovered = (this.hoveredNode === idx);
                 const isNeighborOfSelected = this.selectedNode !== null && this.adj && this.adj.get(this.selectedNode) && this.adj.get(this.selectedNode).has(idx);
                 const isNeighborOfHovered = this.hoveredNode !== null && this.adj && this.adj.get(this.hoveredNode) && this.adj.get(this.hoveredNode).has(idx);
+                const inSegment = hasSegmentFilter && segmentNodes && segmentNodes.has(idx);
+                const nearSegment = hasSegmentFilter && !inSegment && neighborNodes && neighborNodes.has(idx);
+                const dimBySegment = hasSegmentFilter && !inSegment && !nearSegment && !isSelected && !isHovered;
                 
                 const selectedScale = isSelected ? 1.6 : 1.0;
                 const hoverScale = isHovered ? 1.4 : 1.0;
@@ -1110,13 +1239,22 @@ class MolstarGraphRenderer {
                     gradient.addColorStop(0, 'rgba(255, 220, 100, 1)');
                     gradient.addColorStop(0.6, 'rgba(255, 180, 50, 0.95)');
                     gradient.addColorStop(1, 'rgba(230, 140, 30, 0.8)');
+                } else if (inSegment) {
+                    gradient.addColorStop(0, 'rgba(34, 197, 94, 1)');
+                    gradient.addColorStop(0.7, 'rgba(16, 185, 129, 0.95)');
+                    gradient.addColorStop(1, 'rgba(5, 150, 105, 0.85)');
+                } else if (nearSegment) {
+                    gradient.addColorStop(0, 'rgba(251, 191, 36, 1)');
+                    gradient.addColorStop(0.7, 'rgba(245, 158, 11, 0.9)');
+                    gradient.addColorStop(1, 'rgba(217, 119, 6, 0.8)');
                 } else {
                     // Color por clasificación (átomo/residuo)
                     const base = this.projectedNodes[idx].color;
                     const [r, g, b] = base;
-                    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.95)`);
-                    gradient.addColorStop(0.7, `rgba(${Math.max(0,r-30)}, ${Math.max(0,g-20)}, ${Math.max(0,b-30)}, 0.9)`);
-                    gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, 0.75)`);
+                    const dimFactor = dimBySegment ? 0.35 : 1;
+                    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${0.95 * dimFactor})`);
+                    gradient.addColorStop(0.7, `rgba(${Math.max(0,r-30)}, ${Math.max(0,g-20)}, ${Math.max(0,b-30)}, ${0.9 * dimFactor})`);
+                    gradient.addColorStop(1, `rgba(${Math.max(0,r-60)}, ${Math.max(0,g-40)}, ${Math.max(0,b-60)}, ${0.75 * dimFactor})`);
                 }
                 
                 // Draw node con valores validados
@@ -1135,6 +1273,12 @@ class MolstarGraphRenderer {
                 } else if (isHovered) {
                     borderWidth = 3.0;
                     borderColor = 'rgba(255, 255, 255, 1)';
+                } else if (inSegment) {
+                    borderWidth = 3.0;
+                    borderColor = 'rgba(16, 185, 129, 0.95)';
+                } else if (nearSegment) {
+                    borderWidth = 2.6;
+                    borderColor = 'rgba(245, 158, 11, 0.9)';
                 } else if (isNeighborOfSelected || isNeighborOfHovered) {
                     borderWidth = 2.0;
                     borderColor = 'rgba(255, 220, 100, 0.9)';
@@ -1146,7 +1290,7 @@ class MolstarGraphRenderer {
 
                 
                 // Inner glow sutil
-                if (!isHovered) {
+                if (!isHovered && !inSegment) {
                     ctx.strokeStyle = `rgba(255, 200, 255, ${0.3 + depthFactor * 0.2})`;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
@@ -1193,6 +1337,9 @@ class MolstarGraphRenderer {
      */
     clear() {
         this.graphData = null;
+        this.segmentHighlight = null;
+        this.segmentNeighborHighlight = null;
+        this.activeSegmentId = null;
         if (this.ctx) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }

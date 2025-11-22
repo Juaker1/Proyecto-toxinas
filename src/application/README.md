@@ -36,11 +36,10 @@ application/
 ```python
 @dataclass
 class GraphRequestDTO:
-    source: str
-    pid: int
-    granularity: str = 'CA'
-    long_threshold: int = 5
-    distance_threshold: float = 10.0
+  source: str
+  pid: int
+  granularity: str = 'CA'
+  distance_threshold: float = 10.0
 
 @dataclass
 class GraphResponseDTO:
@@ -64,7 +63,7 @@ Los *ports* son contratos abstractos. La infraestructura provee adaptadores conc
 ### `graph_service_port.GraphServicePort`
 | Método | Descripción |
 |--------|-------------|
-| `build_graph(pdb_path, granularity, long_threshold, distance_threshold)` | Construye un grafo (normalmente NetworkX) desde un PDB ya preprocesado. |
+| `build_graph(pdb_path, granularity, distance_threshold)` | Construye un grafo (normalmente NetworkX) desde un PDB ya preprocesado. |
 | `compute_metrics(G)` | Devuelve dict con métricas agregadas (nodos, aristas, densidad, clustering, centralidades, etc.). |
 
 ### `pdb_preprocessor_port.PDBPreprocessorPort`
@@ -91,7 +90,7 @@ Interface mínima para limpieza de archivos temporales cuando la lógica de crea
 Cada *use case* define: un dataclass de entrada + una clase con método `execute()`. Devuelven estructuras simples para que la capa de interfaz decida cómo serializar.
 
 ### 1. `build_protein_graph.BuildProteinGraph`
-**Input:** `BuildProteinGraphInput(pdb_path, granularity, long_threshold, distance_threshold)`
+**Input:** `BuildProteinGraphInput(pdb_path, granularity, distance_threshold)`
 
 Pasos:
 1. Normalizar value objects a primitivos (`granularity.value` etc.).
@@ -112,7 +111,7 @@ Pasos:
 5. Limpieza garantizada en `finally`.
 
 ### 3. `export_atomic_segments.ExportAtomicSegments`
-**Input:** `ExportAtomicSegmentsInput(pid, granularity='atom', long_threshold, distance_threshold)`
+**Input:** `ExportAtomicSegmentsInput(pid, granularity='atom', distance_threshold)`
 
 Validación: exige granularidad `atom`.
 
@@ -125,7 +124,7 @@ Pasos:
 6. Retornar `(bytes_excel, filename, metadata)`.
 
 ### 4. `export_family_reports.ExportFamilyReports`
-**Input:** `ExportFamilyInput(family_prefix, export_type, granularity, long_threshold, distance_threshold)`
+**Input:** `ExportFamilyInput(family_prefix, export_type, granularity, distance_threshold)`
 
 Pasos:
 1. Obtener lista de toxinas de la familia (id, código, IC50 y unidad).
@@ -138,7 +137,7 @@ Pasos:
 6. Error si ninguna toxina produjo datos válidos.
 
 ### 5. `export_residue_report.ExportResidueReport`
-**Input:** `ExportResidueReportInput(source, pid, granularity, long_threshold, distance_threshold)`
+**Input:** `ExportResidueReportInput(source, pid, granularity, distance_threshold)`
 
 Pasos:
 1. Cargar metadata + PDB.
@@ -148,7 +147,7 @@ Pasos:
 5. Exportar `generate_single_toxin_excel`.
 
 ### 6. `export_wt_comparison.ExportWTComparison`
-**Input:** `ExportWTComparisonInput(wt_family, export_type, granularity, long_threshold, distance_threshold, reference_path)`
+**Input:** `ExportWTComparisonInput(wt_family, export_type, granularity, distance_threshold, reference_path)`
 
 Pasos:
 1. Mapear `wt_family` a código WT (tabla interna `wt_mapping`).

@@ -95,7 +95,6 @@ class ExportService:
             neighbors = list(G.neighbors(node))
             neighbor_list = []
             sequential_distances = []  # Para calcular distancias secuenciales
-            long_range_contacts = 0  # Para contar contactos de largo alcance
             
             for neighbor in neighbors:
                 neighbor_attrs = G.nodes[neighbor]
@@ -110,10 +109,6 @@ class ExportService:
                     if current_num is not None and neighbor_num is not None:
                         seq_distance = abs(neighbor_num - current_num)
                         sequential_distances.append(seq_distance)
-                        
-                        # Contar contactos de largo alcance (>5 residuos de separación)
-                        if seq_distance > 5:
-                            long_range_contacts += 1
                 except (ValueError, TypeError):
                     pass  # Si no se pueden convertir a int, ignorar
                 
@@ -131,7 +126,6 @@ class ExportService:
             
             # Calcular métricas de distancia secuencial
             avg_seq_distance = round(sum(sequential_distances) / len(sequential_distances), 2) if sequential_distances else 0.0
-            long_range_proportion = round(long_range_contacts / len(neighbors), 3) if neighbors else 0.0
             
             # Crear identificador único del residuo/átomo
             if granularity.lower() == 'atom' and atom_name:
@@ -159,7 +153,6 @@ class ExportService:
                 'Coeficiente_Agrupamiento': round(clustering_coefficient.get(node, 0), 6) if clustering_coefficient else 0,
                 'Numero_Conexiones': G.degree(node),
                 'Distancia_Secuencial_Promedio': avg_seq_distance,
-                'Proporcion_Contactos_Largos': long_range_proportion,
                 'Residuos_Vecinos': ', '.join(neighbor_list) if neighbor_list else 'Ninguno'
             })
             
@@ -190,7 +183,6 @@ class ExportService:
             'ID': protein_id,
             'Granularidad': granularity,
             'Umbral_Distancia': distance_threshold,
-            'Umbral_Interaccion_Larga': 0,
             'Densidad_del_grafo': round(nx.density(G), 6) if G.number_of_nodes() else 0,
             'Numero_de_nodos': G.number_of_nodes(),
             'Numero_de_aristas': G.number_of_edges(),
