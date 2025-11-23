@@ -1303,8 +1303,8 @@ class MolstarGraphRenderer {
         // Draw info panel - LIMPIO Y PROFESIONAL
         const padding = 14;
         const lineHeight = 22;
-        const panelWidth = 240;
-        const panelHeight = 70;
+        const panelWidth = 280;
+        const panelHeight = 80;
         
         // Semi-transparent dark panel
         ctx.fillStyle = 'rgba(20, 20, 40, 0.85)';
@@ -1318,18 +1318,18 @@ class MolstarGraphRenderer {
         // Info text
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.font = 'bold 15px "Segoe UI", Arial, sans-serif';
-        ctx.fillText(`📊 Nodos: ${nodes.length} | Aristas: ${edges.length}`, padding + 6, padding + lineHeight);
+        ctx.fillText(` Nodos: ${nodes.length} | Aristas: ${edges.length}`, padding + 6, padding + lineHeight);
         
         ctx.font = '13px "Segoe UI", Arial, sans-serif';
         // Calcular zoom de manera inversamente proporcional a la distancia
         // Usar baselineDistance como referencia CONSTANTE
         const zoomPercent = Math.round((this.baselineDistance / this.camera.distance) * 100);
         const displayZoom = Math.max(10, Math.min(1000, zoomPercent));
-        ctx.fillText(`🔍 Zoom: ${displayZoom}%`, padding + 6, padding + lineHeight * 2);
+        ctx.fillText(` Zoom: ${displayZoom}%`, padding + 6, padding + lineHeight * 2);
         
         ctx.fillStyle = 'rgba(180, 220, 255, 0.85)';
         ctx.font = '12px "Segoe UI", Arial, sans-serif';
-        ctx.fillText('🖱️ Arrastrar para rotar | Hover en nodo para info', padding + 6, padding + lineHeight * 3);
+        ctx.fillText(' Arrastrar para rotar | Hover en nodo para info', padding + 6, padding + lineHeight * 3);
     }
     
     /**

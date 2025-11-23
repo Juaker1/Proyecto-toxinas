@@ -956,21 +956,12 @@
 
 /* === VISTA DUAL === */
 .dual-view-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
     gap: var(--space-6);
     margin-bottom: var(--space-6);
     animation: fadeIn var(--transition-slow) ease-in;
     animation-delay: 200ms;
-}
-
-.graph-panel.graph-panel-expanded {
-    grid-column: 1 / -1;
-    min-height: 80vh;
-}
-
-.graph-panel.graph-panel-expanded .graph-plot-wrapper {
-    min-height: 70vh;
+    align-items: flex-start;
 }
 
 /* Panel individual */
@@ -982,6 +973,8 @@
     transition: all var(--transition-base);
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 1000px;
 }
 
 .view-panel:hover {

@@ -148,16 +148,16 @@
                     <!-- py3Dmol viewer -->
                     <div id="py3dmol-dipole-viewer" class="viewer-canvas">
                         <div id="py3dmol-container"></div>
+                        
+                        <!-- Info overlay  -->
+                        <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
+                            <strong><i class="fas fa-circle-info"></i></strong>
+                            <span class="legend-item"><i class="fas fa-arrow-right legend-icon legend-icon--dipole"></i> Vector del dipolo</span>
+                            <span class="legend-item"><i class="fas fa-dna legend-icon legend-icon--structure"></i> Representación eje Z</span>
+                        </div>
                     </div>
                     
                   
-                    
-                    <!-- Info overlay  -->
-                    <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
-                        <strong><i class="fas fa-circle-info"></i></strong>
-                        <span class="legend-item"><i class="fas fa-arrow-right legend-icon legend-icon--dipole"></i> Vector del dipolo</span>
-                        <span class="legend-item"><i class="fas fa-dna legend-icon legend-icon--structure"></i> Representación eje Z</span>
-                    </div>
                     
                     <!-- Loading state -->
                     <div class="loading-state" id="structure-loading">
@@ -1174,3 +1174,4 @@
     <script src="{{ url_for('static', filename=asset_path('js/dual_view_manager.js')) }}" defer></script>
 </body>
 </html>
+
