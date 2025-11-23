@@ -16,7 +16,9 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 - **Vista dual mejorada**: Cambiado el layout de la vista dual en el visualizador de grid a flexbox para mejor responsividad y distribución equitativa del espacio entre paneles de estructura 3D y grafo molecular.
 - **Panel de información del grafo**: Ajustado el tamaño del panel informativo (280x80 píxeles) y removidos emojis para un aspecto más profesional y limpio en el renderizador de grafos.
 - **Posicionamiento de overlay**: Movido el overlay de información de leyenda dentro del contenedor py3Dmol para mejor organización del DOM y consistencia visual.
-
+- **Modal de configuraciones avanzadas**: Rediseñado el sistema de configuraciones avanzadas del grafo, cambiando de un accordion desplegable a un sistema de modales jerárquicos. El botón "Configuraciones avanzadas" ahora abre un modal hub con opciones para "Buscar residuo", "Segmentos conectados" y "Colores de aminoácidos". Cada opción abre un modal dedicado con controles específicos. Los modales se reubicaron fuera del contenedor del grafo para evitar restricciones de posicionamiento y se aplicó una paleta de colores más clara para mejorar la legibilidad del texto.
+- **Leyenda de colores en segmentos**: Agregada una sección de leyenda de colores dentro del modal "Segmentos conectados" que explica el significado de cada color utilizado en la visualización: verde para nodos del segmento buscado, azul cielo para enlaces conectados y gris azulado para nodos atenuados.
+gir 
 ### Technical Details
 
 - Archivos modificados:
