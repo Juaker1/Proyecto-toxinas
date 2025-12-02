@@ -27,8 +27,8 @@ def test_graph_contract_v1_vs_v2():
     app2 = create_app_v2()
 
     with app1.test_client() as c1, app2.test_client() as c2:
-        r1 = c1.get(f"/get_protein_graph/{source}/{pid}?granularity=CA&long=5&threshold=10.0")
-        r2 = c2.get(f"/v2/proteins/{source}/{pid}/graph?granularity=CA&long=5&threshold=10.0")
+        r1 = c1.get(f"/get_protein_graph/{source}/{pid}?granularity=CA&threshold=10.0")
+        r2 = c2.get(f"/v2/proteins/{source}/{pid}/graph?granularity=CA&threshold=10.0")
 
         assert r1.status_code == 200 and r2.status_code == 200
         assert r1.is_json and r2.is_json

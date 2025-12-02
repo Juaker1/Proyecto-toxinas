@@ -6,7 +6,6 @@ class GraphRequestDTO:
     source: str
     pid: int
     granularity: str = 'CA'
-    long_threshold: int = 5
     distance_threshold: float = 10.0
 
 @dataclass

@@ -29,18 +29,6 @@
     
     <!-- Estilos de Mol* -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.css">
-    
-    <!-- Spinner animation for graph loading -->
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #graph-plot {
-            position: relative;
-            min-height: 500px;
-        }
-    </style>
 </head>
 <body class="viewer-page">
         <!-- NAVBAR -->
@@ -66,6 +54,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Guía de inicio rápido -->
         <div class="quick-start-guide">
@@ -121,7 +110,7 @@
                     <span class="control-hint">Proteína para análisis</span>
                 </div>
                 
-                <div class="control-group" id="dipole-status-container" style="display: none;">
+                <div class="control-group" id="dipole-status-container">
                     <label class="control-label">
                         <i class="fas fa-bolt control-icon"></i>
                         Estado del Dipolo
@@ -158,17 +147,17 @@
                     
                     <!-- py3Dmol viewer -->
                     <div id="py3dmol-dipole-viewer" class="viewer-canvas">
-                        <div id="py3dmol-container" style="width: 100%; height: 100%;"></div>
+                        <div id="py3dmol-container"></div>
+                        
+                        <!-- Info overlay  -->
+                        <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
+                            <strong><i class="fas fa-circle-info"></i></strong>
+                            <span class="legend-item"><i class="fas fa-arrow-right legend-icon legend-icon--dipole"></i> Vector del dipolo</span>
+                            <span class="legend-item"><i class="fas fa-dna legend-icon legend-icon--structure"></i> Representación eje Z</span>
+                        </div>
                     </div>
                     
                   
-                    
-                    <!-- Info overlay  -->
-                    <div class="viewer-info-overlay top-left" title="Leyenda: Rojo = Dipolo, Azul = Estructura">
-                        <strong><i class="fas fa-circle-info"></i></strong>
-                        <span class="legend-item"><i class="fas fa-arrow-right" style="color: #EF4444;"></i> Vector del dipolo</span>
-                        <span class="legend-item"><i class="fas fa-dna" style="color: #3B82F6;"></i> Representación eje Z</span>
-                    </div>
                     
                     <!-- Loading state -->
                     <div class="loading-state" id="structure-loading">
@@ -187,6 +176,14 @@
                     </h3>
                     <div class="panel-controls">
                         <span class="badge badge-primary" id="graph-analysis-protein">Esperando...</span>
+                        <button id="graph-expand-btn" class="panel-icon-btn" type="button" aria-pressed="false" title="Expandir el grafo a pantalla completa">
+                            <i class="fas fa-maximize" aria-hidden="true"></i>
+                            <span>Expandir</span>
+                        </button>
+                        <button id="graph-collapse-btn" class="panel-icon-btn" type="button" aria-pressed="true" title="Volver a la vista predeterminada" hidden>
+                            <i class="fas fa-minimize" aria-hidden="true"></i>
+                            <span>Minimizar</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -196,15 +193,6 @@
                         <p class="controls-hint"><i class="fas fa-lightbulb"></i> <strong>Consejo:</strong> Ajusta estos parámetros para refinar el análisis de conectividad entre residuos</p>
                     </div>
                     <div class="graph-controls-grid">
-                        <div class="control-group">
-                            <label class="control-label" for="long-input">
-                                Separación de secuencia
-                                <span class="help-tooltip" title="Número mínimo de residuos en la secuencia primaria que deben separar dos residuos para considerar su conexión"><i class="fas fa-question-circle"></i></span>
-                            </label>
-                            <input id="long-input" type="number" class="form-control" value="5" min="0" step="1">
-                            <span class="control-hint">Residuos (recomendado: 5)</span>
-                        </div>
-                        
                         <div class="control-group">
                             <label class="control-label" for="dist-input">
                                 Distancia umbral
@@ -225,44 +213,99 @@
                                     <div class="toggle-slider"></div>
                                 </div>
                                 <span class="toggle-label">Carbono Alfa</span>
-                                <input type="checkbox" id="granularity-toggle" checked style="display: none;" aria-label="Cambiar granularidad entre residuo y atómico">
+                                    <input type="checkbox" id="granularity-toggle" checked aria-label="Cambiar granularidad entre residuo y atómico">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label">
-                                <i class="fas fa-search control-icon"></i>
-                                Buscar Residuo
-                                <span class="help-tooltip" title="Formato: Cadena:Aminoácido:Posición:Átomo. Ejemplo: P:ASN:19:HD22"><i class="fas fa-question-circle"></i></span>
+                            <label class="control-label" for="toggle-nodes">
+                                <i class="fas fa-eye control-icon"></i>
+                                Visibilidad del grafo
+                                <span class="help-tooltip" title="Oculta temporalmente nodos o aristas para enfocarte en la información relevante"><i class="fas fa-question-circle"></i></span>
                             </label>
-                            <div class="residue-search-container">
-                                <input type="text" id="chain-input" class="residue-input" placeholder="C" maxlength="1" required title="Letra de la cadena">
-                                <span class="residue-separator">:</span>
-                                <input type="text" id="aa-input" class="residue-input" placeholder="ASN" maxlength="3" required title="Código de 3 letras del aminoácido">
-                                <span class="residue-separator">:</span>
-                                <input type="number" id="pos-input" class="residue-input" placeholder="19" min="1" required title="Número de posición en la secuencia">
-                                <span class="residue-separator">:</span>
-                                <input type="text" id="atom-input" class="residue-input" placeholder="HD22" required title="Nombre del átomo">
-                                <button id="search-residue-btn" class="residue-search-btn" type="button">
-                                    <i class="fas fa-search"></i>
-                                    Buscar
-                                </button>
+                            <div class="graph-visibility-toggle" role="group" aria-label="Visibilidad del grafo">
+                                <label class="visibility-chip" for="toggle-nodes">
+                                    <input type="checkbox" id="toggle-nodes" checked>
+                                    <span class="chip-icon" aria-hidden="true"><i class="fas fa-circle"></i></span>
+                                    <span class="chip-text">Nodos</span>
+                                </label>
+                                <label class="visibility-chip" for="toggle-edges">
+                                    <input type="checkbox" id="toggle-edges" checked>
+                                    <span class="chip-icon" aria-hidden="true"><i class="fas fa-link"></i></span>
+                                    <span class="chip-text">Aristas</span>
+                                </label>
                             </div>
+                            <span class="control-hint">Activa solo lo que necesites ver</span>
                         </div>
                     </div>
+
+                    <div class="graph-controls-toolbar">
+                        <div class="graph-controls-toolbar-text">
+                            <span class="toolbar-label">Atajos pro</span>
+                            <p class="toolbar-copy">Residuos, segmentos y colorimetría en un solo lugar.</p>
+                        </div>
+                        <button id="advanced-config-launcher" class="ghost-pill-btn" type="button">
+                            <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                            <span>Configuraciones avanzadas</span>
+                        </button>
+                    </div>
                 </div>
-                
                 <!-- Visualización del grafo -->
                 <div class="graph-plot-wrapper">
                     <div id="graph-plot"></div>
                     
                     <!-- Loading state -->
-                    <div class="loading-state" id="graph-loading" style="display: none;">
+                    <div class="loading-state" id="graph-loading">
                         <div class="spinner"></div>
                         <p class="loading-text">Generando grafo molecular...</p>
                     </div>
                 </div>
 
+                <!-- Modal for quick graph controls (nodes, edges, minimize and reset) -->
+                <div id="graph-controls-modal-overlay" class="graph-controls-modal-overlay" aria-hidden="true">
+                    <div id="graph-controls-modal" class="graph-controls-modal" role="dialog" aria-modal="true" aria-labelledby="graph-controls-title">
+                        <div class="modal-header">
+                            <h4 id="graph-controls-title" class="modal-title"><i class="fas fa-project-diagram"></i> Controles del Grafo</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-subtitle">Acciones rápidas</p>
+                            <div class="modal-actions">
+                                <button id="modal-toggle-nodes" class="modal-action-btn" type="button" title="Ver u ocultar nodos">Ver Nodos</button>
+                                <button id="modal-toggle-edges" class="modal-action-btn" type="button" title="Ver u ocultar aristas">Ver Aristas</button>
+                                <button id="modal-minimize-btn" class="modal-action-btn" type="button" title="Minimizar el grafo">Minimizar</button>
+                                <button id="modal-reset-btn" class="modal-action-btn" type="button" title="Reiniciar la vista del grafo">Reiniciar</button>
+                            </div>
+                            
+                            <!-- Host for the reparented graph when modal opens -->
+                            <div id="modal-graph-host" class="modal-graph-host" aria-hidden="true">
+                                <!-- graphPlotElement will be moved here dynamically by JS when opening the modal -->
+                            </div>
+                            
+                            <!-- Connections panel below the graph -->
+                            <div id="modal-connections-panel" class="modal-connections-panel">
+                                <!-- Header removed to show icon-only squares -->
+                                <div class="modal-connections-carousel">
+                                    <div id="modal-node-connected" class="modal-connections-track">
+                                        <!-- Connections will be populated here -->
+                                    </div>
+                                    <button id="modal-connections-prev" class="modal-carousel-btn left" aria-label="Anterior">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button id="modal-connections-next" class="modal-carousel-btn right" aria-label="Siguiente">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-carousel-indicators" id="modal-carousel-indicators">
+                                    <!-- Indicators will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="modal-close-btn" class="modal-action-btn" type="button" title="Cerrar">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Extra actions overlay removed -->
                 <!-- Panel de información de nodos  -->
                 <div id="graph-info-panel" class="graph-info-panel">
                     <div class="graph-info-content">
@@ -270,7 +313,7 @@
                             <div class="graph-info-empty-icon"><i class="fas fa-mouse"></i></div>
                             <p class="graph-info-empty-text">Haz clic en un nodo del grafo para ver sus detalles</p>
                         </div>
-                        <div id="graph-info-details" class="graph-info-details" style="display: none;">
+                        <div id="graph-info-details" class="graph-info-details">
                             <div class="node-header">
                                 <div class="node-icon"><i class="fas fa-dot-circle"></i></div>
                                 <div class="node-title">
@@ -327,7 +370,7 @@
                         <i class="fas fa-chevron-right nav-btn-arrow"></i>
                     </button>
                     
-                    <button id="toggle-dipole-analysis" class="analysis-nav-btn" data-target="dipole-calculations" style="display: none;" type="button" aria-controls="dipole-calculations" aria-expanded="false">
+                    <button id="toggle-dipole-analysis" class="analysis-nav-btn" data-target="dipole-calculations" type="button" aria-controls="dipole-calculations" aria-expanded="false">
                         <div class="nav-btn-icon">
                             <i class="fas fa-bolt"></i>
                         </div>
@@ -341,7 +384,7 @@
             </div>
 
             <div class="analysis-panels">
-                <section id="detailed-analysis" class="analysis-panel" style="display: none;">
+                <section id="detailed-analysis" class="analysis-panel">
                     <div class="panel-header-modern">
                         <div class="panel-header-icon">
                             <i class="fas fa-project-diagram"></i>
@@ -545,13 +588,13 @@
                     </div>
                 </section>
 
-                <section id="export-data-section" class="analysis-panel" style="display: none;">
+                <section id="export-data-section" class="analysis-panel">
                     <div class="panel-header-modern">
-                        <div class="panel-header-icon" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">
+                        <div class="panel-header-icon panel-header-icon--green">
                             <i class="fas fa-file-export"></i>
                         </div>
                         <div class="panel-header-content">
-                            <div class="panel-header-badge" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">Exportaciones</div>
+                            <div class="panel-header-badge panel-header-badge--green">Exportaciones</div>
                             <h3 class="panel-header-title">Descarga y comparte resultados</h3>
                             <p class="panel-header-description">Genera reportes en formato XLSX con las métricas estructurales calculadas.</p>
                         </div>
@@ -591,7 +634,7 @@
                                             <i class="fas fa-download"></i>
                                             <span>Descargar Excel</span>
                                         </span>
-                                        <span class="btn-loading-modern" style="display: none;">
+                                        <span class="btn-loading-modern">
                                             <i class="fas fa-spinner fa-spin"></i>
                                             <span>Procesando...</span>
                                         </span>
@@ -602,7 +645,7 @@
                             <!-- Familias de Toxinas Card -->
                             <div class="export-card-modern">
                                 <div class="export-card-header-modern">
-                                    <div class="export-card-icon-modern" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.08)); color: #4CAF50;">
+                                    <div class="export-card-icon-modern export-card-icon-modern--green">
                                         <i class="fas fa-layer-group"></i>
                                     </div>
                                     <div class="export-card-title-section">
@@ -645,7 +688,7 @@
                                             <i class="fas fa-download"></i>
                                             <span>Exportar familia</span>
                                         </span>
-                                        <span class="btn-loading-modern" style="display: none;">
+                                        <span class="btn-loading-modern">
                                             <i class="fas fa-spinner fa-spin"></i>
                                             <span>Procesando...</span>
                                         </span>
@@ -656,7 +699,7 @@
                             <!-- Comparación WT Card -->
                             <div class="export-card-modern">
                                 <div class="export-card-header-modern">
-                                    <div class="export-card-icon-modern" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.12), rgba(156, 39, 176, 0.08)); color: #9C27B0;">
+                                    <div class="export-card-icon-modern export-card-icon-modern--purple">
                                         <i class="fas fa-balance-scale"></i>
                                     </div>
                                     <div class="export-card-title-section">
@@ -699,7 +742,7 @@
                                             <i class="fas fa-download"></i>
                                             <span>Comparar con WT</span>
                                         </span>
-                                        <span class="btn-loading-modern" style="display: none;">
+                                        <span class="btn-loading-modern">
                                             <i class="fas fa-spinner fa-spin"></i>
                                             <span>Analizando...</span>
                                         </span>
@@ -710,13 +753,13 @@
                     </div>
                 </section>
 
-                <section id="dipole-calculations" class="analysis-panel" style="display: none;">
+                <section id="dipole-calculations" class="analysis-panel">
                     <div class="panel-header-modern">
-                        <div class="panel-header-icon" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.08)); color: #FF9800;">
+                        <div class="panel-header-icon panel-header-icon--orange">
                             <i class="fas fa-bolt"></i>
                         </div>
                         <div class="panel-header-content">
-                            <div class="panel-header-badge" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.08)); color: #FF9800;">Vector dipolo</div>
+                            <div class="panel-header-badge panel-header-badge--orange">Vector dipolo</div>
                             <h3 class="panel-header-title">Cálculos electromagnéticos</h3>
                             <p class="panel-header-description">Consulta propiedades vectoriales y parámetros de cálculo derivados del PSF procesado.</p>
                         </div>
@@ -786,6 +829,365 @@
         </section>
     </div>
 
+    <!-- Advanced configuration modal hub -->
+    <div id="advanced-config-modal" class="advanced-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="advanced-modal-title" aria-hidden="true">
+        <div class="advanced-modal-card">
+            <div class="advanced-modal-header">
+                <div>
+                    <p class="advanced-modal-eyebrow">Panel contextual</p>
+                    <h4 id="advanced-modal-title">Configuraciones avanzadas</h4>
+                    <p class="advanced-modal-copy">Elige qué deseas ajustar para abrir sus controles dedicados.</p>
+                </div>
+                <button class="advanced-modal-close" type="button" data-close-modal>
+                    <span class="sr-only">Cerrar configuraciones avanzadas</span>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="advanced-option-grid">
+                <button class="advanced-option-card" type="button" data-target="advanced-detail-residue">
+                    <div class="advanced-option-icon"><i class="fas fa-search"></i></div>
+                    <div>
+                        <p class="advanced-option-title">Buscar residuo</p>
+                        <p class="advanced-option-description">Localiza cadenas o átomos específicos dentro del grafo.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="advanced-option-card" type="button" data-target="advanced-detail-segment">
+                    <div class="advanced-option-icon"><i class="fas fa-crosshairs"></i></div>
+                    <div>
+                        <p class="advanced-option-title">Segmentos conectados</p>
+                        <p class="advanced-option-description">Resalta nodos relacionados a un segmento numérico.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="advanced-option-card" type="button" data-target="advanced-detail-colors">
+                    <div class="advanced-option-icon"><i class="fas fa-palette"></i></div>
+                    <div>
+                        <p class="advanced-option-title">Colores de aminoácidos</p>
+                        <p class="advanced-option-description">Consulta la codificación cromática usada en el grafo.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail modal: residue search -->
+    <div id="advanced-detail-residue" class="advanced-detail-modal" role="dialog" aria-modal="true" aria-labelledby="residue-detail-title" aria-hidden="true">
+        <div class="advanced-detail-card">
+            <div class="advanced-detail-header">
+                <button class="advanced-back-btn" type="button" data-back-to="advanced-config-modal">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Volver</span>
+                </button>
+                <button class="advanced-modal-close" type="button" data-close-modal>
+                    <span class="sr-only">Cerrar búsqueda de residuo</span>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="advanced-detail-body">
+                <p class="advanced-modal-eyebrow">Buscar residuo</p>
+                <h4 id="residue-detail-title">Localiza cadenas o átomos específicos</h4>
+                <p class="advanced-modal-copy">Formato: Cadena:Aminoácido:Posición:Átomo. Ejemplo: P:ASN:19:HD22.</p>
+                <div class="residue-search-card" role="region" aria-labelledby="residue-search-title-modal">
+                    <div class="residue-search-card-header">
+                        <div>
+                            <p class="residue-search-eyebrow">
+                                <i class="fas fa-search"></i>
+                                Buscar Residuo
+                            </p>
+                            <h4 id="residue-search-title-modal">Localiza cadenas o átomos específicos</h4>
+                            <p class="residue-search-copy">Formato: Cadena:Aminoácido:Posición:Átomo. Ejemplo: P:ASN:19:HD22</p>
+                        </div>
+                        <span class="help-tooltip" title="Introduce los cuatro datos para centrar y resaltar el residuo requerido"><i class="fas fa-question-circle"></i></span>
+                    </div>
+                    <div class="residue-search-container">
+                        <input type="text" id="chain-input" class="residue-input" placeholder="C" maxlength="1" required title="Letra de la cadena">
+                        <span class="residue-separator">:</span>
+                        <input type="text" id="aa-input" class="residue-input" placeholder="ASN" maxlength="3" required title="Código de 3 letras del aminoácido">
+                        <span class="residue-separator">:</span>
+                        <input type="number" id="pos-input" class="residue-input" placeholder="19" min="1" required title="Número de posición en la secuencia">
+                        <span class="residue-separator">:</span>
+                        <input type="text" id="atom-input" class="residue-input" placeholder="HD22" required title="Nombre del átomo">
+                        <button id="search-residue-btn" class="residue-search-btn" type="button">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail modal: segment search -->
+    <div id="advanced-detail-segment" class="advanced-detail-modal" role="dialog" aria-modal="true" aria-labelledby="segment-detail-title" aria-hidden="true">
+        <div class="advanced-detail-card">
+            <div class="advanced-detail-header">
+                <button class="advanced-back-btn" type="button" data-back-to="advanced-config-modal">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Volver</span>
+                </button>
+                <button class="advanced-modal-close" type="button" data-close-modal>
+                    <span class="sr-only">Cerrar segmentos conectados</span>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="advanced-detail-body">
+                <p class="advanced-modal-eyebrow">Segmentos conectados</p>
+                <h4 id="segment-detail-title">Filtra por identificador de segmento</h4>
+                <p class="advanced-modal-copy">Ingresa el número del segmento (tercera posición del ID, ej. "6" en P:ALY:6:HH3) para resaltar todas sus conexiones.</p>
+                <div class="residue-search-card segment-search-card" role="region" aria-labelledby="segment-search-title-modal">
+                    <div class="residue-search-card-header">
+                        <div>
+                            <p class="residue-search-eyebrow">
+                                <i class="fas fa-project-diagram"></i>
+                                Segmentar conexiones
+                            </p>
+                            <h4 id="segment-search-title-modal">Filtra por identificador de segmento</h4>
+                            <p class="residue-search-copy">Ingresa el número del segmento (tercera posición del ID, ej. "6" en P:ALY:6:HH3) para resaltar todas sus conexiones.</p>
+                        </div>
+                        <span class="help-tooltip" title="Se resaltan los nodos del segmento y sus enlaces directos"><i class="fas fa-question-circle"></i></span>
+                    </div>
+                    <div class="segment-search-controls">
+                        <input type="number" id="segment-input" class="residue-input segment-input" placeholder="6" min="1" aria-label="Número de segmento">
+                        <button id="segment-search-btn" class="residue-search-btn" type="button">
+                            <i class="fas fa-crosshairs"></i>
+                            Enfocar segmento
+                        </button>
+                        <button id="segment-clear-btn" class="segment-clear-btn" type="button" aria-label="Limpiar filtro de segmento">
+                            <i class="fas fa-times"></i>
+                            Limpiar
+                        </button>
+                    </div>
+                    <p id="segment-search-feedback" class="segment-search-feedback" aria-live="polite"></p>
+                </div>
+
+                <!-- Segment color legend -->
+                <div class="segment-color-legend">
+                    <h5 class="segment-legend-title">
+                        <i class="fas fa-palette"></i>
+                        Leyenda de colores
+                    </h5>
+                    <p class="segment-legend-description">Comprende cómo se resaltan los nodos al buscar un segmento:</p>
+                    <div class="segment-legend-items">
+                        <div class="segment-legend-item">
+                            <span class="segment-legend-color segment-color-primary"></span>
+                            <div class="segment-legend-text">
+                                <span class="segment-legend-label">Nodos del segmento</span>
+                                <span class="segment-legend-desc">Residuos que pertenecen al segmento buscado</span>
+                            </div>
+                        </div>
+                        <div class="segment-legend-item">
+                            <span class="segment-legend-color segment-color-secondary"></span>
+                            <div class="segment-legend-text">
+                                <span class="segment-legend-label">Enlaces conectados</span>
+                                <span class="segment-legend-desc">Aristas que conectan el segmento con otros</span>
+                            </div>
+                        </div>
+                        <div class="segment-legend-item">
+                            <span class="segment-legend-color segment-color-muted"></span>
+                            <div class="segment-legend-text">
+                                <span class="segment-legend-label">Nodos atenuados</span>
+                                <span class="segment-legend-desc">Residuos sin pertenencia al segmento buscado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail modal: colors legend -->
+    <div id="advanced-detail-colors" class="advanced-detail-modal" role="dialog" aria-modal="true" aria-labelledby="colors-detail-title" aria-hidden="true">
+        <div class="advanced-detail-card">
+            <div class="advanced-detail-header">
+                <button class="advanced-back-btn" type="button" data-back-to="advanced-config-modal">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Volver</span>
+                </button>
+                <button class="advanced-modal-close" type="button" data-close-modal>
+                    <span class="sr-only">Cerrar colores de aminoácidos</span>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="advanced-detail-body">
+                <p class="advanced-modal-eyebrow">Colores de aminoácidos</p>
+                <h4 id="colors-detail-title">Consulta la codificación cromática</h4>
+                <p class="advanced-modal-copy">Visualiza la leyenda usada en la vista de grafo para interpretar rápidamente cada residuo.</p>
+                <div class="aa-color-legend graph-controls-legend" aria-label="Colores por aminoácido">
+                    <div id="aa-color-content" class="aa-color-legend-content">
+                        <div class="aa-color-group">
+                            <h5 class="aa-color-group-title">No polares · Hidrofóbicos</h5>
+                            <p class="aa-color-group-meta">Pequeños y aromáticos</p>
+                            <div class="aa-color-grid">
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--ala"></span>
+                                    <div>
+                                        <span class="aa-color-label">Alanina (Ala)</span>
+                                        <span class="aa-color-meta">No polar · Pequeño</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--gly"></span>
+                                    <div>
+                                        <span class="aa-color-label">Glicina (Gly)</span>
+                                        <span class="aa-color-meta">No polar · Pequeño</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--val"></span>
+                                    <div>
+                                        <span class="aa-color-label">Valina (Val)</span>
+                                        <span class="aa-color-meta">No polar · Pequeño</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--leu"></span>
+                                    <div>
+                                        <span class="aa-color-label">Leucina (Leu)</span>
+                                        <span class="aa-color-meta">No polar · Pequeño</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--ile"></span>
+                                    <div>
+                                        <span class="aa-color-label">Isoleucina (Ile)</span>
+                                        <span class="aa-color-meta">No polar · Pequeño</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--phe"></span>
+                                    <div>
+                                        <span class="aa-color-label">Fenilalanina (Phe)</span>
+                                        <span class="aa-color-meta">No polar · Aromático</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--trp"></span>
+                                    <div>
+                                        <span class="aa-color-label">Triptófano (Trp)</span>
+                                        <span class="aa-color-meta">No polar · Aromático</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--met"></span>
+                                    <div>
+                                        <span class="aa-color-label">Metionina (Met)</span>
+                                        <span class="aa-color-meta">No polar · Aromático</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aa-color-group">
+                            <h5 class="aa-color-group-title">Especial</h5>
+                            <div class="aa-color-grid">
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--pro"></span>
+                                    <div>
+                                        <span class="aa-color-label">Prolina (Pro)</span>
+                                        <span class="aa-color-meta">No polar · Rígida</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aa-color-group">
+                            <h5 class="aa-color-group-title">Polares · Neutros</h5>
+                            <div class="aa-color-grid">
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--ser"></span>
+                                    <div>
+                                        <span class="aa-color-label">Serina (Ser)</span>
+                                        <span class="aa-color-meta">Polar · Hidroxilo</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--thr"></span>
+                                    <div>
+                                        <span class="aa-color-label">Treonina (Thr)</span>
+                                        <span class="aa-color-meta">Polar · Hidroxilo</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--tyr"></span>
+                                    <div>
+                                        <span class="aa-color-label">Tirosina (Tyr)</span>
+                                        <span class="aa-color-meta">Polar · Aromático</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--asn"></span>
+                                    <div>
+                                        <span class="aa-color-label">Asparagina (Asn)</span>
+                                        <span class="aa-color-meta">Polar · Amida</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--cys"></span>
+                                    <div>
+                                        <span class="aa-color-label">Cisteína (Cys)</span>
+                                        <span class="aa-color-meta">Polar · Tiol</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--gln"></span>
+                                    <div>
+                                        <span class="aa-color-label">Glutamina (Gln)</span>
+                                        <span class="aa-color-meta">Polar · Amida</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aa-color-group">
+                            <h5 class="aa-color-group-title">Cargados · Básicos</h5>
+                            <div class="aa-color-grid">
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--lys"></span>
+                                    <div>
+                                        <span class="aa-color-label">Lisina (Lys)</span>
+                                        <span class="aa-color-meta">Polar · Básico</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--arg"></span>
+                                    <div>
+                                        <span class="aa-color-label">Arginina (Arg)</span>
+                                        <span class="aa-color-meta">Polar · Básico</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--his"></span>
+                                    <div>
+                                        <span class="aa-color-label">Histidina (His)</span>
+                                        <span class="aa-color-meta">Polar · Básico</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aa-color-group">
+                            <h5 class="aa-color-group-title">Cargados · Ácidos</h5>
+                            <div class="aa-color-grid">
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--asp"></span>
+                                    <div>
+                                        <span class="aa-color-label">Aspártico (Asp)</span>
+                                        <span class="aa-color-meta">Polar · Ácido</span>
+                                    </div>
+                                </div>
+                                <div class="aa-color-item">
+                                    <span class="aa-color-swatch aa-color-swatch--glu"></span>
+                                    <div>
+                                        <span class="aa-color-label">Glutámico (Glu)</span>
+                                        <span class="aa-color-meta">Polar · Ácido</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script id="protein-data" type="application/json">
         {
             "toxinas": {{ toxinas | tojson | safe }},
@@ -814,6 +1216,96 @@
         }
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const launcher = document.getElementById('advanced-config-launcher');
+            const hubModal = document.getElementById('advanced-config-modal');
+            const optionButtons = document.querySelectorAll('.advanced-option-card');
+            const detailModals = document.querySelectorAll('.advanced-detail-modal');
+
+            const closeButtons = document.querySelectorAll('[data-close-modal]');
+            const backButtons = document.querySelectorAll('[data-back-to]');
+
+            const toggleScroll = shouldLock => {
+                body.classList.toggle('modal-open', shouldLock);
+            };
+
+            const anyVisibleModal = () => document.querySelector('.advanced-modal-overlay.is-visible, .advanced-detail-modal.is-visible');
+
+            const openModal = modal => {
+                if (!modal) return;
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+                toggleScroll(true);
+            };
+
+            const closeModal = modal => {
+                if (!modal) return;
+                modal.classList.remove('is-visible');
+                modal.setAttribute('aria-hidden', 'true');
+                if (!anyVisibleModal()) {
+                    toggleScroll(false);
+                }
+            };
+
+            const closeAllDetailModals = () => {
+                detailModals.forEach(modal => {
+                    modal.classList.remove('is-visible');
+                    modal.setAttribute('aria-hidden', 'true');
+                });
+            };
+
+            launcher?.addEventListener('click', () => {
+                closeAllDetailModals();
+                openModal(hubModal);
+            });
+
+            optionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const targetModal = document.getElementById(targetId);
+                    if (!targetModal) return;
+                    closeModal(hubModal);
+                    openModal(targetModal);
+                });
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', event => {
+                    const modal = event.currentTarget.closest('.advanced-modal-overlay, .advanced-detail-modal');
+                    closeModal(modal);
+                });
+            });
+
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modal = button.closest('.advanced-detail-modal');
+                    closeModal(modal);
+                    openModal(hubModal);
+                });
+            });
+
+            const handleOverlayClick = event => {
+                const modal = event.currentTarget;
+                if (event.target === modal) {
+                    closeModal(modal);
+                }
+            };
+
+            hubModal?.addEventListener('click', handleOverlayClick);
+            detailModals.forEach(modal => modal.addEventListener('click', handleOverlayClick));
+
+            document.addEventListener('keydown', event => {
+                if (event.key !== 'Escape') return;
+                const activeModal = anyVisibleModal();
+                if (activeModal) {
+                    closeModal(activeModal);
+                }
+            });
+        });
+    </script>
+
     <!-- Scripts externos con defer para carga no bloqueante -->
     <script src="https://cdn.jsdelivr.net/npm/molstar@4.17.0/build/viewer/molstar.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/3dmol@latest/build/3Dmol-min.js" defer></script>
@@ -829,3 +1321,4 @@
     <script src="{{ url_for('static', filename=asset_path('js/dual_view_manager.js')) }}" defer></script>
 </body>
 </html>
+

@@ -37,17 +37,295 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     const graphPlotElement = document.getElementById('graph-plot');
-    const longInput = document.getElementById('long-input');
     const distInput = document.getElementById('dist-input');
     const granularityToggle = document.getElementById('granularity-toggle');
     const granularityToggleWrapper = document.getElementById('granularity-toggle-wrapper');
+    const nodeVisibilityToggle = document.getElementById('toggle-nodes');
+    const edgeVisibilityToggle = document.getElementById('toggle-edges');
+    const graphExpandBtn = document.getElementById('graph-expand-btn');
+    const graphCollapseBtn = document.getElementById('graph-collapse-btn');
+    // Modal elements for graph quick controls
+    const graphControlsModalOverlay = document.getElementById('graph-controls-modal-overlay');
+    const graphControlsModal = document.getElementById('graph-controls-modal');
+    const modalGraphHost = document.getElementById('modal-graph-host');
+    const modalToggleNodesBtn = document.getElementById('modal-toggle-nodes');
+    const modalToggleEdgesBtn = document.getElementById('modal-toggle-edges');
+    const modalMinimizeBtn = document.getElementById('modal-minimize-btn');
+    const modalResetBtn = document.getElementById('modal-reset-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    // Advanced actions FAB and overlay removed
+    const graphPanel = document.querySelector('.graph-panel');
+    const segmentInput = document.getElementById('segment-input');
+    const segmentSearchBtn = document.getElementById('segment-search-btn');
+    const segmentClearBtn = document.getElementById('segment-clear-btn');
+    const segmentFeedback = document.getElementById('segment-search-feedback');
+    const visibilityState = {
+        nodes: nodeVisibilityToggle ? nodeVisibilityToggle.checked : true,
+        edges: edgeVisibilityToggle ? edgeVisibilityToggle.checked : true
+    };
+    let pendingVisibility = { ...visibilityState };
+
+    function syncVisibilityChipState(checkbox) {
+        if (!checkbox) return;
+        const chip = checkbox.closest('.visibility-chip');
+        if (chip) {
+            chip.classList.toggle('is-active', checkbox.checked);
+        }
+    }
+
+    function updateRendererVisibility() {
+        pendingVisibility = { ...visibilityState };
+        if (graphRenderer && typeof graphRenderer.setVisibility === 'function') {
+            graphRenderer.setVisibility(pendingVisibility);
+        }
+    }
+
+    [nodeVisibilityToggle, edgeVisibilityToggle].forEach((checkbox) => {
+        if (!checkbox) return;
+        syncVisibilityChipState(checkbox);
+        checkbox.addEventListener('change', () => {
+            if (checkbox === nodeVisibilityToggle) {
+                visibilityState.nodes = checkbox.checked;
+            } else if (checkbox === edgeVisibilityToggle) {
+                visibilityState.edges = checkbox.checked;
+            }
+            syncVisibilityChipState(checkbox);
+            updateRendererVisibility();
+            // Sync modal labels if present
+            try { updateModalToggleButtons(); } catch (err) {}
+        });
+    });
+
+    function syncExpandButtons(expanded) {
+        if (graphExpandBtn) {
+            graphExpandBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+            graphExpandBtn.title = 'Expandir el grafo a pantalla completa';
+            graphExpandBtn.hidden = expanded;
+        }
+        if (graphCollapseBtn) {
+            graphCollapseBtn.hidden = !expanded;
+            graphCollapseBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+        }
+    }
+
+    function setGraphExpansion(expanded) {
+        if (graphPanel) {
+            graphPanel.classList.toggle('graph-panel-expanded', expanded);
+        }
+        syncExpandButtons(expanded);
+        setTimeout(() => {
+            if (graphRenderer && typeof graphRenderer.handleResize === 'function') {
+                graphRenderer.handleResize();
+            }
+        }, 60);
+    }
+
+    if (graphExpandBtn) {
+        graphExpandBtn.addEventListener('click', () => {
+            // Instead of expanding the whole viewer, only open a focused modal
+            openGraphControlsModal();
+        });
+    }
+
+    if (graphCollapseBtn) {
+        graphCollapseBtn.addEventListener('click', () => {
+            if (graphPanel && graphPanel.classList.contains('graph-panel-expanded')) {
+                setGraphExpansion(false);
+            }
+            // Ensure modal is closed when graph is collapsed
+            closeGraphControlsModal();
+        });
+    }
+
+    // Reparent helpers
+    let originalGraphParent = null;
+    let originalNextSibling = null;
+    // Placeholders and originals for advanced sections
+    let residueSearchCard = null;
+    let aaColorLegend = null;
+    let residueSearchPlaceholder = null;
+    let aaColorLegendPlaceholder = null;
+
+    // Modal helpers
+    function openGraphControlsModal() {
+        if (!graphControlsModalOverlay) return;
+        // Prevent opening if already open
+        if (graphControlsModalOverlay.classList.contains('open')) return;
+        // Move modal overlay to body to cover entire screen
+        if (graphControlsModalOverlay.parentElement !== document.body) {
+            document.body.appendChild(graphControlsModalOverlay);
+        }
+        graphControlsModalOverlay.classList.add('open');
+        graphControlsModalOverlay.setAttribute('aria-hidden', 'false');
+        updateModalToggleButtons();
+        if (graphControlsModal) {
+            const firstBtn = graphControlsModal.querySelector('button.modal-action-btn');
+            try { firstBtn && firstBtn.focus(); } catch (err) {}
+        }
+        // Prevent background scroll when modal open
+        try { document.body.style.overflow = 'hidden'; } catch (err) {}
+        // Disable expand button while modal is open
+        if (graphExpandBtn) {
+            graphExpandBtn.disabled = true;
+            graphExpandBtn.style.opacity = '0.5';
+        }
+        // Reparent graphPlotElement into modalGraphHost (so only the graph is focused)
+        if (modalGraphHost && graphPlotElement) {
+            try {
+                // Save original place to restore later
+                originalGraphParent = graphPlotElement.parentElement;
+                originalNextSibling = graphPlotElement.nextElementSibling;
+                modalGraphHost.classList.add('active');
+                modalGraphHost.setAttribute('aria-hidden', 'false');
+                modalGraphHost.appendChild(graphPlotElement);
+                // Force resize of graph renderer to modal size
+                setTimeout(() => {
+                    try { if (graphRenderer && typeof graphRenderer.handleResize === 'function') graphRenderer.handleResize(); } catch (e) {}
+                }, 50);
+            } catch (err) {
+                console.warn('Failed to reparent graph into modal host:', err);
+            }
+        }
+        // Update modal connections if there's a selected node
+        if (graphRenderer && graphRenderer.selectedNode !== null && graphRenderer.graphData && graphRenderer.graphData.nodes[graphRenderer.selectedNode]) {
+            const selectedNode = graphRenderer.graphData.nodes[graphRenderer.selectedNode];
+            graphRenderer.updateModalConnectionsGrid(selectedNode, graphRenderer.selectedNode);
+        }
+    }
+
+    function closeGraphControlsModal() {
+        if (!graphControlsModalOverlay) return;
+        graphControlsModalOverlay.classList.remove('open');
+        graphControlsModalOverlay.setAttribute('aria-hidden', 'true');
+        try { document.body.style.overflow = ''; } catch (err) {}
+        // Re-enable expand button
+        if (graphExpandBtn) {
+            graphExpandBtn.disabled = false;
+            graphExpandBtn.style.opacity = '';
+        }
+        // Move modal overlay back to its original parent
+        const originalModalParent = document.querySelector('.graph-panel');
+        if (originalModalParent && graphControlsModalOverlay.parentElement === document.body) {
+            originalModalParent.appendChild(graphControlsModalOverlay);
+        }
+        // Restore advanced sections if they were moved
+        restoreAdvancedSections();
+        // Restore graphPlotElement to its original parent
+        if (originalGraphParent && graphPlotElement) {
+            try {
+                if (originalNextSibling) {
+                    originalGraphParent.insertBefore(graphPlotElement, originalNextSibling);
+                } else {
+                    originalGraphParent.appendChild(graphPlotElement);
+                }
+                modalGraphHost.classList.remove('active');
+                modalGraphHost.setAttribute('aria-hidden', 'true');
+                setTimeout(() => {
+                    try { if (graphRenderer && typeof graphRenderer.handleResize === 'function') graphRenderer.handleResize(); } catch (e) {}
+                }, 50);
+            } catch (err) {
+                console.warn('Failed to restore graph to original parent:', err);
+            }
+        }
+    }
+
+    // Advanced overlay removed: no action needed at this time
+
+    function restoreAdvancedSections() {
+        // Move elements back to their placeholders
+        try {
+            if (residueSearchCard && residueSearchPlaceholder && residueSearchPlaceholder.parentElement) {
+                residueSearchPlaceholder.parentElement.insertBefore(residueSearchCard, residueSearchPlaceholder);
+            }
+            if (aaColorLegend && aaColorLegendPlaceholder && aaColorLegendPlaceholder.parentElement) {
+                aaColorLegendPlaceholder.parentElement.insertBefore(aaColorLegend, aaColorLegendPlaceholder);
+            }
+            // If there was any overlay, we rely on CSS to hide it; no extra work required.
+        } catch(e) { /* no-op */ }
+    }
+
+    function updateModalToggleButtons() {
+        if (modalToggleNodesBtn && nodeVisibilityToggle) {
+            const visible = nodeVisibilityToggle.checked;
+            modalToggleNodesBtn.textContent = visible ? 'Ocultar Nodos' : 'Ver Nodos';
+            modalToggleNodesBtn.classList.toggle('active', visible);
+        }
+        if (modalToggleEdgesBtn && edgeVisibilityToggle) {
+            const visible = edgeVisibilityToggle.checked;
+            modalToggleEdgesBtn.textContent = visible ? 'Ocultar Aristas' : 'Ver Aristas';
+            modalToggleEdgesBtn.classList.toggle('active', visible);
+        }
+    }
+
+    // Modal event listeners
+    if (modalToggleNodesBtn) {
+        modalToggleNodesBtn.addEventListener('click', () => {
+            if (!nodeVisibilityToggle) return;
+            nodeVisibilityToggle.checked = !nodeVisibilityToggle.checked;
+            nodeVisibilityToggle.dispatchEvent(new Event('change', { bubbles: true }));
+            updateModalToggleButtons();
+        });
+    }
+
+    if (modalToggleEdgesBtn) {
+        modalToggleEdgesBtn.addEventListener('click', () => {
+            if (!edgeVisibilityToggle) return;
+            edgeVisibilityToggle.checked = !edgeVisibilityToggle.checked;
+            edgeVisibilityToggle.dispatchEvent(new Event('change', { bubbles: true }));
+            updateModalToggleButtons();
+        });
+    }
+
+    if (modalMinimizeBtn) {
+        modalMinimizeBtn.addEventListener('click', () => {
+            // Only close the modal and restore the graph to its original container
+            closeGraphControlsModal();
+        });
+    }
+
+    if (modalResetBtn) {
+        modalResetBtn.addEventListener('click', () => {
+            // Reset view via renderer
+            if (graphRenderer && typeof graphRenderer.resetView === 'function') {
+                graphRenderer.resetView();
+            }
+        });
+    }
+
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', () => {
+            closeGraphControlsModal();
+        });
+    }
+
+    // Advanced overlay functionality removed; nothing to initialize here.
+
+    // Close when clicking on overlay background
+    if (graphControlsModalOverlay) {
+        graphControlsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === graphControlsModalOverlay) {
+                closeGraphControlsModal();
+            }
+        });
+    }
+
+    // Close with Esc key
+    document.addEventListener('keydown', (e) => {
+        if (!graphControlsModalOverlay) return;
+        if (e.key === 'Escape' && graphControlsModalOverlay.classList.contains('open')) {
+            closeGraphControlsModal();
+        }
+    });
     
     let currentProteinGroup = null;
     let currentProteinId = null;
+    let currentSegmentFilter = null;
     
     // Initialize WebGL graph renderer with safety check
     if (typeof MolstarGraphRenderer !== 'undefined') {
         graphRenderer = new MolstarGraphRenderer(graphPlotElement);
+        updateRendererVisibility();
+        syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
     } else {
         // Fallback if renderer not loaded yet
         console.warn('MolstarGraphRenderer not loaded yet, will retry...');
@@ -61,12 +339,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 graphRenderer = new MolstarGraphRenderer(graphPlotElement);
                 window.graphRenderer = graphRenderer;
                 console.log('MolstarGraphRenderer loaded successfully');
+                updateRendererVisibility();
+                syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
             }
         }, 500);
     }
     
     // Exponer globalmente para debugging
     window.graphRenderer = graphRenderer;
+    updateRendererVisibility();
+    syncExpandButtons(Boolean(graphPanel && graphPanel.classList.contains('graph-panel-expanded')));
+    // Initialize modal toggle labels if present
+    try { updateModalToggleButtons(); } catch (err) {}
     
     // Función para sincronizar el estado visual del toggle con el checkbox
     function syncGranularityToggleVisual() {
@@ -90,7 +374,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     graphPlotElement.appendChild(initialMsg);
     
     // Eventos para actualizar automaticamente el grafo
-    longInput.addEventListener('change', updateGraphVisualization);
     distInput.addEventListener('change', updateGraphVisualization);
     granularityToggle.addEventListener('change', () => {
         syncGranularityToggleVisual();
@@ -122,6 +405,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentProteinId = proteinSelect.value;
         updateGraphVisualization();
     });
+
+    if (segmentSearchBtn) {
+        segmentSearchBtn.addEventListener('click', handleSegmentSearch);
+    }
+
+    if (segmentInput) {
+        segmentInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                handleSegmentSearch(event);
+            }
+        });
+    }
+
+    if (segmentClearBtn) {
+        segmentClearBtn.addEventListener('click', () => clearSegmentFilter(true));
+    }
     
     currentProteinGroup = groupSelect.value;
     
@@ -143,7 +442,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         try {
-            const longValue = longInput.value;
             const distValue = distInput.value;
             const granularity = granularityToggle.checked ? 'atom' : 'CA';
             
@@ -152,7 +450,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             showLoading(graphPlotElement);
             
-            const url = `/v2/proteins/${currentProteinGroup}/${currentProteinId}/graph?long=${longValue}&threshold=${distValue}&granularity=${granularity}&edges=${edgesParam}`;
+            const url = `/v2/proteins/${currentProteinGroup}/${currentProteinId}/graph?threshold=${distValue}&granularity=${granularity}&edges=${edgesParam}`;
             console.time('fetch-graph');
             const response = await fetch(url);
             console.timeEnd('fetch-graph');
@@ -184,6 +482,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
                 
                 graphRenderer.loadGraph(data);
+                reapplySegmentFilter(true);
             }
             console.timeEnd('webgl-render');
             
@@ -234,6 +533,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Actualizar datos básicos del grafo
         updateElementText('num-nodes', properties.num_nodes || '-');
         updateElementText('num-edges', properties.num_edges || '-');
+
+        // Puentes disulfuro directamente desde las propiedades del grafo
+        if (typeof properties.disulfide_count === 'number') {
+            updateElementText('disulfide-bridges', properties.disulfide_count.toString());
+        } else if (properties.graph_properties?.disulfide_bridges !== undefined) {
+            updateElementText('disulfide-bridges', properties.graph_properties.disulfide_bridges);
+        }
         
         // Densidad del grafo
         updateElementText('graph-density', (properties.density || 0).toFixed(4));
@@ -247,6 +553,72 @@ document.addEventListener("DOMContentLoaded", async () => {
         const infoElement = document.getElementById('graph-info');
         if (infoElement) {
             infoElement.textContent = `Grafo visualizado en: ${granularityText}`;
+        }
+    }
+
+    function handleSegmentSearch(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        const value = (segmentInput?.value || '').trim();
+        if (!value) {
+            clearSegmentFilter(true);
+            return;
+        }
+        if (!graphRenderer || !graphRenderer.graphData || typeof graphRenderer.highlightSegment !== 'function') {
+            updateSegmentFeedback({ state: 'error', message: 'Carga una proteína antes de resaltar un segmento.' });
+            return;
+        }
+        const result = graphRenderer.highlightSegment(value);
+        if (!result || !result.found) {
+            currentSegmentFilter = null;
+            updateSegmentFeedback({ state: 'warning', message: `No se encontraron nodos para el segmento ${value}.` });
+            return;
+        }
+        currentSegmentFilter = value;
+        updateSegmentFeedback({ state: 'success', message: `Segmento ${value} resaltado (${result.count} nodos, ${result.neighborCount} conexiones).` });
+    }
+
+    function clearSegmentFilter(showMessage = false) {
+        currentSegmentFilter = null;
+        if (segmentInput) {
+            segmentInput.value = '';
+        }
+        if (graphRenderer && typeof graphRenderer.clearSegmentHighlight === 'function') {
+            graphRenderer.clearSegmentHighlight();
+        }
+        if (showMessage) {
+            updateSegmentFeedback({ state: '', message: 'Filtro de segmento desactivado.' });
+        }
+    }
+
+    function reapplySegmentFilter(fromReload = false) {
+        if (!currentSegmentFilter) {
+            if (fromReload && segmentFeedback) {
+                segmentFeedback.textContent = '';
+                segmentFeedback.removeAttribute('data-state');
+            }
+            return;
+        }
+        if (!graphRenderer || typeof graphRenderer.highlightSegment !== 'function') {
+            return;
+        }
+        const result = graphRenderer.highlightSegment(currentSegmentFilter);
+        if (!result || !result.found) {
+            updateSegmentFeedback({ state: 'warning', message: `El segmento ${currentSegmentFilter} no está presente en este grafo.` });
+            currentSegmentFilter = null;
+        } else if (fromReload) {
+            updateSegmentFeedback({ state: 'success', message: `Segmento ${currentSegmentFilter} activo (${result.count} nodos, ${result.neighborCount} conexiones).` });
+        }
+    }
+
+    function updateSegmentFeedback({ state, message }) {
+        if (!segmentFeedback) return;
+        segmentFeedback.textContent = message || '';
+        if (state) {
+            segmentFeedback.setAttribute('data-state', state);
+        } else {
+            segmentFeedback.removeAttribute('data-state');
         }
     }
 
@@ -307,7 +679,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Top 5 residuos
         const top5 = analysis.top_5_residues;
-        
         if (top5) {
             populateTop5List('top-degree-list', top5.degree_centrality);
             populateTop5List('top-between-list', top5.betweenness_centrality);
@@ -398,7 +769,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             
             try {
-                const longValue = longInput.value;
                 const distValue = distInput.value;
                 const granularity = granularityToggle.checked ? 'atom' : 'CA';
                 
@@ -434,7 +804,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (exportType === 'segments_atomicos') {
                     // Segmentación atómica (solo Nav1.7)
                     filename = `Nav1.7-${cleanName}-Segmentos-Atomicos.xlsx`;
-                    url = `/v2/export/segments_atomicos/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}`;
+                    url = `/v2/export/segments_atomicos/${currentProteinId}?threshold=${distValue}&granularity=${granularity}`;
                 } else {
                     // Análisis por residuos (normal)
                     const exportTypeText = 'Residuos';
@@ -443,7 +813,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     } else {
                         filename = `Toxinas-${cleanName}-${exportTypeText}.xlsx`;
                     }
-                    url = `/v2/export/residues/${currentProteinGroup}/${currentProteinId}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=residues`;
+                    url = `/v2/export/residues/${currentProteinGroup}/${currentProteinId}?threshold=${distValue}&granularity=${granularity}&export_type=residues`;
                 }
                 
                 // Simulate delay to show progress
@@ -531,7 +901,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 try {
-                    const longValue = longInput.value;
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
@@ -564,7 +933,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     
                     // Add export_type parameter to URL
-                    const url = `/v2/export/family/${encodeURIComponent(selectedFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${familyExportType}`;
+                    const url = `/v2/export/family/${encodeURIComponent(selectedFamily)}?threshold=${distValue}&granularity=${granularity}&export_type=${familyExportType}`;
                     
                     // Simulate delay for family processing (longer time for atomic segmentation)
                     const delay = familyExportType === 'segments_atomicos' ? 3500 : 2500;
@@ -654,7 +1023,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 
                 try {
-                    const longValue = longInput.value;
                     const distValue = distInput.value;
                     const granularity = granularityToggle.checked ? 'atom' : 'CA';
                     
@@ -684,7 +1052,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     
                     // Add export_type parameter to URL
-                    const url = `/v2/export/wt_comparison/${encodeURIComponent(selectedWtFamily)}?long=${longValue}&threshold=${distValue}&granularity=${granularity}&export_type=${wtExportType}`;
+                    const url = `/v2/export/wt_comparison/${encodeURIComponent(selectedWtFamily)}?threshold=${distValue}&granularity=${granularity}&export_type=${wtExportType}`;
                     
                     // Simulate delay for WT comparison (longer for atomic segmentation)
                     const delay = wtExportType === 'segments_atomicos' ? 3000 : 2000;

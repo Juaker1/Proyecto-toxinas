@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   app:
@@ -53,4 +53,3 @@ volumes:
   toxinas_db:
   toxinas_pdbs:
   toxinas_psfs:
-YAML

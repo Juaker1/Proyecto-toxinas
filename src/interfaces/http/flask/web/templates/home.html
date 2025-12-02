@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/navbar.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/accessibility.css')) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/home-page.css')) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename=asset_path('css/popup.css')) }}">
 
     <!-- Font Awesome con preload y async -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -30,6 +31,17 @@
 
     <!-- NAVBAR -->
     {% include 'partials/navbar.html' %}
+
+    <!-- POPUP -->
+    <div id="popup-overlay" class="popup-overlay">
+        <div class="popup-content">
+            <button id="popup-close" class="popup-close">&times;</button>
+            <h2>¡Bienvenido!</h2>
+            <p>Bienvenido a su página que lo ayudará a estudiar péptidos con visualizadores 3D de grafos y moléculas.</p>
+            <p class="highlight">Favor de usar un equipo de escritorio o notebook ya que la página está diseñada para estos dispositivos y debido a algunas librerías usar celular o dispositivos antiguos generará problemas.</p>
+            <button id="popup-btn" class="popup-btn">Entendido</button>
+        </div>
+    </div>
 
     <!-- HERO SECTION -->
     <main id="main-content">
@@ -238,5 +250,6 @@
 
     <!-- Navbar behavior -->
     <script src="{{ url_for('static', filename=asset_path('js/navbar.js')) }}" defer></script>
+    <script src="{{ url_for('static', filename=asset_path('js/popup.js')) }}" defer></script>
 </body>
 </html>

@@ -137,5 +137,12 @@ class GraphPresenter:
             "summary_statistics": normalize(summary_stats_renamed),
             "top_5_residues": normalize(top5_residues),
             "key_residues": normalize(key_residues),
+            "graph_properties": {
+                "nodes": properties.get("num_nodes", 0),
+                "edges": properties.get("num_edges", 0),
+                "disulfide_bridges": properties.get("disulfide_count", 0),
+                "density": properties.get("density", 0.0),
+                "clustering_coefficient_avg": properties.get("avg_clustering", 0.0)
+            }
         })
         return normalize(base)

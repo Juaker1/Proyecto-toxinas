@@ -11,7 +11,7 @@ from src.infrastructure.graphein.graph_visualizer_adapter import MolstarGraphVis
 from src.infrastructure.pdb.pdb_preprocessor_adapter import PDBPreprocessorAdapter
 from src.infrastructure.fs.temp_file_service import TempFileService
 from src.interfaces.http.flask.presenters.graph_presenter import GraphPresenter
-from src.domain.models.value_objects import Granularity, DistanceThreshold, SequenceSeparation
+from src.domain.models.value_objects import Granularity, DistanceThreshold
 
 
 graphs_v2 = Blueprint("graphs_v2", __name__)
@@ -62,7 +62,6 @@ def configure_graphs_dependencies(
 def get_graph_v2(source: str, pid: int):
     try:
         # Params
-        long_threshold = int(request.args.get("long", 5))
         distance_threshold = float(request.args.get("threshold", 10.0))
         granularity = request.args.get("granularity", "CA")
         raw = request.args.get("raw", "0") == "1"
@@ -117,7 +116,6 @@ def get_graph_v2(source: str, pid: int):
             inp = BuildProteinGraphInput(
                 pdb_path=pdb_path,
                 granularity=Granularity.from_string(granularity),
-                long_threshold=SequenceSeparation(long_threshold),
                 distance_threshold=DistanceThreshold(distance_threshold),
             )
             uc = _build_graph_uc if _build_graph_uc is not None else BuildProteinGraph(_graph)

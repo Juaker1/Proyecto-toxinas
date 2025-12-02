@@ -1,0 +1,71 @@
+name: vmd
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  # Core scientific packages
+  - numpy=1.26.4
+  - pandas
+  - scipy
+  - matplotlib-base
+  - seaborn
+  - scikit-learn
+  # Molecular analysis
+  - biopython
+  - networkx
+  # Jupyter and visualization
+  - jupyterlab
+  - ipykernel
+  - plotly
+  - altair
+  # File formats
+  - openpyxl
+  - h5py
+  - netcdf4
+  # HTTP and web
+  - requests
+  - beautifulsoup4
+  # Development tools
+  - pytest
+  - pyyaml
+  - tqdm
+  - pip:
+      # MDAnalysis and related
+      - mdanalysis==2.7.0
+      - mda-xdrlib
+      # Molecular visualization
+      - py3dmol
+      - biopandas
+      - stmol
+      - streamlit
+      - streamlit-molstar
+      # Protein analysis
+      - bioservices
+      - graphein
+      - freesasa
+      - propka
+      - pdb2pqr
+      # Data science
+      - pandas
+      - plotly
+      - dash
+      - flask
+      - # Utilities
+      - python-dotenv
+      - loguru
+      - click
+      - colorlog
+      # Testing
+      - pytest
+      - deepdiff
+      # OpenAI
+      - openai
+      # Additional utilities
+      - requests-cache
+      - lxml
+      - jinja2
+      - pyarrow
+      - narwhals
+      - pydantic

@@ -32,7 +32,7 @@ def test_v2_graph_returns_expected_keys():
     from src.interfaces.http.flask.app import create_app_v2
     app = create_app_v2()
     with app.test_client() as c:
-        r = c.get('/v2/proteins/nav1_7/1/graph?long=5&threshold=10&granularity=CA')
+        r = c.get('/v2/proteins/nav1_7/1/graph?threshold=10&granularity=CA')
         assert r.status_code == 200
         payload = r.get_json()
         assert isinstance(payload, dict)

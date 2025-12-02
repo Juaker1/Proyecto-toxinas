@@ -216,11 +216,6 @@ def agrupar_por_segmentos_atomicos(G: Any, granularity: str = "atom") -> pd.Data
         else:
             distancia_promedio = 0.0
 
-        if vecinos_conexiones:
-            proporcion_largos = long_contacts / vecinos_conexiones
-        else:
-            proporcion_largos = 0.0
-
         # Normalize position to integer when possible for consistency
         pos_seq = residuo_info['residuo_numero']
         pos_int = _residue_seq_index(pos_seq)
@@ -255,7 +250,6 @@ def agrupar_por_segmentos_atomicos(G: Any, granularity: str = "atom") -> pd.Data
 
             # Métricas de contacto y vecindad
             'Distancia_Secuencial_Promedio': round(distancia_promedio, 6),
-            'Proporcion_Contactos_Largos': round(proporcion_largos, 6),
             'Residuos_Vecinos': ', '.join(vecinos_base) if vecinos_base else 'Ninguno',
             'Residuos_Vecinos_Detalle': ', '.join(vecinos_detalle) if vecinos_detalle else 'Ninguno',
         })

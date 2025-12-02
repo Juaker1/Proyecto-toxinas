@@ -8,7 +8,7 @@ from src.infrastructure.pdb.pdb_preprocessor_adapter import PDBPreprocessorAdapt
 from src.domain.services.segmentation_service import agrupar_por_segmentos_atomicos
 import pandas as pd
 import networkx as nx
-from src.domain.models.value_objects import Granularity, DistanceThreshold, SequenceSeparation
+from src.domain.models.value_objects import Granularity, DistanceThreshold
 
 
 @dataclass
@@ -16,7 +16,6 @@ class ExportFamilyInput:
     family_prefix: str
     export_type: str = 'residues'  # 'residues' | 'segments_atomicos'
     granularity: Union[str, Granularity] = 'CA'
-    long_threshold: Union[int, SequenceSeparation] = 5
     distance_threshold: Union[float, DistanceThreshold] = 10.0
 
 
@@ -34,7 +33,6 @@ class ExportFamilyReports:
         processed_count = 0
         from datetime import datetime
         gran = inp.granularity.value if isinstance(inp.granularity, Granularity) else inp.granularity
-        long_thr = int(inp.long_threshold.value) if isinstance(inp.long_threshold, SequenceSeparation) else int(inp.long_threshold)
         dist_thr = float(inp.distance_threshold.value) if isinstance(inp.distance_threshold, DistanceThreshold) else float(inp.distance_threshold)
 
         metadata = {
@@ -42,7 +40,6 @@ class ExportFamilyReports:
             'Tipo_Analisis': 'Segmentación Atómica' if inp.export_type == 'segments_atomicos' else 'Análisis por Residuos',
             'Numero_Toxinas_Procesadas': len(family_toxins),
             'Umbral_Distancia': dist_thr,
-            'Umbral_Interaccion_Larga': long_thr,
             'Granularidad': gran,
             'Fecha_Exportacion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
@@ -54,7 +51,7 @@ class ExportFamilyReports:
                 continue
             pdb_path = self.pdb.prepare_temp_pdb_from_any(pdb_data)
             try:
-                config = GraphAnalyzer.create_graph_config(gran, long_thr, dist_thr)
+                config = GraphAnalyzer.create_graph_config(gran, dist_thr)
                 G = GraphAnalyzer.construct_protein_graph(pdb_path, config)
                 if inp.export_type == 'segments_atomicos':
                     df_segmentos = agrupar_por_segmentos_atomicos(G, gran)

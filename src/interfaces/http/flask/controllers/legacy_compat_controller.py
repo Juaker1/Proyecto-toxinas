@@ -86,12 +86,12 @@ def legacy_get_graph(source: str, pid: int):
     # Redirect to the v2 graph endpoint with same query params, unless aliases are disabled
     if not current_app.config.get('LEGACY_ALIASES_ENABLED', True):
         return jsonify({"error": "Legacy aliases are disabled"}), 404
-    long_threshold = request.args.get("long", type=int)
+    # legacy long param is deprecated and ignored; only distance threshold is supported
+    request.args.get("long", type=int)
     threshold = request.args.get("threshold")
     granularity = request.args.get("granularity")
     q = []
-    if long_threshold is not None:
-        q.append(f"long={long_threshold}")
+    # Do not append 'long' parameter to the v2 endpoint, it is no longer supported
     if threshold is not None:
         q.append(f"threshold={threshold}")
     if granularity:

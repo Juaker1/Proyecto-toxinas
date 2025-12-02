@@ -5,6 +5,32 @@ El historial se organiza en "versiones" retrospectivas según hitos de desarroll
 
 ---
 
+## [2.10.0] – 2025-11-23
+
+### Added
+
+- **Popup de bienvenida**: Modal informativo que se muestra al cargar la página principal, advirtiendo sobre el uso recomendado en equipos de escritorio/notebook y explicando la funcionalidad de la plataforma para estudio de péptidos con visualizadores 3D.
+
+### Changed
+
+- **Vista dual mejorada**: Cambiado el layout de la vista dual en el visualizador de grid a flexbox para mejor responsividad y distribución equitativa del espacio entre paneles de estructura 3D y grafo molecular.
+- **Panel de información del grafo**: Ajustado el tamaño del panel informativo (280x80 píxeles) y removidos emojis para un aspecto más profesional y limpio en el renderizador de grafos.
+- **Posicionamiento de overlay**: Movido el overlay de información de leyenda dentro del contenedor py3Dmol para mejor organización del DOM y consistencia visual.
+- **Modal de configuraciones avanzadas**: Rediseñado el sistema de configuraciones avanzadas del grafo, cambiando de un accordion desplegable a un sistema de modales jerárquicos. El botón "Configuraciones avanzadas" ahora abre un modal hub con opciones para "Buscar residuo", "Segmentos conectados" y "Colores de aminoácidos". Cada opción abre un modal dedicado con controles específicos. Los modales se reubicaron fuera del contenedor del grafo para evitar restricciones de posicionamiento y se aplicó una paleta de colores más clara para mejorar la legibilidad del texto.
+- **Leyenda de colores en segmentos**: Agregada una sección de leyenda de colores dentro del modal "Segmentos conectados" que explica el significado de cada color utilizado en la visualización: verde para nodos del segmento buscado, azul cielo para enlaces conectados y gris azulado para nodos atenuados.
+gir 
+### Technical Details
+
+- Archivos modificados:
+  - `static/css/popup.css`: Nuevo archivo con estilos completos para el popup de bienvenida, incluyendo overlay, contenido, botones y transiciones.
+  - `static/css/viewer-page.css`: Cambios en `.dual-view-wrapper` para usar flexbox en lugar de grid, agregado `flex: 1` y `min-height: 1000px` a `.view-panel` para distribución equitativa.
+  - `static/js/molstar_graph_renderer.js`: Ajustes en dimensiones del panel de info y eliminación de emojis en el texto para apariencia más profesional.
+  - `static/js/popup.js`: Nuevo archivo con funcionalidad JavaScript para mostrar/ocultar popup, manejo de eventos de cierre y almacenamiento en sessionStorage.
+  - `templates/home.html`: Agregado popup overlay en el HTML, inclusión de `popup.css` y `popup.js` en el head y scripts.
+  - `templates/viewer.html`: Reubicado `.viewer-info-overlay` dentro de `#py3dmol-dipole-viewer` para mejor jerarquía DOM.
+
+---
+
 ## [2.9.0] – 2025-11-15
 
 ### Added
