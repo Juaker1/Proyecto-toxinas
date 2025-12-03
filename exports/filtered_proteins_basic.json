@@ -1,0 +1,266 @@
+[
+  {
+    "peptide_id": 17,
+    "accession": "D2Y1Y0",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 29,
+    "accession": "B3EWN2",
+    "sequence": "ACLGFGEKCNPSNDKCCKSSSLVCSQKHKWCKYGW",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 60,
+    "accession": "D2Y2D2",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 67,
+    "accession": "P0DP95",
+    "sequence": "GCKGFGKACKYGADECCKNLVCSKKHKWCKYTL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 82,
+    "accession": "D2Y1Z7",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 164,
+    "accession": "D2Y1Y9",
+    "sequence": "GCKGFSDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 172,
+    "accession": "P0DJA9",
+    "sequence": "DCLGFMRKCIPDNDKCCRPNLVCSRTHKWCKYVF",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 204,
+    "accession": "D2Y1Y1",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 249,
+    "accession": "D2Y1Y3",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 379,
+    "accession": "P84510",
+    "sequence": "DCLGFLWKCNPSNDKCCRPNLVCSRKDKWCKYQI",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 430,
+    "accession": "D2Y232",
+    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 442,
+    "accession": "P56676",
+    "sequence": "ACKGVFDACTPGKNECCPNRVCSDKHKWCKWKL",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 449,
+    "accession": "D2Y1Y2",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 459,
+    "accession": "D2Y2D3",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 476,
+    "accession": "A0A0J9X1W9",
+    "sequence": "ACLGFGKSCNPSNDQCCKSSSLACSTKHKWCKYEL",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 478,
+    "accession": "B3EWN3",
+    "sequence": "ACKGLFVTCTPGKDECCPNHVCSSKHKWCKYKI",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 574,
+    "accession": "D2Y2D7",
+    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 621,
+    "accession": "D2Y1X9",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 627,
+    "accession": "D2Y200",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVLL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 637,
+    "accession": "D2Y2I5",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYS",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 642,
+    "accession": "D2Y2I6",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVNL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 664,
+    "accession": "D2Y2D1",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 778,
+    "accession": "P60975",
+    "sequence": "ECLGFGKGCNPSNDQCCKSANLVCSRKHRWCKYEI",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 834,
+    "accession": "D2Y1Z8",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 881,
+    "accession": "D2Y235",
+    "sequence": "ECLGFGKGCNPSSDQCCKSSNLVCSRKHRWCKYEI",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 964,
+    "accession": "P0DQO3",
+    "sequence": "DDCLGMFSSCDPNNDKCCPNRKCSRKDQWCKYQLW",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1113,
+    "accession": "D2Y1Z4",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1114,
+    "accession": "D2Y2I3",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1167,
+    "accession": "D2Y233",
+    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1208,
+    "accession": "A0A1S4NYE8",
+    "sequence": "EDCLGWFSRCSPKNDKCCPNYKCSSKDLWCKYKIW",
+    "model_source": "PDB"
+  },
+  {
+    "peptide_id": 1248,
+    "accession": "D2Y1Z1",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSCKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1277,
+    "accession": "D2Y201",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSGKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1307,
+    "accession": "P0DP93",
+    "sequence": "DDCLGIFKSCNPDNDKCCESYKCSRRDKWCKYVL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 124,
+    "accession": "D2Y1Y8",
+    "sequence": "GCKGFGDSCTPGKNECCPNPACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 194,
+    "accession": "D2Y1Y6",
+    "sequence": "GCKGFDDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 367,
+    "accession": "D2Y202",
+    "sequence": "GCRGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 434,
+    "accession": "D2Y1Y7",
+    "sequence": "GCKGFGDSCTPGKNECCPDHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 614,
+    "accession": "D2Y1Y5",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 819,
+    "accession": "D2Y1Z3",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 865,
+    "accession": "D2Y1Z6",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 954,
+    "accession": "D2Y1Z0",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKAYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1045,
+    "accession": "D2Y1Z5",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1151,
+    "accession": "D2Y1Z9",
+    "sequence": "GCKGFGDSCAPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  },
+  {
+    "peptide_id": 1173,
+    "accession": "D2Y1Y4",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "model_source": "AlphaFoldDB"
+  }
+]

@@ -1,481 +1,481 @@
 REMARK original generated coordinate pdb file
-ATOM      1  N   GLY A   1     -17.873 -44.962  36.944  1.00  0.00      PROA N
-ATOM      2  HT1 GLY A   1     -18.282 -45.855  37.132  0.00  0.00      PROA  
-ATOM      3  HT2 GLY A   1     -18.048 -44.700  35.995  0.00  0.00      PROA  
-ATOM      4  HT3 GLY A   1     -18.254 -44.275  37.563  0.00  0.00      PROA  
-ATOM      5  CA  GLY A   1     -16.400 -45.047  37.161  1.00  0.00      PROA C
-ATOM      6  HA1 GLY A   1     -15.994 -45.762  36.459  0.00  0.00      PROA  
-ATOM      7  HA2 GLY A   1     -16.204 -45.332  38.184  1.00  0.00      PROA H
-ATOM      8  C   GLY A   1     -15.758 -43.685  36.876  1.00  0.00      PROA C
-ATOM      9  O   GLY A   1     -15.135 -43.488  35.849  1.00  0.00      PROA O
-ATOM     10  N   CYS A   2     -15.907 -42.746  37.779  1.00  0.00      PROA N
-ATOM     11  HN  CYS A   2     -16.407 -42.850  38.637  0.00  0.00      PROA  
-ATOM     12  CA  CYS A   2     -15.305 -41.393  37.564  1.00  0.00      PROA C
-ATOM     13  HA  CYS A   2     -14.527 -41.447  36.820  1.00  0.00      PROA H
-ATOM     14  CB  CYS A   2     -16.453 -40.515  37.047  1.00  0.00      PROA  
-ATOM     15  HB1 CYS A   2     -16.764 -40.870  36.166  0.00  0.00      PROA  
-ATOM     16  HB2 CYS A   2     -16.102 -39.502  36.932  1.00  0.00      PROA H
-ATOM     17  SG  CYS A   2     -17.840 -40.542  38.216  1.00  0.00      PROA  
-ATOM     18  C   CYS A   2     -14.739 -40.839  38.878  1.00  0.00      PROA C
-ATOM     19  O   CYS A   2     -15.012 -41.346  39.951  1.00  0.00      PROA O
-ATOM     20  N   LYS A  13     -13.943 -39.800  38.795  1.00  0.00      PROA N
-ATOM     21  HN  LYS A  13     -13.690 -39.351  37.940  0.00  0.00      PROA  
-ATOM     22  CA  LYS A  13     -13.342 -39.202  40.029  1.00  0.00      PROA C
-ATOM     23  HA  LYS A  13     -13.166 -39.964  40.769  1.00  0.00      PROA H
-ATOM     24  CB  LYS A  13     -12.011 -38.606  39.568  1.00  0.00      PROA C
-ATOM     25  HB1 LYS A  13     -11.662 -37.989  40.273  0.00  0.00      PROA  
-ATOM     26  HB2 LYS A  13     -12.162 -38.057  38.648  1.00  0.00      PROA H
-ATOM     27  CG  LYS A  13     -10.999 -39.730  39.330  1.00  0.00      PROA C
-ATOM     28  HG1 LYS A  13     -11.482 -40.553  39.032  0.00  0.00      PROA  
-ATOM     29  HG2 LYS A  13     -10.467 -39.936  40.247  1.00  0.00      PROA H
-ATOM     30  CD  LYS A  13     -10.002 -39.305  38.246  1.00  0.00      PROA C
-ATOM     31  HD1 LYS A  13      -9.077 -39.309  38.626  0.00  0.00      PROA  
-ATOM     32  HD2 LYS A  13     -10.248 -38.310  37.901  1.00  0.00      PROA H
-ATOM     33  CE  LYS A  13     -10.073 -40.285  37.069  1.00  0.00      PROA C
-ATOM     34  HE1 LYS A  13     -10.070 -39.812  36.188  0.00  0.00      PROA  
-ATOM     35  HE2 LYS A  13     -10.987 -40.863  37.117  1.00  0.00      PROA H
-ATOM     36  NZ  LYS A  13      -8.886 -41.176  37.226  1.00  0.00      PROA N
-ATOM     37  HZ1 LYS A  13      -8.907 -41.621  38.166  1.00  0.00      PROA H
-ATOM     38  HZ2 LYS A  13      -8.016 -40.615  37.128  1.00  0.00      PROA H
-ATOM     39  HZ3 LYS A  13      -8.909 -41.913  36.492  1.00  0.00      PROA H
-ATOM     40  C   LYS A  13     -14.258 -38.108  40.594  1.00  0.00      PROA C
-ATOM     41  O   LYS A  13     -14.944 -37.423  39.862  1.00  0.00      PROA O
-ATOM     42  N   GLY A  24     -14.274 -37.945  41.895  1.00  0.00      PROA N
-ATOM     43  HN  GLY A  24     -13.724 -38.484  42.532  0.00  0.00      PROA  
-ATOM     44  CA  GLY A  24     -15.150 -36.904  42.517  1.00  0.00      PROA C
-ATOM     45  HA1 GLY A  24     -15.221 -37.112  43.576  0.00  0.00      PROA  
-ATOM     46  HA2 GLY A  24     -16.119 -36.918  42.038  1.00  0.00      PROA H
-ATOM     47  C   GLY A  24     -14.519 -35.519  42.347  1.00  0.00      PROA C
-ATOM     48  O   GLY A  24     -14.598 -34.917  41.292  1.00  0.00      PROA O
-ATOM     49  N   PHE A  28     -13.898 -35.007  43.383  1.00  0.00      PROA N
-ATOM     50  HN  PHE A  28     -13.802 -35.450  44.273  0.00  0.00      PROA  
-ATOM     51  CA  PHE A  28     -13.261 -33.657  43.291  1.00  0.00      PROA C
-ATOM     52  HA  PHE A  28     -13.219 -33.329  42.265  1.00  0.00      PROA H
-ATOM     53  CB  PHE A  28     -14.178 -32.730  44.098  1.00  0.00      PROA C
-ATOM     54  HB1 PHE A  28     -14.190 -33.021  45.055  0.00  0.00      PROA  
-ATOM     55  HB2 PHE A  28     -15.179 -32.776  43.695  1.00  0.00      PROA H
-ATOM     56  CG  PHE A  28     -13.662 -31.311  44.010  1.00  0.00      PROA C
-ATOM     57  CD1 PHE A  28     -14.021 -30.499  42.927  1.00  0.00      PROA C
-ATOM     58  HD1 PHE A  28     -14.670 -30.884  42.157  1.00  0.00      PROA H
-ATOM     59  CE1 PHE A  28     -13.540 -29.187  42.845  1.00  0.00      PROA C
-ATOM     60  HE1 PHE A  28     -13.818 -28.562  42.010  1.00  0.00      PROA H
-ATOM     61  CZ  PHE A  28     -12.699 -28.687  43.844  1.00  0.00      PROA C
-ATOM     62  HZ  PHE A  28     -12.325 -27.674  43.781  1.00  0.00      PROA H
-ATOM     63  CD2 PHE A  28     -12.820 -30.808  45.012  1.00  0.00      PROA C
-ATOM     64  HD2 PHE A  28     -12.542 -31.433  45.847  1.00  0.00      PROA H
-ATOM     65  CE2 PHE A  28     -12.338 -29.497  44.928  1.00  0.00      PROA C
-ATOM     66  HE2 PHE A  28     -11.689 -29.110  45.698  1.00  0.00      PROA H
-ATOM     67  C   PHE A  28     -11.855 -33.689  43.905  1.00  0.00      PROA C
-ATOM     68  O   PHE A  28     -11.633 -34.283  44.943  1.00  0.00      PROA O
-ATOM     69  N   GLY A  29     -10.905 -33.049  43.266  1.00  0.00      PROA N
-ATOM     70  HN  GLY A  29     -11.046 -32.550  42.412  0.00  0.00      PROA  
-ATOM     71  CA  GLY A  29      -9.510 -33.032  43.801  1.00  0.00      PROA C
-ATOM     72  HA1 GLY A  29      -9.568 -32.996  44.880  0.00  0.00      PROA  
-ATOM     73  HA2 GLY A  29      -8.983 -32.179  43.399  1.00  0.00      PROA H
-ATOM     74  C   GLY A  29      -8.765 -34.318  43.408  1.00  0.00      PROA C
-ATOM     75  O   GLY A  29      -7.666 -34.563  43.869  1.00  0.00      PROA O
-ATOM     76  N   ASP A  30      -9.343 -35.140  42.561  1.00  0.00      PROA N
-ATOM     77  HN  ASP A  30     -10.235 -35.026  42.132  0.00  0.00      PROA  
-ATOM     78  CA  ASP A  30      -8.655 -36.401  42.148  1.00  0.00      PROA C
-ATOM     79  HA  ASP A  30      -8.049 -36.778  42.956  1.00  0.00      PROA H
-ATOM     80  CB  ASP A  30      -9.780 -37.390  41.833  1.00  0.00      PROA C
-ATOM     81  HB1 ASP A  30      -9.967 -37.379  40.851  0.00  0.00      PROA  
-ATOM     82  HB2 ASP A  30     -10.673 -37.105  42.373  1.00  0.00      PROA H
-ATOM     83  CG  ASP A  30      -9.356 -38.798  42.255  1.00  0.00      PROA C
-ATOM     84  OD1 ASP A  30      -8.535 -39.381  41.564  1.00  0.00      PROA O
-ATOM     85  OD2 ASP A  30      -9.859 -39.271  43.261  1.00  0.00      PROA O
-ATOM     86  C   ASP A  30      -7.793 -36.147  40.906  1.00  0.00      PROA C
-ATOM     87  O   ASP A  30      -8.190 -35.433  40.004  1.00  0.00      PROA O
-ATOM     88  N   SER A  31      -6.617 -36.724  40.857  1.00  0.00      PROA N
-ATOM     89  HN  SER A  31      -6.236 -37.322  41.562  0.00  0.00      PROA  
-ATOM     90  CA  SER A  31      -5.718 -36.515  39.678  1.00  0.00      PROA C
-ATOM     91  HA  SER A  31      -5.434 -35.478  39.605  1.00  0.00      PROA H
-ATOM     92  CB  SER A  31      -4.481 -37.371  39.958  1.00  0.00      PROA C
-ATOM     93  HB1 SER A  31      -4.725 -38.339  39.893  0.00  0.00      PROA  
-ATOM     94  HB2 SER A  31      -4.111 -37.159  40.947  1.00  0.00      PROA H
-ATOM     95  OG  SER A  31      -3.470 -37.063  39.005  1.00  0.00      PROA O
-ATOM     96  HG1 SER A  31      -2.645 -37.441  39.335  0.00  0.00      PROA  
-ATOM     97  C   SER A  31      -6.403 -36.972  38.382  1.00  0.00      PROA C
-ATOM     98  O   SER A  31      -6.806 -38.112  38.252  1.00  0.00      PROA O
-ATOM     99  N   CYS A  32      -6.528 -36.083  37.427  1.00  0.00      PROA N
-ATOM    100  HN  CYS A  32      -6.216 -35.137  37.486  0.00  0.00      PROA  
-ATOM    101  CA  CYS A  32      -7.176 -36.450  36.129  1.00  0.00      PROA C
-ATOM    102  HA  CYS A  32      -7.176 -37.521  36.000  1.00  0.00      PROA H
-ATOM    103  CB  CYS A  32      -8.618 -35.938  36.232  1.00  0.00      PROA  
-ATOM    104  HB1 CYS A  32      -9.079 -36.407  36.986  0.00  0.00      PROA  
-ATOM    105  HB2 CYS A  32      -9.135 -36.137  35.306  1.00  0.00      PROA H
-ATOM    106  SG  CYS A  32      -8.623 -34.154  36.551  1.00  0.00      PROA  
-ATOM    107  C   CYS A  32      -6.445 -35.774  34.962  1.00  0.00      PROA C
-ATOM    108  O   CYS A  32      -5.548 -34.975  35.160  1.00  0.00      PROA O
-ATOM    109  N   THR A  33      -6.825 -36.087  33.747  1.00  0.00      PROA N
-ATOM    110  HN  THR A  33      -7.553 -36.732  33.515  0.00  0.00      PROA  
-ATOM    111  CA  THR A  33      -6.156 -35.464  32.564  1.00  0.00      PROA C
-ATOM    112  HA  THR A  33      -5.175 -35.104  32.832  1.00  0.00      PROA H
-ATOM    113  CB  THR A  33      -6.033 -36.589  31.525  1.00  0.00      PROA C
-ATOM    114  HB  THR A  33      -7.018 -36.852  31.166  1.00  0.00      PROA H
-ATOM    115  OG1 THR A  33      -5.428 -37.729  32.127  1.00  0.00      PROA O
-ATOM    116  HG1 THR A  33      -4.566 -37.470  32.461  1.00  0.00      PROA H
-ATOM    117  CG2 THR A  33      -5.177 -36.117  30.348  1.00  0.00      PROA C
-ATOM    118 HG21 THR A  33      -5.798 -36.014  29.471  1.00  0.00      PROA H
-ATOM    119 HG22 THR A  33      -4.400 -36.841  30.156  1.00  0.00      PROA H
-ATOM    120 HG23 THR A  33      -4.730 -35.163  30.586  1.00  0.00      PROA H
-ATOM    121  C   THR A  33      -7.017 -34.319  32.010  1.00  0.00      PROA C
-ATOM    122  O   THR A  33      -8.179 -34.517  31.708  1.00  0.00      PROA O
-ATOM    123  N   PRO A   3      -6.416 -33.155  31.888  1.00  0.00      PROA N
-ATOM    124  CD  PRO A   3      -5.023 -32.827  32.224  1.00  0.00      PROA C
-ATOM    125  HD1 PRO A   3      -4.842 -32.880  33.206  0.00  0.00      PROA  
-ATOM    126  HD2 PRO A   3      -4.340 -33.521  31.751  1.00  0.00      PROA H
-ATOM    127  CA  PRO A   3      -7.147 -31.978  31.353  1.00  0.00      PROA C
-ATOM    128  HA  PRO A   3      -8.067 -31.824  31.895  1.00  0.00      PROA H
-ATOM    129  CB  PRO A   3      -6.190 -30.815  31.595  1.00  0.00      PROA C
-ATOM    130  HB1 PRO A   3      -6.402 -30.297  32.557  0.00  0.00      PROA  
-ATOM    131  HB2 PRO A   3      -6.244 -30.110  30.776  1.00  0.00      PROA H
-ATOM    132  CG  PRO A   3      -4.834 -31.440  31.666  1.00  0.00      PROA C
-ATOM    133  HG1 PRO A   3      -4.175 -30.808  32.293  0.00  0.00      PROA  
-ATOM    134  HG2 PRO A   3      -4.400 -31.492  30.676  1.00  0.00      PROA H
-ATOM    135  C   PRO A   3      -7.430 -32.173  29.862  1.00  0.00      PROA C
-ATOM    136  O   PRO A   3      -6.546 -32.490  29.087  1.00  0.00      PROA O
-ATOM    137  N   GLY A   4      -8.666 -32.015  29.466  1.00  0.00      PROA N
-ATOM    138  HN  GLY A   4      -9.418 -31.758  30.071  0.00  0.00      PROA  
-ATOM    139  CA  GLY A   4      -9.031 -32.218  28.035  1.00  0.00      PROA C
-ATOM    140  HA1 GLY A   4      -8.124 -32.265  27.447  0.00  0.00      PROA  
-ATOM    141  HA2 GLY A   4      -9.682 -31.420  27.711  1.00  0.00      PROA H
-ATOM    142  C   GLY A   4      -9.754 -33.564  27.900  1.00  0.00      PROA C
-ATOM    143  O   GLY A   4     -10.574 -33.750  27.021  1.00  0.00      PROA O
-ATOM    144  N   LYS A   5      -9.460 -34.500  28.776  1.00  0.00      PROA N
-ATOM    145  HN  LYS A   5      -8.795 -34.395  29.514  0.00  0.00      PROA  
-ATOM    146  CA  LYS A   5     -10.134 -35.833  28.714  1.00  0.00      PROA C
-ATOM    147  HA  LYS A   5     -10.354 -36.093  27.693  1.00  0.00      PROA H
-ATOM    148  CB  LYS A   5      -9.122 -36.822  29.302  1.00  0.00      PROA C
-ATOM    149  HB1 LYS A   5      -9.236 -36.862  30.295  0.00  0.00      PROA  
-ATOM    150  HB2 LYS A   5      -8.120 -36.494  29.068  1.00  0.00      PROA H
-ATOM    151  CG  LYS A   5      -9.358 -38.215  28.709  1.00  0.00      PROA C
-ATOM    152  HG1 LYS A   5     -10.155 -38.192  28.105  0.00  0.00      PROA  
-ATOM    153  HG2 LYS A   5      -9.533 -38.920  29.508  1.00  0.00      PROA H
-ATOM    154  CD  LYS A   5      -8.126 -38.643  27.909  1.00  0.00      PROA C
-ATOM    155  HD1 LYS A   5      -7.338 -38.708  28.521  0.00  0.00      PROA  
-ATOM    156  HD2 LYS A   5      -7.925 -37.912  27.139  1.00  0.00      PROA H
-ATOM    157  CE  LYS A   5      -8.383 -40.009  27.263  1.00  0.00      PROA C
-ATOM    158  HE1 LYS A   5      -9.333 -40.113  26.970  0.00  0.00      PROA  
-ATOM    159  HE2 LYS A   5      -8.181 -40.802  27.971  1.00  0.00      PROA H
-ATOM    160  NZ  LYS A   5      -7.436 -40.083  26.114  1.00  0.00      PROA N
-ATOM    161  HZ1 LYS A   5      -6.463 -39.954  26.455  1.00  0.00      PROA H
-ATOM    162  HZ2 LYS A   5      -7.663 -39.338  25.426  1.00  0.00      PROA H
-ATOM    163  HZ3 LYS A   5      -7.521 -41.015  25.655  1.00  0.00      PROA H
-ATOM    164  C   LYS A   5     -11.419 -35.814  29.551  1.00  0.00      PROA C
-ATOM    165  O   LYS A   5     -12.386 -36.477  29.227  1.00  0.00      PROA O
-ATOM    166  N   ASN A   6     -11.429 -35.053  30.626  1.00  0.00      PROA N
-ATOM    167  HN  ASN A   6     -10.658 -34.493  30.928  0.00  0.00      PROA  
-ATOM    168  CA  ASN A   6     -12.639 -34.969  31.505  1.00  0.00      PROA C
-ATOM    169  HA  ASN A   6     -12.443 -34.312  32.338  1.00  0.00      PROA H
-ATOM    170  CB  ASN A   6     -13.743 -34.369  30.621  1.00  0.00      PROA C
-ATOM    171  HB1 ASN A   6     -14.167 -35.096  30.081  0.00  0.00      PROA  
-ATOM    172  HB2 ASN A   6     -13.312 -33.631  29.960  1.00  0.00      PROA H
-ATOM    173  CG  ASN A   6     -14.807 -33.705  31.502  1.00  0.00      PROA C
-ATOM    174  OD1 ASN A   6     -14.488 -32.947  32.396  1.00  0.00      PROA O
-ATOM    175  ND2 ASN A   6     -16.070 -33.958  31.284  1.00  0.00      PROA N
-ATOM    176 HD21 ASN A   6     -16.332 -34.569  30.562  1.00  0.00      PROA H
-ATOM    177 HD22 ASN A   6     -16.757 -33.537  31.841  1.00  0.00      PROA H
-ATOM    178  C   ASN A   6     -13.031 -36.361  32.017  1.00  0.00      PROA C
-ATOM    179  O   ASN A   6     -14.119 -36.848  31.764  1.00  0.00      PROA O
-ATOM    180  N   GLU A   7     -12.150 -37.003  32.746  1.00  0.00      PROA N
-ATOM    181  HN  GLU A   7     -11.245 -36.668  32.993  0.00  0.00      PROA  
-ATOM    182  CA  GLU A   7     -12.465 -38.362  33.287  1.00  0.00      PROA C
-ATOM    183  HA  GLU A   7     -13.102 -38.898  32.601  1.00  0.00      PROA H
-ATOM    184  CB  GLU A   7     -11.112 -39.073  33.400  1.00  0.00      PROA C
-ATOM    185  HB1 GLU A   7     -10.864 -39.163  34.364  0.00  0.00      PROA  
-ATOM    186  HB2 GLU A   7     -10.358 -38.494  32.884  1.00  0.00      PROA H
-ATOM    187  CG  GLU A   7     -11.207 -40.466  32.769  1.00  0.00      PROA C
-ATOM    188  HG1 GLU A   7     -10.287 -40.843  32.659  0.00  0.00      PROA  
-ATOM    189  HG2 GLU A   7     -11.686 -40.391  31.804  1.00  0.00      PROA H
-ATOM    190  CD  GLU A   7     -12.027 -41.390  33.676  1.00  0.00      PROA C
-ATOM    191  OE1 GLU A   7     -11.478 -41.869  34.653  1.00  0.00      PROA O
-ATOM    192  OE2 GLU A   7     -13.191 -41.601  33.375  1.00  0.00      PROA O
-ATOM    193  C   GLU A   7     -13.139 -38.259  34.667  1.00  0.00      PROA C
-ATOM    194  O   GLU A   7     -13.461 -39.260  35.280  1.00  0.00      PROA O
-ATOM    195  N   CYS A   8     -13.357 -37.061  35.160  1.00  0.00      PROA N
-ATOM    196  HN  CYS A   8     -13.115 -36.204  34.708  0.00  0.00      PROA  
-ATOM    197  CA  CYS A   8     -14.014 -36.902  36.495  1.00  0.00      PROA C
-ATOM    198  HA  CYS A   8     -13.573 -37.576  37.211  1.00  0.00      PROA H
-ATOM    199  CB  CYS A   8     -13.744 -35.451  36.908  1.00  0.00      PROA  
-ATOM    200  HB1 CYS A   8     -14.192 -35.266  37.783  0.00  0.00      PROA  
-ATOM    201  HB2 CYS A   8     -14.134 -34.785  36.153  1.00  0.00      PROA H
-ATOM    202  SG  CYS A   8     -11.962 -35.188  37.081  1.00  0.00      PROA  
-ATOM    203  C   CYS A   8     -15.523 -37.152  36.382  1.00  0.00      PROA C
-ATOM    204  O   CYS A   8     -16.058 -37.312  35.300  1.00  0.00      PROA O
-ATOM    205  N   CYS A   9     -16.209 -37.185  37.497  1.00  0.00      PROA N
-ATOM    206  HN  CYS A   9     -15.817 -37.061  38.407  0.00  0.00      PROA  
-ATOM    207  CA  CYS A   9     -17.687 -37.420  37.478  1.00  0.00      PROA C
-ATOM    208  HA  CYS A   9     -17.920 -38.315  36.923  1.00  0.00      PROA H
-ATOM    209  CB  CYS A   9     -18.072 -37.599  38.953  1.00  0.00      PROA  
-ATOM    210  HB1 CYS A   9     -19.068 -37.636  39.030  0.00  0.00      PROA  
-ATOM    211  HB2 CYS A   9     -17.692 -36.768  39.526  1.00  0.00      PROA H
-ATOM    212  SG  CYS A   9     -17.362 -39.140  39.592  1.00  0.00      PROA  
-ATOM    213  C   CYS A   9     -18.407 -36.204  36.868  1.00  0.00      PROA C
-ATOM    214  O   CYS A   9     -17.782 -35.195  36.589  1.00  0.00      PROA O
-ATOM    215  N   PRO A  10     -19.704 -36.330  36.683  1.00  0.00      PROA N
-ATOM    216  CD  PRO A  10     -20.550 -37.492  36.993  1.00  0.00      PROA C
-ATOM    217  HD1 PRO A  10     -20.409 -38.254  36.361  0.00  0.00      PROA  
-ATOM    218  HD2 PRO A  10     -20.333 -37.879  37.978  1.00  0.00      PROA H
-ATOM    219  CA  PRO A  10     -20.502 -35.213  36.103  1.00  0.00      PROA C
-ATOM    220  HA  PRO A  10     -20.115 -34.937  35.135  1.00  0.00      PROA H
-ATOM    221  CB  PRO A  10     -21.901 -35.814  35.953  1.00  0.00      PROA C
-ATOM    222  HB1 PRO A  10     -22.069 -36.231  34.935  0.00  0.00      PROA  
-ATOM    223  HB2 PRO A  10     -22.654 -35.071  36.182  1.00  0.00      PROA H
-ATOM    224  CG  PRO A  10     -21.943 -36.926  36.946  1.00  0.00      PROA C
-ATOM    225  HG1 PRO A  10     -22.702 -37.671  36.637  0.00  0.00      PROA  
-ATOM    226  HG2 PRO A  10     -22.226 -36.545  37.919  1.00  0.00      PROA H
-ATOM    227  C   PRO A  10     -20.503 -34.006  37.049  1.00  0.00      PROA C
-ATOM    228  O   PRO A  10     -20.359 -34.154  38.247  1.00  0.00      PROA O
-ATOM    229  N   ASN A  11     -20.631 -32.816  36.499  1.00  0.00      PROA N
-ATOM    230  HN  ASN A  11     -20.746 -32.670  35.517  0.00  0.00      PROA  
-ATOM    231  CA  ASN A  11     -20.615 -31.557  37.318  1.00  0.00      PROA C
-ATOM    232  HA  ASN A  11     -21.056 -30.750  36.753  1.00  0.00      PROA H
-ATOM    233  CB  ASN A  11     -21.464 -31.832  38.571  1.00  0.00      PROA C
-ATOM    234  HB1 ASN A  11     -20.890 -32.250  39.275  0.00  0.00      PROA  
-ATOM    235  HB2 ASN A  11     -22.272 -32.502  38.317  1.00  0.00      PROA H
-ATOM    236  CG  ASN A  11     -22.041 -30.516  39.102  1.00  0.00      PROA C
-ATOM    237  OD1 ASN A  11     -21.538 -29.967  40.062  1.00  0.00      PROA O
-ATOM    238  ND2 ASN A  11     -23.082 -29.985  38.520  1.00  0.00      PROA N
-ATOM    239 HD21 ASN A  11     -23.491 -30.426  37.746  1.00  0.00      PROA H
-ATOM    240 HD22 ASN A  11     -23.455 -29.143  38.856  1.00  0.00      PROA H
-ATOM    241  C   ASN A  11     -19.172 -31.193  37.698  1.00  0.00      PROA C
-ATOM    242  O   ASN A  11     -18.942 -30.310  38.504  1.00  0.00      PROA O
-ATOM    243  N   TYR A  12     -18.195 -31.855  37.109  1.00  0.00      PROA N
-ATOM    244  HN  TYR A  12     -18.316 -32.587  36.441  0.00  0.00      PROA  
-ATOM    245  CA  TYR A  12     -16.775 -31.532  37.423  1.00  0.00      PROA C
-ATOM    246  HA  TYR A  12     -16.712 -30.562  37.882  1.00  0.00      PROA H
-ATOM    247  CB  TYR A  12     -16.303 -32.610  38.404  1.00  0.00      PROA C
-ATOM    248  HB1 TYR A  12     -15.317 -32.515  38.540  0.00  0.00      PROA  
-ATOM    249  HB2 TYR A  12     -16.525 -33.584  37.999  1.00  0.00      PROA H
-ATOM    250  CG  TYR A  12     -16.998 -32.449  39.736  1.00  0.00      PROA C
-ATOM    251  CD1 TYR A  12     -16.665 -31.381  40.579  1.00  0.00      PROA C
-ATOM    252  HD1 TYR A  12     -15.915 -30.666  40.275  1.00  0.00      PROA H
-ATOM    253  CE1 TYR A  12     -17.308 -31.238  41.813  1.00  0.00      PROA C
-ATOM    254  HE1 TYR A  12     -17.051 -30.416  42.463  1.00  0.00      PROA H
-ATOM    255  CZ  TYR A  12     -18.281 -32.164  42.205  1.00  0.00      PROA C
-ATOM    256  OH  TYR A  12     -18.914 -32.025  43.424  1.00  0.00      PROA O
-ATOM    257  HH  TYR A  12     -19.656 -31.427  43.307  1.00  0.00      PROA H
-ATOM    258  CD2 TYR A  12     -17.971 -33.374  40.129  1.00  0.00      PROA C
-ATOM    259  HD2 TYR A  12     -18.228 -34.197  39.479  1.00  0.00      PROA H
-ATOM    260  CE2 TYR A  12     -18.614 -33.232  41.364  1.00  0.00      PROA C
-ATOM    261  HE2 TYR A  12     -19.364 -33.947  41.667  1.00  0.00      PROA H
-ATOM    262  C   TYR A  12     -15.922 -31.579  36.150  1.00  0.00      PROA C
-ATOM    263  O   TYR A  12     -15.996 -32.517  35.377  1.00  0.00      PROA O
-ATOM    264  N   ALA A  14     -15.102 -30.581  35.936  1.00  0.00      PROA N
-ATOM    265  HN  ALA A  14     -15.009 -29.794  36.545  0.00  0.00      PROA  
-ATOM    266  CA  ALA A  14     -14.228 -30.562  34.727  1.00  0.00      PROA C
-ATOM    267  HA  ALA A  14     -14.475 -31.378  34.068  1.00  0.00      PROA H
-ATOM    268  CB  ALA A  14     -14.523 -29.226  34.039  1.00  0.00      PROA C
-ATOM    269  HB1 ALA A  14     -15.592 -29.094  33.957  1.00  0.00      PROA H
-ATOM    270  HB2 ALA A  14     -14.083 -29.225  33.054  1.00  0.00      PROA H
-ATOM    271  HB3 ALA A  14     -14.104 -28.420  34.623  1.00  0.00      PROA H
-ATOM    272  C   ALA A  14     -12.755 -30.639  35.147  1.00  0.00      PROA C
-ATOM    273  O   ALA A  14     -12.304 -29.883  35.989  1.00  0.00      PROA O
-ATOM    274  N   CYS A  15     -12.005 -31.548  34.571  1.00  0.00      PROA N
-ATOM    275  HN  CYS A  15     -12.319 -32.193  33.877  0.00  0.00      PROA  
-ATOM    276  CA  CYS A  15     -10.559 -31.678  34.940  1.00  0.00      PROA C
-ATOM    277  HA  CYS A  15     -10.456 -31.828  36.003  1.00  0.00      PROA H
-ATOM    278  CB  CYS A  15     -10.060 -32.916  34.188  1.00  0.00      PROA  
-ATOM    279  HB1 CYS A  15     -10.058 -32.731  33.205  0.00  0.00      PROA  
-ATOM    280  HB2 CYS A  15     -10.713 -33.751  34.397  1.00  0.00      PROA H
-ATOM    281  SG  CYS A  15      -8.380 -33.314  34.730  1.00  0.00      PROA  
-ATOM    282  C   CYS A  15      -9.785 -30.429  34.498  1.00  0.00      PROA C
-ATOM    283  O   CYS A  15      -9.761 -30.081  33.332  1.00  0.00      PROA O
-ATOM    284  N   SER A  16      -9.158 -29.750  35.429  1.00  0.00      PROA N
-ATOM    285  HN  SER A  16      -9.140 -29.982  36.401  0.00  0.00      PROA  
-ATOM    286  CA  SER A  16      -8.387 -28.517  35.079  1.00  0.00      PROA C
-ATOM    287  HA  SER A  16      -8.837 -28.020  34.233  1.00  0.00      PROA H
-ATOM    288  CB  SER A  16      -8.485 -27.625  36.317  1.00  0.00      PROA C
-ATOM    289  HB1 SER A  16      -7.866 -27.969  37.023  0.00  0.00      PROA  
-ATOM    290  HB2 SER A  16      -9.496 -27.633  36.689  1.00  0.00      PROA H
-ATOM    291  OG  SER A  16      -8.125 -26.294  35.971  1.00  0.00      PROA O
-ATOM    292  HG1 SER A  16      -8.408 -25.726  36.698  0.00  0.00      PROA  
-ATOM    293  C   SER A  16      -6.922 -28.861  34.781  1.00  0.00      PROA C
-ATOM    294  O   SER A  16      -6.432 -29.911  35.156  1.00  0.00      PROA O
-ATOM    295  N   SER A  17      -6.222 -27.979  34.109  1.00  0.00      PROA N
-ATOM    296  HN  SER A  17      -6.566 -27.103  33.771  0.00  0.00      PROA  
-ATOM    297  CA  SER A  17      -4.785 -28.238  33.786  1.00  0.00      PROA C
-ATOM    298  HA  SER A  17      -4.603 -29.297  33.713  1.00  0.00      PROA H
-ATOM    299  CB  SER A  17      -4.552 -27.575  32.427  1.00  0.00      PROA C
-ATOM    300  HB1 SER A  17      -4.349 -26.605  32.562  0.00  0.00      PROA  
-ATOM    301  HB2 SER A  17      -5.434 -27.674  31.819  1.00  0.00      PROA H
-ATOM    302  OG  SER A  17      -3.459 -28.210  31.775  1.00  0.00      PROA O
-ATOM    303  HG1 SER A  17      -3.479 -27.931  30.851  0.00  0.00      PROA  
-ATOM    304  C   SER A  17      -3.878 -27.618  34.855  1.00  0.00      PROA C
-ATOM    305  O   SER A  17      -2.900 -28.211  35.269  1.00  0.00      PROA O
-ATOM    306  N   LYS A  18      -4.206 -26.431  35.311  1.00  0.00      PROA N
-ATOM    307  HN  LYS A  18      -4.999 -25.909  35.002  0.00  0.00      PROA  
-ATOM    308  CA  LYS A  18      -3.376 -25.763  36.365  1.00  0.00      PROA C
-ATOM    309  HA  LYS A  18      -2.365 -25.637  36.021  1.00  0.00      PROA H
-ATOM    310  CB  LYS A  18      -4.033 -24.395  36.587  1.00  0.00      PROA C
-ATOM    311  HB1 LYS A  18      -4.976 -24.528  36.893  0.00  0.00      PROA  
-ATOM    312  HB2 LYS A  18      -4.025 -23.839  35.660  1.00  0.00      PROA H
-ATOM    313  CG  LYS A  18      -3.261 -23.613  37.657  1.00  0.00      PROA C
-ATOM    314  HG1 LYS A  18      -2.469 -24.147  37.952  0.00  0.00      PROA  
-ATOM    315  HG2 LYS A  18      -3.908 -23.428  38.501  1.00  0.00      PROA H
-ATOM    316  CD  LYS A  18      -2.783 -22.278  37.077  1.00  0.00      PROA C
-ATOM    317  HD1 LYS A  18      -2.482 -22.416  36.133  0.00  0.00      PROA  
-ATOM    318  HD2 LYS A  18      -1.961 -21.903  37.668  1.00  0.00      PROA H
-ATOM    319  CE  LYS A  18      -3.933 -21.262  37.100  1.00  0.00      PROA C
-ATOM    320  HE1 LYS A  18      -3.770 -20.524  37.755  0.00  0.00      PROA  
-ATOM    321  HE2 LYS A  18      -4.855 -21.747  37.392  1.00  0.00      PROA H
-ATOM    322  NZ  LYS A  18      -4.033 -20.752  35.703  1.00  0.00      PROA N
-ATOM    323  HZ1 LYS A  18      -3.136 -20.300  35.431  1.00  0.00      PROA H
-ATOM    324  HZ2 LYS A  18      -4.801 -20.053  35.643  1.00  0.00      PROA H
-ATOM    325  HZ3 LYS A  18      -4.235 -21.543  35.057  1.00  0.00      PROA H
-ATOM    326  C   LYS A  18      -3.403 -26.593  37.653  1.00  0.00      PROA C
-ATOM    327  O   LYS A  18      -2.386 -26.817  38.281  1.00  0.00      PROA O
-ATOM    328  N   HSE A  19      -4.563 -27.057  38.035  1.00  0.00      PROA N
-ATOM    329  HN  HSE A  19      -5.428 -26.906  37.559  0.00  0.00      PROA  
-ATOM    330  CA  HSE A  19      -4.678 -27.888  39.275  1.00  0.00      PROA C
-ATOM    331  HA  HSE A  19      -3.956 -27.568  40.010  1.00  0.00      PROA H
-ATOM    332  CB  HSE A  19      -6.096 -27.635  39.788  1.00  0.00      PROA C
-ATOM    333  HB1 HSE A  19      -6.294 -28.258  40.544  0.00  0.00      PROA  
-ATOM    334  HB2 HSE A  19      -6.805 -27.804  38.991  1.00  0.00      PROA H
-ATOM    335  ND1 HSE A  19      -5.456 -25.725  41.325  1.00  0.00      PROA N
-ATOM    336  CG  HSE A  19      -6.205 -26.210  40.264  1.00  0.00      PROA C
-ATOM    337  CE1 HSE A  19      -5.778 -24.428  41.491  1.00  0.00      PROA C
-ATOM    338  HE1 HSE A  19      -5.348 -23.790  42.248  1.00  0.00      PROA H
-ATOM    339  NE2 HSE A  19      -6.694 -24.030  40.605  1.00  0.00      PROA N
-ATOM    340  HE2 HSE A  19      -7.126 -23.134  40.510  0.00  0.00      PROA  
-ATOM    341  CD2 HSE A  19      -6.965 -25.152  39.829  1.00  0.00      PROA C
-ATOM    342  HD2 HSE A  19      -7.663 -25.187  39.006  1.00  0.00      PROA H
-ATOM    343  C   HSE A  19      -4.469 -29.373  38.933  1.00  0.00      PROA C
-ATOM    344  O   HSE A  19      -4.053 -30.153  39.769  1.00  0.00      PROA O
-ATOM    345  N   LYS A  20      -4.746 -29.756  37.705  1.00  0.00      PROA N
-ATOM    346  HN  LYS A  20      -5.091 -29.137  37.001  0.00  0.00      PROA  
-ATOM    347  CA  LYS A  20      -4.559 -31.180  37.265  1.00  0.00      PROA C
-ATOM    348  HA  LYS A  20      -4.764 -31.263  36.211  1.00  0.00      PROA H
-ATOM    349  CB  LYS A  20      -3.077 -31.493  37.517  1.00  0.00      PROA C
-ATOM    350  HB1 LYS A  20      -3.005 -32.246  38.171  0.00  0.00      PROA  
-ATOM    351  HB2 LYS A  20      -2.586 -30.617  37.917  1.00  0.00      PROA H
-ATOM    352  CG  LYS A  20      -2.405 -31.893  36.200  1.00  0.00      PROA C
-ATOM    353  HG1 LYS A  20      -1.424 -31.706  36.259  0.00  0.00      PROA  
-ATOM    354  HG2 LYS A  20      -2.834 -31.322  35.389  1.00  0.00      PROA H
-ATOM    355  CD  LYS A  20      -2.621 -33.388  35.942  1.00  0.00      PROA C
-ATOM    356  HD1 LYS A  20      -3.506 -33.666  36.315  0.00  0.00      PROA  
-ATOM    357  HD2 LYS A  20      -1.835 -33.953  36.423  1.00  0.00      PROA H
-ATOM    358  CE  LYS A  20      -2.602 -33.659  34.433  1.00  0.00      PROA C
-ATOM    359  HE1 LYS A  20      -2.659 -32.815  33.900  0.00  0.00      PROA  
-ATOM    360  HE2 LYS A  20      -3.448 -34.269  34.152  1.00  0.00      PROA H
-ATOM    361  NZ  LYS A  20      -1.327 -34.390  34.180  1.00  0.00      PROA N
-ATOM    362  HZ1 LYS A  20      -1.327 -35.284  34.712  1.00  0.00      PROA H
-ATOM    363  HZ2 LYS A  20      -0.523 -33.808  34.487  1.00  0.00      PROA H
-ATOM    364  HZ3 LYS A  20      -1.241 -34.592  33.163  1.00  0.00      PROA H
-ATOM    365  C   LYS A  20      -5.464 -32.150  38.046  1.00  0.00      PROA C
-ATOM    366  O   LYS A  20      -5.203 -33.339  38.091  1.00  0.00      PROA O
-ATOM    367  N   TRP A  21      -6.536 -31.671  38.640  1.00  0.00      PROA N
-ATOM    368  HN  TRP A  21      -6.814 -30.713  38.647  0.00  0.00      PROA  
-ATOM    369  CA  TRP A  21      -7.446 -32.599  39.380  1.00  0.00      PROA C
-ATOM    370  HA  TRP A  21      -7.229 -33.617  39.091  1.00  0.00      PROA H
-ATOM    371  CB  TRP A  21      -7.127 -32.420  40.879  1.00  0.00      PROA C
-ATOM    372  HB1 TRP A  21      -6.135 -32.487  40.985  0.00  0.00      PROA  
-ATOM    373  HB2 TRP A  21      -7.634 -33.187  41.440  1.00  0.00      PROA H
-ATOM    374  CG  TRP A  21      -7.556 -31.076  41.402  1.00  0.00      PROA C
-ATOM    375  CD1 TRP A  21      -8.795 -30.538  41.286  1.00  0.00      PROA C
-ATOM    376  HD1 TRP A  21      -9.632 -30.995  40.784  1.00  0.00      PROA H
-ATOM    377  NE1 TRP A  21      -8.809 -29.304  41.909  1.00  0.00      PROA N
-ATOM    378  HE1 TRP A  21      -9.584 -28.708  41.962  1.00  0.00      PROA H
-ATOM    379  CE2 TRP A  21      -7.585 -28.996  42.461  1.00  0.00      PROA C
-ATOM    380  CD2 TRP A  21      -6.767 -30.111  42.158  1.00  0.00      PROA C
-ATOM    381  CE3 TRP A  21      -5.433 -30.094  42.600  1.00  0.00      PROA C
-ATOM    382  HE3 TRP A  21      -4.785 -30.929  42.384  1.00  0.00      PROA H
-ATOM    383  CZ3 TRP A  21      -4.938 -28.996  43.324  1.00  0.00      PROA C
-ATOM    384  HZ3 TRP A  21      -3.912 -28.992  43.659  1.00  0.00      PROA H
-ATOM    385  CZ2 TRP A  21      -7.096 -27.905  43.179  1.00  0.00      PROA C
-ATOM    386  HZ2 TRP A  21      -7.740 -27.066  43.398  1.00  0.00      PROA H
-ATOM    387  CH2 TRP A  21      -5.768 -27.904  43.612  1.00  0.00      PROA C
-ATOM    388  HH2 TRP A  21      -5.381 -27.063  44.168  1.00  0.00      PROA H
-ATOM    389  C   TRP A  21      -8.915 -32.288  39.055  1.00  0.00      PROA C
-ATOM    390  O   TRP A  21      -9.218 -31.326  38.373  1.00  0.00      PROA O
-ATOM    391  N   CYS A  22      -9.824 -33.108  39.526  1.00  0.00      PROA N
-ATOM    392  HN  CYS A  22      -9.631 -33.911  40.087  0.00  0.00      PROA  
-ATOM    393  CA  CYS A  22     -11.277 -32.879  39.237  1.00  0.00      PROA C
-ATOM    394  HA  CYS A  22     -11.450 -32.888  38.171  1.00  0.00      PROA H
-ATOM    395  CB  CYS A  22     -12.009 -34.052  39.889  1.00  0.00      PROA  
-ATOM    396  HB1 CYS A  22     -12.996 -33.900  39.833  0.00  0.00      PROA  
-ATOM    397  HB2 CYS A  22     -11.715 -34.130  40.926  1.00  0.00      PROA H
-ATOM    398  SG  CYS A  22     -11.585 -35.585  39.026  1.00  0.00      PROA  
-ATOM    399  C   CYS A  22     -11.745 -31.549  39.836  1.00  0.00      PROA C
-ATOM    400  O   CYS A  22     -11.826 -31.392  41.040  1.00  0.00      PROA O
-ATOM    401  N   LYS A  23     -12.056 -30.597  38.996  1.00  0.00      PROA N
-ATOM    402  HN  LYS A  23     -12.006 -30.685  38.002  0.00  0.00      PROA  
-ATOM    403  CA  LYS A  23     -12.524 -29.268  39.492  1.00  0.00      PROA C
-ATOM    404  HA  LYS A  23     -12.359 -29.180  40.554  1.00  0.00      PROA H
-ATOM    405  CB  LYS A  23     -11.670 -28.245  38.740  1.00  0.00      PROA C
-ATOM    406  HB1 LYS A  23     -12.222 -27.434  38.544  0.00  0.00      PROA  
-ATOM    407  HB2 LYS A  23     -11.321 -28.677  37.814  1.00  0.00      PROA H
-ATOM    408  CG  LYS A  23     -10.469 -27.848  39.599  1.00  0.00      PROA C
-ATOM    409  HG1 LYS A  23      -9.732 -28.512  39.471  0.00  0.00      PROA  
-ATOM    410  HG2 LYS A  23     -10.763 -27.831  40.640  1.00  0.00      PROA H
-ATOM    411  CD  LYS A  23      -9.978 -26.459  39.182  1.00  0.00      PROA C
-ATOM    412  HD1 LYS A  23     -10.434 -26.184  38.336  0.00  0.00      PROA  
-ATOM    413  HD2 LYS A  23      -8.910 -26.490  39.024  1.00  0.00      PROA H
-ATOM    414  CE  LYS A  23     -10.304 -25.445  40.284  1.00  0.00      PROA C
-ATOM    415  HE1 LYS A  23      -9.721 -24.634  40.232  0.00  0.00      PROA  
-ATOM    416  HE2 LYS A  23     -10.146 -25.887  41.257  1.00  0.00      PROA H
-ATOM    417  NZ  LYS A  23     -11.745 -25.105  40.093  1.00  0.00      PROA N
-ATOM    418  HZ1 LYS A  23     -12.334 -25.900  40.410  1.00  0.00      PROA H
-ATOM    419  HZ2 LYS A  23     -11.931 -24.917  39.087  1.00  0.00      PROA H
-ATOM    420  HZ3 LYS A  23     -11.977 -24.258  40.653  1.00  0.00      PROA H
-ATOM    421  C   LYS A  23     -14.005 -29.075  39.158  1.00  0.00      PROA C
-ATOM    422  O   LYS A  23     -14.606 -29.892  38.490  1.00  0.00      PROA O
-ATOM    423  N   VAL A  25     -14.596 -27.999  39.609  1.00  0.00      PROA N
-ATOM    424  HN  VAL A  25     -14.164 -27.290  40.160  0.00  0.00      PROA  
-ATOM    425  CA  VAL A  25     -16.038 -27.753  39.308  1.00  0.00      PROA C
-ATOM    426  HA  VAL A  25     -16.570 -28.690  39.240  1.00  0.00      PROA H
-ATOM    427  CB  VAL A  25     -16.578 -26.929  40.488  1.00  0.00      PROA C
-ATOM    428  HB  VAL A  25     -17.618 -26.713  40.317  1.00  0.00      PROA H
-ATOM    429  CG1 VAL A  25     -16.442 -27.733  41.785  1.00  0.00      PROA C
-ATOM    430 HG11 VAL A  25     -17.383 -27.724  42.313  1.00  0.00      PROA H
-ATOM    431 HG12 VAL A  25     -15.676 -27.290  42.405  1.00  0.00      PROA H
-ATOM    432 HG13 VAL A  25     -16.170 -28.752  41.552  1.00  0.00      PROA H
-ATOM    433  CG2 VAL A  25     -15.800 -25.611  40.619  1.00  0.00      PROA C
-ATOM    434 HG21 VAL A  25     -15.665 -25.173  39.640  1.00  0.00      PROA H
-ATOM    435 HG22 VAL A  25     -14.835 -25.803  41.063  1.00  0.00      PROA H
-ATOM    436 HG23 VAL A  25     -16.355 -24.928  41.244  1.00  0.00      PROA H
-ATOM    437  C   VAL A  25     -16.172 -26.971  37.994  1.00  0.00      PROA C
-ATOM    438  O   VAL A  25     -15.264 -26.271  37.583  1.00  0.00      PROA O
-ATOM    439  N   TYR A  26     -17.298 -27.084  37.333  1.00  0.00      PROA N
-ATOM    440  HN  TYR A  26     -18.079 -27.641  37.612  0.00  0.00      PROA  
-ATOM    441  CA  TYR A  26     -17.491 -26.341  36.045  1.00  0.00      PROA C
-ATOM    442  HA  TYR A  26     -16.669 -26.535  35.377  1.00  0.00      PROA H
-ATOM    443  CB  TYR A  26     -18.791 -26.891  35.448  1.00  0.00      PROA C
-ATOM    444  HB1 TYR A  26     -19.244 -26.173  34.920  0.00  0.00      PROA  
-ATOM    445  HB2 TYR A  26     -19.445 -27.217  36.243  1.00  0.00      PROA H
-ATOM    446  CG  TYR A  26     -18.476 -28.059  34.541  1.00  0.00      PROA C
-ATOM    447  CD1 TYR A  26     -17.984 -27.833  33.249  1.00  0.00      PROA C
-ATOM    448  HD1 TYR A  26     -17.831 -26.823  32.899  1.00  0.00      PROA H
-ATOM    449  CE1 TYR A  26     -17.691 -28.915  32.413  1.00  0.00      PROA C
-ATOM    450  HE1 TYR A  26     -17.311 -28.741  31.417  1.00  0.00      PROA H
-ATOM    451  CZ  TYR A  26     -17.889 -30.225  32.866  1.00  0.00      PROA C
-ATOM    452  OH  TYR A  26     -17.600 -31.293  32.041  1.00  0.00      PROA O
-ATOM    453  HH  TYR A  26     -18.391 -31.506  31.542  1.00  0.00      PROA H
-ATOM    454  CD2 TYR A  26     -18.674 -29.368  34.993  1.00  0.00      PROA C
-ATOM    455  HD2 TYR A  26     -19.054 -29.541  35.989  1.00  0.00      PROA H
-ATOM    456  CE2 TYR A  26     -18.382 -30.450  34.157  1.00  0.00      PROA C
-ATOM    457  HE2 TYR A  26     -18.535 -31.460  34.507  1.00  0.00      PROA H
-ATOM    458  C   TYR A  26     -17.611 -24.836  36.312  1.00  0.00      PROA C
-ATOM    459  O   TYR A  26     -17.158 -24.022  35.529  1.00  0.00      PROA O
-ATOM    460  N   LEU A  27     -18.212 -24.462  37.415  1.00  0.00      PROA N
-ATOM    461  HN  LEU A  27     -18.603 -25.079  38.095  0.00  0.00      PROA  
-ATOM    462  CA  LEU A  27     -18.360 -23.011  37.746  1.00  0.00      PROA C
-ATOM    463  HA  LEU A  27     -17.677 -22.419  37.156  1.00  0.00      PROA H
-ATOM    464  CB  LEU A  27     -19.805 -22.665  37.376  1.00  0.00      PROA C
-ATOM    465  HB1 LEU A  27     -20.248 -22.215  38.151  0.00  0.00      PROA  
-ATOM    466  HB2 LEU A  27     -20.341 -23.570  37.131  1.00  0.00      PROA H
-ATOM    467  CG  LEU A  27     -19.812 -21.723  36.167  1.00  0.00      PROA C
-ATOM    468  HG  LEU A  27     -18.826 -21.697  35.726  1.00  0.00      PROA H
-ATOM    469  CD1 LEU A  27     -20.817 -22.229  35.130  1.00  0.00      PROA C
-ATOM    470 HD11 LEU A  27     -20.547 -23.229  34.825  1.00  0.00      PROA H
-ATOM    471 HD12 LEU A  27     -20.807 -21.575  34.270  1.00  0.00      PROA H
-ATOM    472 HD13 LEU A  27     -21.807 -22.239  35.562  1.00  0.00      PROA H
-ATOM    473  CD2 LEU A  27     -20.209 -20.315  36.619  1.00  0.00      PROA C
-ATOM    474 HD21 LEU A  27     -21.239 -20.317  36.943  1.00  0.00      PROA H
-ATOM    475 HD22 LEU A  27     -20.090 -19.625  35.796  1.00  0.00      PROA H
-ATOM    476 HD23 LEU A  27     -19.575 -20.008  37.439  1.00  0.00      PROA H
-ATOM    477  C   LEU A  27     -18.112 -22.777  39.243  1.00  0.00      PROA C
-ATOM    478  OT1 LEU A  27     -17.903 -23.652  39.679  0.00  0.00      PROA  
-ATOM    479  OT2 LEU A  27     -18.216 -21.802  39.442  0.00  0.00      PROA  
+ATOM      1  N   GLY A   1       8.568  10.987   2.333  1.00  0.00      PROA N
+ATOM      2  HT1 GLY A   1       9.212  11.677   2.665  0.00  0.00      PROA  
+ATOM      3  HT2 GLY A   1       8.292  11.201   1.396  0.00  0.00      PROA  
+ATOM      4  HT3 GLY A   1       8.991  10.082   2.366  0.00  0.00      PROA  
+ATOM      5  CA  GLY A   1       7.360  10.990   3.208  1.00  0.00      PROA C
+ATOM      6  HA1 GLY A   1       6.888  11.960   3.133  0.00  0.00      PROA  
+ATOM      7  HA2 GLY A   1       7.652  10.764   4.223  1.00  0.00      PROA H
+ATOM      8  C   GLY A   1       6.363   9.938   2.713  1.00  0.00      PROA C
+ATOM      9  O   GLY A   1       5.360  10.261   2.103  1.00  0.00      PROA O
+ATOM     10  N   CYS A   2       6.632   8.681   2.973  1.00  0.00      PROA N
+ATOM     11  HN  CYS A   2       7.437   8.358   3.468  0.00  0.00      PROA  
+ATOM     12  CA  CYS A   2       5.700   7.602   2.520  1.00  0.00      PROA C
+ATOM     13  HA  CYS A   2       4.728   8.016   2.307  1.00  0.00      PROA H
+ATOM     14  CB  CYS A   2       6.318   7.047   1.229  1.00  0.00      PROA  
+ATOM     15  HB1 CYS A   2       6.332   7.769   0.538  0.00  0.00      PROA  
+ATOM     16  HB2 CYS A   2       5.727   6.215   0.880  1.00  0.00      PROA H
+ATOM     17  SG  CYS A   2       8.017   6.490   1.535  1.00  0.00      PROA  
+ATOM     18  C   CYS A   2       5.582   6.506   3.587  1.00  0.00      PROA C
+ATOM     19  O   CYS A   2       6.362   6.442   4.520  1.00  0.00      PROA O
+ATOM     20  N   LYS A  13       4.601   5.646   3.455  1.00  0.00      PROA N
+ATOM     21  HN  LYS A  13       3.938   5.658   2.709  0.00  0.00      PROA  
+ATOM     22  CA  LYS A  13       4.410   4.550   4.457  1.00  0.00      PROA C
+ATOM     23  HA  LYS A  13       4.719   4.877   5.436  1.00  0.00      PROA H
+ATOM     24  CB  LYS A  13       2.907   4.270   4.451  1.00  0.00      PROA C
+ATOM     25  HB1 LYS A  13       2.730   3.401   4.913  0.00  0.00      PROA  
+ATOM     26  HB2 LYS A  13       2.555   4.216   3.430  1.00  0.00      PROA H
+ATOM     27  CG  LYS A  13       2.171   5.395   5.185  1.00  0.00      PROA C
+ATOM     28  HG1 LYS A  13       2.674   6.251   5.068  0.00  0.00      PROA  
+ATOM     29  HG2 LYS A  13       2.104   5.156   6.236  1.00  0.00      PROA H
+ATOM     30  CD  LYS A  13       0.761   5.552   4.606  1.00  0.00      PROA C
+ATOM     31  HD1 LYS A  13       0.086   5.396   5.327  0.00  0.00      PROA  
+ATOM     32  HD2 LYS A  13       0.616   4.832   3.812  1.00  0.00      PROA H
+ATOM     33  CE  LYS A  13       0.590   6.969   4.046  1.00  0.00      PROA C
+ATOM     34  HE1 LYS A  13       0.134   6.967   3.156  0.00  0.00      PROA  
+ATOM     35  HE2 LYS A  13       1.556   7.437   3.907  1.00  0.00      PROA H
+ATOM     36  NZ  LYS A  13      -0.201   7.706   5.075  1.00  0.00      PROA N
+ATOM     37  HZ1 LYS A  13       0.288   7.655   5.992  1.00  0.00      PROA H
+ATOM     38  HZ2 LYS A  13      -1.144   7.276   5.162  1.00  0.00      PROA H
+ATOM     39  HZ3 LYS A  13      -0.298   8.701   4.788  1.00  0.00      PROA H
+ATOM     40  C   LYS A  13       5.195   3.300   4.038  1.00  0.00      PROA C
+ATOM     41  O   LYS A  13       5.362   3.026   2.866  1.00  0.00      PROA O
+ATOM     42  N   GLY A  24       5.681   2.543   4.992  1.00  0.00      PROA N
+ATOM     43  HN  GLY A  24       5.565   2.730   5.967  0.00  0.00      PROA  
+ATOM     44  CA  GLY A  24       6.465   1.313   4.658  1.00  0.00      PROA C
+ATOM     45  HA1 GLY A  24       6.990   0.996   5.548  0.00  0.00      PROA  
+ATOM     46  HA2 GLY A  24       7.144   1.531   3.846  1.00  0.00      PROA H
+ATOM     47  C   GLY A  24       5.517   0.185   4.240  1.00  0.00      PROA C
+ATOM     48  O   GLY A  24       5.036   0.150   3.123  1.00  0.00      PROA O
+ATOM     49  N   PHE A  28       5.251  -0.741   5.130  1.00  0.00      PROA N
+ATOM     50  HN  PHE A  28       5.616  -0.767   6.059  0.00  0.00      PROA  
+ATOM     51  CA  PHE A  28       4.337  -1.875   4.791  1.00  0.00      PROA C
+ATOM     52  HA  PHE A  28       3.822  -1.680   3.864  1.00  0.00      PROA H
+ATOM     53  CB  PHE A  28       5.255  -3.092   4.631  1.00  0.00      PROA C
+ATOM     54  HB1 PHE A  28       5.707  -3.287   5.501  0.00  0.00      PROA  
+ATOM     55  HB2 PHE A  28       6.000  -2.883   3.878  1.00  0.00      PROA H
+ATOM     56  CG  PHE A  28       4.434  -4.291   4.212  1.00  0.00      PROA C
+ATOM     57  CD1 PHE A  28       4.143  -4.504   2.859  1.00  0.00      PROA C
+ATOM     58  HD1 PHE A  28       4.509  -3.815   2.114  1.00  0.00      PROA H
+ATOM     59  CE1 PHE A  28       3.380  -5.612   2.473  1.00  0.00      PROA C
+ATOM     60  HE1 PHE A  28       3.157  -5.776   1.429  1.00  0.00      PROA H
+ATOM     61  CZ  PHE A  28       2.906  -6.506   3.438  1.00  0.00      PROA C
+ATOM     62  HZ  PHE A  28       2.315  -7.361   3.141  1.00  0.00      PROA H
+ATOM     63  CD2 PHE A  28       3.960  -5.188   5.179  1.00  0.00      PROA C
+ATOM     64  HD2 PHE A  28       4.183  -5.025   6.222  1.00  0.00      PROA H
+ATOM     65  CE2 PHE A  28       3.196  -6.295   4.792  1.00  0.00      PROA C
+ATOM     66  HE2 PHE A  28       2.830  -6.985   5.536  1.00  0.00      PROA H
+ATOM     67  C   PHE A  28       3.331  -2.106   5.927  1.00  0.00      PROA C
+ATOM     68  O   PHE A  28       3.677  -2.067   7.093  1.00  0.00      PROA O
+ATOM     69  N   GLY A  29       2.088  -2.349   5.590  1.00  0.00      PROA N
+ATOM     70  HN  GLY A  29       1.765  -2.390   4.645  0.00  0.00      PROA  
+ATOM     71  CA  GLY A  29       1.050  -2.586   6.639  1.00  0.00      PROA C
+ATOM     72  HA1 GLY A  29       1.516  -3.128   7.451  0.00  0.00      PROA  
+ATOM     73  HA2 GLY A  29       0.227  -3.138   6.209  1.00  0.00      PROA H
+ATOM     74  C   GLY A  29       0.529  -1.251   7.195  1.00  0.00      PROA C
+ATOM     75  O   GLY A  29      -0.213  -1.229   8.159  1.00  0.00      PROA O
+ATOM     76  N   ASP A  30       0.902  -0.140   6.601  1.00  0.00      PROA N
+ATOM     77  HN  ASP A  30       1.502  -0.057   5.810  0.00  0.00      PROA  
+ATOM     78  CA  ASP A  30       0.418   1.181   7.106  1.00  0.00      PROA C
+ATOM     79  HA  ASP A  30       0.281   1.146   8.175  1.00  0.00      PROA H
+ATOM     80  CB  ASP A  30       1.525   2.178   6.754  1.00  0.00      PROA C
+ATOM     81  HB1 ASP A  30       1.305   2.628   5.889  0.00  0.00      PROA  
+ATOM     82  HB2 ASP A  30       2.466   1.653   6.658  1.00  0.00      PROA H
+ATOM     83  CG  ASP A  30       1.637   3.230   7.859  1.00  0.00      PROA C
+ATOM     84  OD1 ASP A  30       0.770   4.087   7.925  1.00  0.00      PROA O
+ATOM     85  OD2 ASP A  30       2.588   3.162   8.620  1.00  0.00      PROA O
+ATOM     86  C   ASP A  30      -0.894   1.561   6.411  1.00  0.00      PROA C
+ATOM     87  O   ASP A  30      -1.058   1.348   5.224  1.00  0.00      PROA O
+ATOM     88  N   SER A  31      -1.828   2.118   7.143  1.00  0.00      PROA N
+ATOM     89  HN  SER A  31      -1.754   2.321   8.119  0.00  0.00      PROA  
+ATOM     90  CA  SER A  31      -3.138   2.508   6.533  1.00  0.00      PROA C
+ATOM     91  HA  SER A  31      -3.660   1.634   6.177  1.00  0.00      PROA H
+ATOM     92  CB  SER A  31      -3.934   3.157   7.668  1.00  0.00      PROA C
+ATOM     93  HB1 SER A  31      -3.520   4.036   7.904  0.00  0.00      PROA  
+ATOM     94  HB2 SER A  31      -3.925   2.512   8.530  1.00  0.00      PROA H
+ATOM     95  OG  SER A  31      -5.278   3.356   7.246  1.00  0.00      PROA O
+ATOM     96  HG1 SER A  31      -5.797   3.551   8.036  0.00  0.00      PROA  
+ATOM     97  C   SER A  31      -2.930   3.507   5.386  1.00  0.00      PROA C
+ATOM     98  O   SER A  31      -2.359   4.565   5.569  1.00  0.00      PROA O
+ATOM     99  N   CYS A  32      -3.397   3.171   4.208  1.00  0.00      PROA N
+ATOM    100  HN  CYS A  32      -3.870   2.315   4.007  0.00  0.00      PROA  
+ATOM    101  CA  CYS A  32      -3.243   4.092   3.039  1.00  0.00      PROA C
+ATOM    102  HA  CYS A  32      -3.047   5.097   3.378  1.00  0.00      PROA H
+ATOM    103  CB  CYS A  32      -2.036   3.561   2.256  1.00  0.00      PROA  
+ATOM    104  HB1 CYS A  32      -1.222   3.609   2.835  0.00  0.00      PROA  
+ATOM    105  HB2 CYS A  32      -1.892   4.162   1.371  1.00  0.00      PROA H
+ATOM    106  SG  CYS A  32      -2.318   1.838   1.772  1.00  0.00      PROA  
+ATOM    107  C   CYS A  32      -4.507   4.061   2.170  1.00  0.00      PROA C
+ATOM    108  O   CYS A  32      -5.413   3.283   2.405  1.00  0.00      PROA O
+ATOM    109  N   THR A  33      -4.572   4.902   1.166  1.00  0.00      PROA N
+ATOM    110  HN  THR A  33      -3.866   5.565   0.918  0.00  0.00      PROA  
+ATOM    111  CA  THR A  33      -5.775   4.924   0.278  1.00  0.00      PROA C
+ATOM    112  HA  THR A  33      -6.627   4.501   0.787  1.00  0.00      PROA H
+ATOM    113  CB  THR A  33      -6.031   6.408  -0.024  1.00  0.00      PROA C
+ATOM    114  HB  THR A  33      -5.234   6.788  -0.647  1.00  0.00      PROA H
+ATOM    115  OG1 THR A  33      -6.072   7.143   1.195  1.00  0.00      PROA O
+ATOM    116  HG1 THR A  33      -6.769   6.775   1.743  1.00  0.00      PROA H
+ATOM    117  CG2 THR A  33      -7.363   6.565  -0.761  1.00  0.00      PROA C
+ATOM    118 HG21 THR A  33      -7.177   6.874  -1.778  1.00  0.00      PROA H
+ATOM    119 HG22 THR A  33      -7.964   7.310  -0.262  1.00  0.00      PROA H
+ATOM    120 HG23 THR A  33      -7.888   5.621  -0.762  1.00  0.00      PROA H
+ATOM    121  C   THR A  33      -5.488   4.157  -1.021  1.00  0.00      PROA C
+ATOM    122  O   THR A  33      -4.525   4.449  -1.706  1.00  0.00      PROA O
+ATOM    123  N   PRO A   3      -6.339   3.201  -1.324  1.00  0.00      PROA N
+ATOM    124  CD  PRO A   3      -7.525   2.783  -0.562  1.00  0.00      PROA C
+ATOM    125  HD1 PRO A   3      -7.291   2.371   0.318  0.00  0.00      PROA  
+ATOM    126  HD2 PRO A   3      -8.158   3.632  -0.340  1.00  0.00      PROA H
+ATOM    127  CA  PRO A   3      -6.169   2.400  -2.563  1.00  0.00      PROA C
+ATOM    128  HA  PRO A   3      -5.173   1.989  -2.615  1.00  0.00      PROA H
+ATOM    129  CB  PRO A   3      -7.195   1.280  -2.416  1.00  0.00      PROA C
+ATOM    130  HB1 PRO A   3      -6.749   0.366  -1.964  0.00  0.00      PROA  
+ATOM    131  HB2 PRO A   3      -7.630   1.044  -3.378  1.00  0.00      PROA H
+ATOM    132  CG  PRO A   3      -8.231   1.827  -1.488  1.00  0.00      PROA C
+ATOM    133  HG1 PRO A   3      -8.719   0.989  -0.953  0.00  0.00      PROA  
+ATOM    134  HG2 PRO A   3      -8.993   2.348  -2.052  1.00  0.00      PROA H
+ATOM    135  C   PRO A   3      -6.455   3.268  -3.790  1.00  0.00      PROA C
+ATOM    136  O   PRO A   3      -7.473   3.931  -3.871  1.00  0.00      PROA O
+ATOM    137  N   GLY A   4      -5.546   3.289  -4.729  1.00  0.00      PROA N
+ATOM    138  HN  GLY A   4      -4.699   2.760  -4.697  0.00  0.00      PROA  
+ATOM    139  CA  GLY A   4      -5.733   4.135  -5.942  1.00  0.00      PROA C
+ATOM    140  HA1 GLY A   4      -6.760   4.472  -5.976  0.00  0.00      PROA  
+ATOM    141  HA2 GLY A   4      -5.464   3.570  -6.822  1.00  0.00      PROA H
+ATOM    142  C   GLY A   4      -4.832   5.370  -5.823  1.00  0.00      PROA C
+ATOM    143  O   GLY A   4      -4.402   5.930  -6.813  1.00  0.00      PROA O
+ATOM    144  N   LYS A   5      -4.535   5.789  -4.612  1.00  0.00      PROA N
+ATOM    145  HN  LYS A   5      -4.863   5.363  -3.770  0.00  0.00      PROA  
+ATOM    146  CA  LYS A   5      -3.652   6.979  -4.418  1.00  0.00      PROA C
+ATOM    147  HA  LYS A   5      -3.795   7.684  -5.218  1.00  0.00      PROA H
+ATOM    148  CB  LYS A   5      -4.095   7.595  -3.087  1.00  0.00      PROA C
+ATOM    149  HB1 LYS A   5      -3.596   7.160  -2.338  0.00  0.00      PROA  
+ATOM    150  HB2 LYS A   5      -5.155   7.438  -2.953  1.00  0.00      PROA H
+ATOM    151  CG  LYS A   5      -3.796   9.098  -3.090  1.00  0.00      PROA C
+ATOM    152  HG1 LYS A   5      -3.328   9.344  -3.939  0.00  0.00      PROA  
+ATOM    153  HG2 LYS A   5      -3.165   9.340  -2.247  1.00  0.00      PROA H
+ATOM    154  CD  LYS A   5      -5.108   9.879  -2.987  1.00  0.00      PROA C
+ATOM    155  HD1 LYS A   5      -5.556   9.665  -2.119  0.00  0.00      PROA  
+ATOM    156  HD2 LYS A   5      -5.757   9.601  -3.806  1.00  0.00      PROA H
+ATOM    157  CE  LYS A   5      -4.817  11.382  -3.052  1.00  0.00      PROA C
+ATOM    158  HE1 LYS A   5      -4.061  11.592  -3.672  0.00  0.00      PROA  
+ATOM    159  HE2 LYS A   5      -4.537  11.752  -2.075  1.00  0.00      PROA H
+ATOM    160  NZ  LYS A   5      -6.093  12.009  -3.501  1.00  0.00      PROA N
+ATOM    161  HZ1 LYS A   5      -6.856  11.755  -2.843  1.00  0.00      PROA H
+ATOM    162  HZ2 LYS A   5      -6.332  11.671  -4.454  1.00  0.00      PROA H
+ATOM    163  HZ3 LYS A   5      -5.982  13.045  -3.518  1.00  0.00      PROA H
+ATOM    164  C   LYS A   5      -2.184   6.540  -4.347  1.00  0.00      PROA C
+ATOM    165  O   LYS A   5      -1.296   7.257  -4.769  1.00  0.00      PROA O
+ATOM    166  N   ASN A   6      -1.930   5.363  -3.815  1.00  0.00      PROA N
+ATOM    167  HN  ASN A   6      -2.628   4.744  -3.457  0.00  0.00      PROA  
+ATOM    168  CA  ASN A   6      -0.527   4.849  -3.704  1.00  0.00      PROA C
+ATOM    169  HA  ASN A   6      -0.527   3.881  -3.227  1.00  0.00      PROA H
+ATOM    170  CB  ASN A   6      -0.028   4.713  -5.150  1.00  0.00      PROA C
+ATOM    171  HB1 ASN A   6       0.306   5.600  -5.469  0.00  0.00      PROA  
+ATOM    172  HB2 ASN A   6      -0.841   4.383  -5.781  1.00  0.00      PROA H
+ATOM    173  CG  ASN A   6       1.112   3.690  -5.210  1.00  0.00      PROA C
+ATOM    174  OD1 ASN A   6       1.003   2.607  -4.670  1.00  0.00      PROA O
+ATOM    175  ND2 ASN A   6       2.210   3.989  -5.851  1.00  0.00      PROA N
+ATOM    176 HD21 ASN A   6       2.302   4.862  -6.289  1.00  0.00      PROA H
+ATOM    177 HD22 ASN A   6       2.943   3.340  -5.896  1.00  0.00      PROA H
+ATOM    178  C   ASN A   6       0.343   5.827  -2.904  1.00  0.00      PROA C
+ATOM    179  O   ASN A   6       1.326   6.352  -3.398  1.00  0.00      PROA O
+ATOM    180  N   GLU A   7      -0.008   6.068  -1.664  1.00  0.00      PROA N
+ATOM    181  HN  GLU A   7      -0.794   5.675  -1.195  0.00  0.00      PROA  
+ATOM    182  CA  GLU A   7       0.798   7.005  -0.820  1.00  0.00      PROA C
+ATOM    183  HA  GLU A   7       1.220   7.787  -1.431  1.00  0.00      PROA H
+ATOM    184  CB  GLU A   7      -0.200   7.607   0.176  1.00  0.00      PROA C
+ATOM    185  HB1 GLU A   7      -0.023   7.237   1.088  0.00  0.00      PROA  
+ATOM    186  HB2 GLU A   7      -1.207   7.356  -0.128  1.00  0.00      PROA H
+ATOM    187  CG  GLU A   7      -0.041   9.131   0.207  1.00  0.00      PROA C
+ATOM    188  HG1 GLU A   7      -0.817   9.535   0.692  0.00  0.00      PROA  
+ATOM    189  HG2 GLU A   7      -0.009   9.509  -0.804  1.00  0.00      PROA H
+ATOM    190  CD  GLU A   7       1.257   9.501   0.932  1.00  0.00      PROA C
+ATOM    191  OE1 GLU A   7       1.261   9.474   2.151  1.00  0.00      PROA O
+ATOM    192  OE2 GLU A   7       2.225   9.804   0.253  1.00  0.00      PROA O
+ATOM    193  C   GLU A   7       1.914   6.249  -0.077  1.00  0.00      PROA C
+ATOM    194  O   GLU A   7       2.672   6.836   0.673  1.00  0.00      PROA O
+ATOM    195  N   CYS A   8       2.025   4.956  -0.280  1.00  0.00      PROA N
+ATOM    196  HN  CYS A   8       1.436   4.418  -0.881  0.00  0.00      PROA  
+ATOM    197  CA  CYS A   8       3.096   4.173   0.413  1.00  0.00      PROA C
+ATOM    198  HA  CYS A   8       3.139   4.439   1.456  1.00  0.00      PROA H
+ATOM    199  CB  CYS A   8       2.683   2.705   0.264  1.00  0.00      PROA  
+ATOM    200  HB1 CYS A   8       3.383   2.121   0.675  0.00  0.00      PROA  
+ATOM    201  HB2 CYS A   8       2.581   2.465  -0.783  1.00  0.00      PROA H
+ATOM    202  SG  CYS A   8       1.102   2.429   1.101  1.00  0.00      PROA  
+ATOM    203  C   CYS A   8       4.454   4.415  -0.259  1.00  0.00      PROA C
+ATOM    204  O   CYS A   8       4.544   5.054  -1.291  1.00  0.00      PROA O
+ATOM    205  N   CYS A   9       5.509   3.904   0.325  1.00  0.00      PROA N
+ATOM    206  HN  CYS A   9       5.487   3.375   1.171  0.00  0.00      PROA  
+ATOM    207  CA  CYS A   9       6.873   4.089  -0.264  1.00  0.00      PROA C
+ATOM    208  HA  CYS A   9       7.069   5.134  -0.440  1.00  0.00      PROA H
+ATOM    209  CB  CYS A   9       7.834   3.543   0.801  1.00  0.00      PROA  
+ATOM    210  HB1 CYS A   9       8.760   3.518   0.425  0.00  0.00      PROA  
+ATOM    211  HB2 CYS A   9       7.528   2.548   1.085  1.00  0.00      PROA H
+ATOM    212  SG  CYS A   9       7.807   4.616   2.263  1.00  0.00      PROA  
+ATOM    213  C   CYS A   9       6.995   3.288  -1.573  1.00  0.00      PROA C
+ATOM    214  O   CYS A   9       6.096   2.544  -1.925  1.00  0.00      PROA O
+ATOM    215  N   PRO A  10       8.107   3.459  -2.256  1.00  0.00      PROA N
+ATOM    216  CD  PRO A  10       9.250   4.320  -1.916  1.00  0.00      PROA C
+ATOM    217  HD1 PRO A  10       9.053   5.293  -2.037  0.00  0.00      PROA  
+ATOM    218  HD2 PRO A  10       9.531   4.202  -0.880  1.00  0.00      PROA H
+ATOM    219  CA  PRO A  10       8.334   2.731  -3.536  1.00  0.00      PROA C
+ATOM    220  HA  PRO A  10       7.546   2.951  -4.239  1.00  0.00      PROA H
+ATOM    221  CB  PRO A  10       9.660   3.301  -4.042  1.00  0.00      PROA C
+ATOM    222  HB1 PRO A  10       9.508   4.145  -4.752  0.00  0.00      PROA  
+ATOM    223  HB2 PRO A  10      10.249   2.522  -4.508  1.00  0.00      PROA H
+ATOM    224  CG  PRO A  10      10.342   3.813  -2.818  1.00  0.00      PROA C
+ATOM    225  HG1 PRO A  10      11.069   4.599  -3.100  0.00  0.00      PROA  
+ATOM    226  HG2 PRO A  10      10.887   3.013  -2.334  1.00  0.00      PROA H
+ATOM    227  C   PRO A  10       8.426   1.221  -3.285  1.00  0.00      PROA C
+ATOM    228  O   PRO A  10       8.801   0.789  -2.212  1.00  0.00      PROA O
+ATOM    229  N   ASN A  11       8.051   0.428  -4.268  1.00  0.00      PROA N
+ATOM    230  HN  ASN A  11       7.736   0.759  -5.156  0.00  0.00      PROA  
+ATOM    231  CA  ASN A  11       8.067  -1.068  -4.131  1.00  0.00      PROA C
+ATOM    232  HA  ASN A  11       8.053  -1.523  -5.110  1.00  0.00      PROA H
+ATOM    233  CB  ASN A  11       9.377  -1.434  -3.413  1.00  0.00      PROA C
+ATOM    234  HB1 ASN A  11       9.238  -1.385  -2.424  0.00  0.00      PROA  
+ATOM    235  HB2 ASN A  11      10.152  -0.741  -3.705  1.00  0.00      PROA H
+ATOM    236  CG  ASN A  11       9.795  -2.857  -3.796  1.00  0.00      PROA C
+ATOM    237  OD1 ASN A  11       9.596  -3.783  -3.035  1.00  0.00      PROA O
+ATOM    238  ND2 ASN A  11      10.373  -3.073  -4.947  1.00  0.00      PROA N
+ATOM    239 HD21 ASN A  11      10.536  -2.328  -5.563  1.00  0.00      PROA H
+ATOM    240 HD22 ASN A  11      10.642  -3.982  -5.197  1.00  0.00      PROA H
+ATOM    241  C   ASN A  11       6.846  -1.537  -3.326  1.00  0.00      PROA C
+ATOM    242  O   ASN A  11       6.753  -2.691  -2.947  1.00  0.00      PROA O
+ATOM    243  N   TYR A  12       5.898  -0.656  -3.076  1.00  0.00      PROA N
+ATOM    244  HN  TYR A  12       5.913   0.302  -3.358  0.00  0.00      PROA  
+ATOM    245  CA  TYR A  12       4.681  -1.058  -2.316  1.00  0.00      PROA C
+ATOM    246  HA  TYR A  12       4.581  -2.128  -2.324  1.00  0.00      PROA H
+ATOM    247  CB  TYR A  12       4.893  -0.560  -0.883  1.00  0.00      PROA C
+ATOM    248  HB1 TYR A  12       4.046  -0.687  -0.367  0.00  0.00      PROA  
+ATOM    249  HB2 TYR A  12       5.157   0.485  -0.903  1.00  0.00      PROA H
+ATOM    250  CG  TYR A  12       5.996  -1.344  -0.212  1.00  0.00      PROA C
+ATOM    251  CD1 TYR A  12       5.783  -2.676   0.166  1.00  0.00      PROA C
+ATOM    252  HD1 TYR A  12       4.831  -3.147  -0.028  1.00  0.00      PROA H
+ATOM    253  CE1 TYR A  12       6.806  -3.397   0.791  1.00  0.00      PROA C
+ATOM    254  HE1 TYR A  12       6.642  -4.423   1.083  1.00  0.00      PROA H
+ATOM    255  CZ  TYR A  12       8.040  -2.786   1.041  1.00  0.00      PROA C
+ATOM    256  OH  TYR A  12       9.049  -3.496   1.660  1.00  0.00      PROA O
+ATOM    257  HH  TYR A  12       9.526  -3.985   0.985  1.00  0.00      PROA H
+ATOM    258  CD2 TYR A  12       7.230  -0.734   0.038  1.00  0.00      PROA C
+ATOM    259  HD2 TYR A  12       7.394   0.292  -0.254  1.00  0.00      PROA H
+ATOM    260  CE2 TYR A  12       8.253  -1.455   0.664  1.00  0.00      PROA C
+ATOM    261  HE2 TYR A  12       9.205  -0.983   0.858  1.00  0.00      PROA H
+ATOM    262  C   TYR A  12       3.434  -0.399  -2.916  1.00  0.00      PROA C
+ATOM    263  O   TYR A  12       3.414   0.791  -3.175  1.00  0.00      PROA O
+ATOM    264  N   ALA A  14       2.390  -1.161  -3.124  1.00  0.00      PROA N
+ATOM    265  HN  ALA A  14       2.364  -2.140  -2.925  0.00  0.00      PROA  
+ATOM    266  CA  ALA A  14       1.133  -0.589  -3.691  1.00  0.00      PROA C
+ATOM    267  HA  ALA A  14       1.284   0.436  -3.988  1.00  0.00      PROA H
+ATOM    268  CB  ALA A  14       0.819  -1.449  -4.918  1.00  0.00      PROA C
+ATOM    269  HB1 ALA A  14       1.709  -1.550  -5.523  1.00  0.00      PROA H
+ATOM    270  HB2 ALA A  14       0.041  -0.977  -5.498  1.00  0.00      PROA H
+ATOM    271  HB3 ALA A  14       0.489  -2.426  -4.598  1.00  0.00      PROA H
+ATOM    272  C   ALA A  14       0.003  -0.688  -2.659  1.00  0.00      PROA C
+ATOM    273  O   ALA A  14      -0.244  -1.741  -2.100  1.00  0.00      PROA O
+ATOM    274  N   CYS A  15      -0.681   0.401  -2.400  1.00  0.00      PROA N
+ATOM    275  HN  CYS A  15      -0.524   1.290  -2.826  0.00  0.00      PROA  
+ATOM    276  CA  CYS A  15      -1.795   0.373  -1.399  1.00  0.00      PROA C
+ATOM    277  HA  CYS A  15      -1.436   0.006  -0.450  1.00  0.00      PROA H
+ATOM    278  CB  CYS A  15      -2.248   1.829  -1.258  1.00  0.00      PROA  
+ATOM    279  HB1 CYS A  15      -2.676   2.129  -2.110  0.00  0.00      PROA  
+ATOM    280  HB2 CYS A  15      -1.392   2.453  -1.045  1.00  0.00      PROA H
+ATOM    281  SG  CYS A  15      -3.441   1.960   0.097  1.00  0.00      PROA  
+ATOM    282  C   CYS A  15      -2.945  -0.504  -1.911  1.00  0.00      PROA C
+ATOM    283  O   CYS A  15      -3.503  -0.261  -2.965  1.00  0.00      PROA O
+ATOM    284  N   SER A  16      -3.296  -1.528  -1.170  1.00  0.00      PROA N
+ATOM    285  HN  SER A  16      -2.879  -1.781  -0.297  0.00  0.00      PROA  
+ATOM    286  CA  SER A  16      -4.404  -2.434  -1.605  1.00  0.00      PROA C
+ATOM    287  HA  SER A  16      -4.449  -2.483  -2.682  1.00  0.00      PROA H
+ATOM    288  CB  SER A  16      -4.038  -3.806  -1.037  1.00  0.00      PROA C
+ATOM    289  HB1 SER A  16      -4.234  -3.821  -0.057  0.00  0.00      PROA  
+ATOM    290  HB2 SER A  16      -2.990  -3.996  -1.199  1.00  0.00      PROA H
+ATOM    291  OG  SER A  16      -4.801  -4.809  -1.695  1.00  0.00      PROA O
+ATOM    292  HG1 SER A  16      -4.396  -5.659  -1.482  0.00  0.00      PROA  
+ATOM    293  C   SER A  16      -5.747  -1.959  -1.034  1.00  0.00      PROA C
+ATOM    294  O   SER A  16      -5.795  -1.200  -0.083  1.00  0.00      PROA O
+ATOM    295  N   SER A  17      -6.837  -2.406  -1.610  1.00  0.00      PROA N
+ATOM    296  HN  SER A  17      -6.865  -3.027  -2.393  0.00  0.00      PROA  
+ATOM    297  CA  SER A  17      -8.184  -1.994  -1.107  1.00  0.00      PROA C
+ATOM    298  HA  SER A  17      -8.130  -1.022  -0.647  1.00  0.00      PROA H
+ATOM    299  CB  SER A  17      -9.076  -1.934  -2.348  1.00  0.00      PROA C
+ATOM    300  HB1 SER A  17      -9.428  -2.849  -2.547  0.00  0.00      PROA  
+ATOM    301  HB2 SER A  17      -8.505  -1.579  -3.189  1.00  0.00      PROA H
+ATOM    302  OG  SER A  17     -10.158  -1.043  -2.107  1.00  0.00      PROA O
+ATOM    303  HG1 SER A  17     -10.566  -0.855  -2.962  0.00  0.00      PROA  
+ATOM    304  C   SER A  17      -8.716  -3.026  -0.106  1.00  0.00      PROA C
+ATOM    305  O   SER A  17      -9.289  -2.677   0.909  1.00  0.00      PROA O
+ATOM    306  N   LYS A  18      -8.519  -4.294  -0.383  1.00  0.00      PROA N
+ATOM    307  HN  LYS A  18      -8.054  -4.626  -1.202  0.00  0.00      PROA  
+ATOM    308  CA  LYS A  18      -9.000  -5.362   0.552  1.00  0.00      PROA C
+ATOM    309  HA  LYS A  18     -10.065  -5.290   0.687  1.00  0.00      PROA H
+ATOM    310  CB  LYS A  18      -8.644  -6.687  -0.133  1.00  0.00      PROA C
+ATOM    311  HB1 LYS A  18      -7.654  -6.735  -0.264  0.00  0.00      PROA  
+ATOM    312  HB2 LYS A  18      -9.141  -6.740  -1.091  1.00  0.00      PROA H
+ATOM    313  CG  LYS A  18      -9.093  -7.864   0.741  1.00  0.00      PROA C
+ATOM    314  HG1 LYS A  18      -9.560  -7.515   1.553  0.00  0.00      PROA  
+ATOM    315  HG2 LYS A  18      -8.229  -8.439   1.039  1.00  0.00      PROA H
+ATOM    316  CD  LYS A  18     -10.054  -8.758  -0.050  1.00  0.00      PROA C
+ATOM    317  HD1 LYS A  18     -10.660  -8.185  -0.602  0.00  0.00      PROA  
+ATOM    318  HD2 LYS A  18     -10.641  -9.350   0.636  1.00  0.00      PROA H
+ATOM    319  CE  LYS A  18      -9.254  -9.689  -0.971  1.00  0.00      PROA C
+ATOM    320  HE1 LYS A  18      -9.313 -10.644  -0.682  0.00  0.00      PROA  
+ATOM    321  HE2 LYS A  18      -8.207  -9.419  -0.959  1.00  0.00      PROA H
+ATOM    322  NZ  LYS A  18      -9.829  -9.483  -2.331  1.00  0.00      PROA N
+ATOM    323  HZ1 LYS A  18     -10.839  -9.734  -2.325  1.00  0.00      PROA H
+ATOM    324  HZ2 LYS A  18      -9.330 -10.087  -3.014  1.00  0.00      PROA H
+ATOM    325  HZ3 LYS A  18      -9.720  -8.485  -2.608  1.00  0.00      PROA H
+ATOM    326  C   LYS A  18      -8.281  -5.238   1.900  1.00  0.00      PROA C
+ATOM    327  O   LYS A  18      -8.890  -5.315   2.950  1.00  0.00      PROA O
+ATOM    328  N   HSE A  19      -6.991  -5.033   1.867  1.00  0.00      PROA N
+ATOM    329  HN  HSE A  19      -6.442  -4.960   1.036  0.00  0.00      PROA  
+ATOM    330  CA  HSE A  19      -6.212  -4.887   3.136  1.00  0.00      PROA C
+ATOM    331  HA  HSE A  19      -6.641  -5.500   3.913  1.00  0.00      PROA H
+ATOM    332  CB  HSE A  19      -4.806  -5.382   2.794  1.00  0.00      PROA C
+ATOM    333  HB1 HSE A  19      -4.189  -5.193   3.558  0.00  0.00      PROA  
+ATOM    334  HB2 HSE A  19      -4.447  -4.872   1.912  1.00  0.00      PROA H
+ATOM    335  ND1 HSE A  19      -5.215  -7.777   3.514  1.00  0.00      PROA N
+ATOM    336  CG  HSE A  19      -4.851  -6.865   2.535  1.00  0.00      PROA C
+ATOM    337  CE1 HSE A  19      -5.162  -9.005   2.965  1.00  0.00      PROA C
+ATOM    338  HE1 HSE A  19      -5.396  -9.916   3.496  1.00  0.00      PROA H
+ATOM    339  NE2 HSE A  19      -4.785  -8.959   1.686  1.00  0.00      PROA N
+ATOM    340  HE2 HSE A  19      -4.644  -9.714   1.046  0.00  0.00      PROA  
+ATOM    341  CD2 HSE A  19      -4.588  -7.609   1.411  1.00  0.00      PROA C
+ATOM    342  HD2 HSE A  19      -4.280  -7.206   0.458  1.00  0.00      PROA H
+ATOM    343  C   HSE A  19      -6.189  -3.412   3.572  1.00  0.00      PROA C
+ATOM    344  O   HSE A  19      -6.053  -3.109   4.742  1.00  0.00      PROA O
+ATOM    345  N   LYS A  20      -6.335  -2.501   2.633  1.00  0.00      PROA N
+ATOM    346  HN  LYS A  20      -6.446  -2.723   1.665  0.00  0.00      PROA  
+ATOM    347  CA  LYS A  20      -6.345  -1.035   2.956  1.00  0.00      PROA C
+ATOM    348  HA  LYS A  20      -6.556  -0.469   2.064  1.00  0.00      PROA H
+ATOM    349  CB  LYS A  20      -7.495  -0.846   3.956  1.00  0.00      PROA C
+ATOM    350  HB1 LYS A  20      -7.129  -0.488   4.815  0.00  0.00      PROA  
+ATOM    351  HB2 LYS A  20      -7.978  -1.796   4.135  1.00  0.00      PROA H
+ATOM    352  CG  LYS A  20      -8.517   0.142   3.385  1.00  0.00      PROA C
+ATOM    353  HG1 LYS A  20      -9.411  -0.029   3.800  0.00  0.00      PROA  
+ATOM    354  HG2 LYS A  20      -8.583   0.011   2.314  1.00  0.00      PROA H
+ATOM    355  CD  LYS A  20      -8.080   1.577   3.698  1.00  0.00      PROA C
+ATOM    356  HD1 LYS A  20      -7.081   1.628   3.706  0.00  0.00      PROA  
+ATOM    357  HD2 LYS A  20      -8.463   1.865   4.667  1.00  0.00      PROA H
+ATOM    358  CE  LYS A  20      -8.626   2.527   2.625  1.00  0.00      PROA C
+ATOM    359  HE1 LYS A  20      -8.979   2.033   1.831  0.00  0.00      PROA  
+ATOM    360  HE2 LYS A  20      -7.841   3.180   2.270  1.00  0.00      PROA H
+ATOM    361  NZ  LYS A  20      -9.692   3.318   3.305  1.00  0.00      PROA N
+ATOM    362  HZ1 LYS A  20      -9.278   3.856   4.093  1.00  0.00      PROA H
+ATOM    363  HZ2 LYS A  20     -10.422   2.677   3.672  1.00  0.00      PROA H
+ATOM    364  HZ3 LYS A  20     -10.120   3.977   2.623  1.00  0.00      PROA H
+ATOM    365  C   LYS A  20      -5.010  -0.567   3.562  1.00  0.00      PROA C
+ATOM    366  O   LYS A  20      -4.951   0.466   4.205  1.00  0.00      PROA O
+ATOM    367  N   TRP A  21      -3.933  -1.291   3.348  1.00  0.00      PROA N
+ATOM    368  HN  TRP A  21      -3.904  -2.144   2.833  0.00  0.00      PROA  
+ATOM    369  CA  TRP A  21      -2.618  -0.841   3.902  1.00  0.00      PROA C
+ATOM    370  HA  TRP A  21      -2.690   0.197   4.191  1.00  0.00      PROA H
+ATOM    371  CB  TRP A  21      -2.358  -1.699   5.158  1.00  0.00      PROA C
+ATOM    372  HB1 TRP A  21      -3.185  -1.670   5.719  0.00  0.00      PROA  
+ATOM    373  HB2 TRP A  21      -1.509  -1.297   5.687  1.00  0.00      PROA H
+ATOM    374  CG  TRP A  21      -2.080  -3.139   4.824  1.00  0.00      PROA C
+ATOM    375  CD1 TRP A  21      -1.146  -3.585   3.949  1.00  0.00      PROA C
+ATOM    376  HD1 TRP A  21      -0.491  -2.964   3.360  1.00  0.00      PROA H
+ATOM    377  NE1 TRP A  21      -1.174  -4.967   3.927  1.00  0.00      PROA N
+ATOM    378  HE1 TRP A  21      -0.600  -5.534   3.372  1.00  0.00      PROA H
+ATOM    379  CE2 TRP A  21      -2.120  -5.473   4.792  1.00  0.00      PROA C
+ATOM    380  CD2 TRP A  21      -2.710  -4.330   5.382  1.00  0.00      PROA C
+ATOM    381  CE3 TRP A  21      -3.730  -4.525   6.330  1.00  0.00      PROA C
+ATOM    382  HE3 TRP A  21      -4.199  -3.673   6.797  1.00  0.00      PROA H
+ATOM    383  CZ3 TRP A  21      -4.140  -5.823   6.675  1.00  0.00      PROA C
+ATOM    384  HZ3 TRP A  21      -4.924  -5.963   7.404  1.00  0.00      PROA H
+ATOM    385  CZ2 TRP A  21      -2.526  -6.763   5.132  1.00  0.00      PROA C
+ATOM    386  HZ2 TRP A  21      -2.060  -7.620   4.668  1.00  0.00      PROA H
+ATOM    387  CH2 TRP A  21      -3.540  -6.940   6.077  1.00  0.00      PROA C
+ATOM    388  HH2 TRP A  21      -3.861  -7.935   6.346  1.00  0.00      PROA H
+ATOM    389  C   TRP A  21      -1.509  -0.994   2.851  1.00  0.00      PROA C
+ATOM    390  O   TRP A  21      -1.728  -1.527   1.778  1.00  0.00      PROA O
+ATOM    391  N   CYS A  22      -0.325  -0.512   3.148  1.00  0.00      PROA N
+ATOM    392  HN  CYS A  22      -0.093  -0.065   4.010  0.00  0.00      PROA  
+ATOM    393  CA  CYS A  22       0.803  -0.608   2.166  1.00  0.00      PROA C
+ATOM    394  HA  CYS A  22       0.542  -0.102   1.249  1.00  0.00      PROA H
+ATOM    395  CB  CYS A  22       1.981   0.103   2.832  1.00  0.00      PROA  
+ATOM    396  HB1 CYS A  22       2.803  -0.026   2.277  0.00  0.00      PROA  
+ATOM    397  HB2 CYS A  22       2.143  -0.310   3.817  1.00  0.00      PROA H
+ATOM    398  SG  CYS A  22       1.619   1.871   2.973  1.00  0.00      PROA  
+ATOM    399  C   CYS A  22       1.148  -2.073   1.880  1.00  0.00      PROA C
+ATOM    400  O   CYS A  22       1.655  -2.781   2.730  1.00  0.00      PROA O
+ATOM    401  N   LYS A  23       0.877  -2.524   0.683  1.00  0.00      PROA N
+ATOM    402  HN  LYS A  23       0.464  -1.977  -0.043  0.00  0.00      PROA  
+ATOM    403  CA  LYS A  23       1.181  -3.939   0.316  1.00  0.00      PROA C
+ATOM    404  HA  LYS A  23       1.430  -4.514   1.194  1.00  0.00      PROA H
+ATOM    405  CB  LYS A  23      -0.110  -4.469  -0.312  1.00  0.00      PROA C
+ATOM    406  HB1 LYS A  23       0.117  -5.104  -1.051  0.00  0.00      PROA  
+ATOM    407  HB2 LYS A  23      -0.683  -3.644  -0.708  1.00  0.00      PROA H
+ATOM    408  CG  LYS A  23      -0.935  -5.198   0.749  1.00  0.00      PROA C
+ATOM    409  HG1 LYS A  23      -1.488  -4.537   1.256  0.00  0.00      PROA  
+ATOM    410  HG2 LYS A  23      -0.270  -5.710   1.431  1.00  0.00      PROA H
+ATOM    411  CD  LYS A  23      -1.856  -6.216   0.070  1.00  0.00      PROA C
+ATOM    412  HD1 LYS A  23      -1.844  -6.069  -0.919  0.00  0.00      PROA  
+ATOM    413  HD2 LYS A  23      -2.862  -6.092   0.443  1.00  0.00      PROA H
+ATOM    414  CE  LYS A  23      -1.368  -7.636   0.376  1.00  0.00      PROA C
+ATOM    415  HE1 LYS A  23      -2.095  -8.314   0.266  0.00  0.00      PROA  
+ATOM    416  HE2 LYS A  23      -1.026  -7.701   1.399  1.00  0.00      PROA H
+ATOM    417  NZ  LYS A  23      -0.237  -7.877  -0.568  1.00  0.00      PROA N
+ATOM    418  HZ1 LYS A  23       0.595  -7.337  -0.258  1.00  0.00      PROA H
+ATOM    419  HZ2 LYS A  23      -0.508  -7.572  -1.525  1.00  0.00      PROA H
+ATOM    420  HZ3 LYS A  23      -0.007  -8.892  -0.579  1.00  0.00      PROA H
+ATOM    421  C   LYS A  23       2.326  -3.983  -0.699  1.00  0.00      PROA C
+ATOM    422  O   LYS A  23       2.788  -2.961  -1.164  1.00  0.00      PROA O
+ATOM    423  N   VAL A  25       2.781  -5.157  -1.053  1.00  0.00      PROA N
+ATOM    424  HN  VAL A  25       2.448  -6.032  -0.712  0.00  0.00      PROA  
+ATOM    425  CA  VAL A  25       3.891  -5.263  -2.047  1.00  0.00      PROA C
+ATOM    426  HA  VAL A  25       4.554  -4.416  -1.956  1.00  0.00      PROA H
+ATOM    427  CB  VAL A  25       4.644  -6.557  -1.698  1.00  0.00      PROA C
+ATOM    428  HB  VAL A  25       5.454  -6.689  -2.394  1.00  0.00      PROA H
+ATOM    429  CG1 VAL A  25       5.215  -6.456  -0.280  1.00  0.00      PROA C
+ATOM    430 HG11 VAL A  25       6.258  -6.733  -0.293  1.00  0.00      PROA H
+ATOM    431 HG12 VAL A  25       4.673  -7.123   0.375  1.00  0.00      PROA H
+ATOM    432 HG13 VAL A  25       5.117  -5.442   0.078  1.00  0.00      PROA H
+ATOM    433  CG2 VAL A  25       3.698  -7.764  -1.784  1.00  0.00      PROA C
+ATOM    434 HG21 VAL A  25       3.094  -7.686  -2.677  1.00  0.00      PROA H
+ATOM    435 HG22 VAL A  25       3.056  -7.784  -0.916  1.00  0.00      PROA H
+ATOM    436 HG23 VAL A  25       4.279  -8.673  -1.823  1.00  0.00      PROA H
+ATOM    437  C   VAL A  25       3.316  -5.336  -3.468  1.00  0.00      PROA C
+ATOM    438  O   VAL A  25       2.185  -5.741  -3.669  1.00  0.00      PROA O
+ATOM    439  N   TYR A  26       4.086  -4.949  -4.455  1.00  0.00      PROA N
+ATOM    440  HN  TYR A  26       5.019  -4.606  -4.360  0.00  0.00      PROA  
+ATOM    441  CA  TYR A  26       3.583  -5.001  -5.866  1.00  0.00      PROA C
+ATOM    442  HA  TYR A  26       2.634  -4.498  -5.941  1.00  0.00      PROA H
+ATOM    443  CB  TYR A  26       4.634  -4.263  -6.702  1.00  0.00      PROA C
+ATOM    444  HB1 TYR A  26       4.665  -4.657  -7.620  0.00  0.00      PROA  
+ATOM    445  HB2 TYR A  26       5.603  -4.364  -6.236  1.00  0.00      PROA H
+ATOM    446  CG  TYR A  26       4.268  -2.799  -6.795  1.00  0.00      PROA C
+ATOM    447  CD1 TYR A  26       3.272  -2.379  -7.686  1.00  0.00      PROA C
+ATOM    448  HD1 TYR A  26       2.766  -3.101  -8.309  1.00  0.00      PROA H
+ATOM    449  CE1 TYR A  26       2.933  -1.024  -7.769  1.00  0.00      PROA C
+ATOM    450  HE1 TYR A  26       2.165  -0.701  -8.456  1.00  0.00      PROA H
+ATOM    451  CZ  TYR A  26       3.589  -0.087  -6.961  1.00  0.00      PROA C
+ATOM    452  OH  TYR A  26       3.255   1.249  -7.043  1.00  0.00      PROA O
+ATOM    453  HH  TYR A  26       3.814   1.655  -7.709  1.00  0.00      PROA H
+ATOM    454  CD2 TYR A  26       4.923  -1.862  -5.989  1.00  0.00      PROA C
+ATOM    455  HD2 TYR A  26       5.691  -2.186  -5.303  1.00  0.00      PROA H
+ATOM    456  CE2 TYR A  26       4.585  -0.507  -6.072  1.00  0.00      PROA C
+ATOM    457  HE2 TYR A  26       5.092   0.215  -5.449  1.00  0.00      PROA H
+ATOM    458  C   TYR A  26       3.447  -6.457  -6.329  1.00  0.00      PROA C
+ATOM    459  O   TYR A  26       2.550  -6.796  -7.078  1.00  0.00      PROA O
+ATOM    460  N   LEU A  27       4.328  -7.319  -5.883  1.00  0.00      PROA N
+ATOM    461  HN  LEU A  27       5.084  -7.103  -5.269  0.00  0.00      PROA  
+ATOM    462  CA  LEU A  27       4.255  -8.758  -6.286  1.00  0.00      PROA C
+ATOM    463  HA  LEU A  27       3.279  -8.987  -6.686  1.00  0.00      PROA H
+ATOM    464  CB  LEU A  27       5.318  -8.919  -7.377  1.00  0.00      PROA C
+ATOM    465  HB1 LEU A  27       5.913  -9.690  -7.151  0.00  0.00      PROA  
+ATOM    466  HB2 LEU A  27       5.908  -8.017  -7.441  1.00  0.00      PROA H
+ATOM    467  CG  LEU A  27       4.634  -9.180  -8.723  1.00  0.00      PROA C
+ATOM    468  HG  LEU A  27       3.577  -8.975  -8.635  1.00  0.00      PROA H
+ATOM    469  CD1 LEU A  27       5.240  -8.267  -9.791  1.00  0.00      PROA C
+ATOM    470 HD11 LEU A  27       5.111  -7.235  -9.498  1.00  0.00      PROA H
+ATOM    471 HD12 LEU A  27       4.744  -8.438 -10.735  1.00  0.00      PROA H
+ATOM    472 HD13 LEU A  27       6.293  -8.482  -9.894  1.00  0.00      PROA H
+ATOM    473  CD2 LEU A  27       4.840 -10.643  -9.125  1.00  0.00      PROA C
+ATOM    474 HD21 LEU A  27       5.885 -10.816  -9.336  1.00  0.00      PROA H
+ATOM    475 HD22 LEU A  27       4.253 -10.861 -10.006  1.00  0.00      PROA H
+ATOM    476 HD23 LEU A  27       4.525 -11.287  -8.316  1.00  0.00      PROA H
+ATOM    477  C   LEU A  27       4.566  -9.664  -5.087  1.00  0.00      PROA C
+ATOM    478  OT1 LEU A  27       4.752  -9.093  -4.287  0.00  0.00      PROA  
+ATOM    479  OT2 LEU A  27       4.512 -10.619  -5.378  0.00  0.00      PROA  
 END

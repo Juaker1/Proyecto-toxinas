@@ -7,18 +7,14 @@ Info)    Molecular Dynamics', J. Molec. Graphics 1996, 14.1, 33-38.
 Info) -------------------------------------------------------------
 Info) Multithreading available, 12 CPUs detected.
 Info)   CPU features: SSE2 AVX AVX2 FMA 
-Info) Free system memory: 13GB (86%)
+Info) Free system memory: 13GB (84%)
 Info) Creating CUDA device pool and initializing hardware...
 Info) Detected 1 available CUDA accelerator:
 Info) [0] NVIDIA GeForce RTX 3060 28 SM_8.6 @ 1.81 GHz, 12GB RAM, KTO, AE1, ZCP
-Warning) Unable to open dynamic library '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so'.
-Warning) libexpat.so.0: failed to map segment from shared object
-Warning) Unable to dlopen '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so':
-  Unable to dlopen plugin file /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so
-Info) Dynamically loaded 1 plugins in directory:
+Info) Dynamically loaded 2 plugins in directory:
 Info) /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile
 1.6.4
-Iniciando construcción PSF para: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84507.pdb
+Iniciando construcción PSF para: /tmp/peptide_p371grmb.pdb
 Topologías: "/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf"
 Prefijo salida: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507
 Segmento: PROA
@@ -48,26 +44,306 @@ psfgen) aliasing residue HSP to HSP
 psfgen) aliasing residue MSE to MET
 psfgen) aliasing residue SEC to CYS
 psfgen) aliasing residue CYX to CYS
-Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84507.pdb
-Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84507.pdb
+Info) Using plugin pdb for structure file /tmp/peptide_p371grmb.pdb
+Info) Using plugin pdb for coordinates from file /tmp/peptide_p371grmb.pdb
 Info) Determining bond structure from distance search ...
 Info) Eliminating bonds duplicated from existing structure...
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P84507.pdb.
+Info) Finished with coordinate file /tmp/peptide_p371grmb.pdb.
 Info) Analyzing structure ...
-Info)    Atoms: 273
-Info)    Bonds: 282
+Info)    Atoms: 1626
+Info)    Bonds: 1675
 Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
 Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
-Info)    Residues: 33
+Info)    Residues: 210
 Info)    Waters: 0
-Info)    Segments: 1
-Info)    Fragments: 1   Protein: 1   Nucleic: 0
-Info) Opened coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb for writing.
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb.
+Info)    Segments: 6
+Info)    Fragments: 6   Protein: 6   Nucleic: 0
+Info) Opened coordinate file /tmp/psfgen_sanitized_8573_1764366417451911.pdb for writing.
+Info) Finished with coordinate file /tmp/psfgen_sanitized_8573_1764366417451911.pdb.
 Construyendo segmento PROA...
 psfgen) building segment PROA
-psfgen) reading residues from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb
-psfgen) extracted 33 residues from pdb file
+psfgen) reading residues from pdb file /tmp/psfgen_sanitized_8573_1764366417451911.pdb
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 143
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 154
+psfgen) ERROR: failed on residue GLN from pdb file
+psfgen) duplicate residue key 78
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 89
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 78
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 89
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 78
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 89
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 78
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 89
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 78
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 89
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 142
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 144
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 148
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 149
+psfgen) ERROR: failed on residue LEU from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 153
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 155
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 162
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 163
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 162
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 163
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 162
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 163
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 162
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 163
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 162
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 163
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 166
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 167
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 166
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 167
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 166
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 167
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 166
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 167
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 166
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 167
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 62
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 63
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 62
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 63
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 62
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 63
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 62
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 63
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 62
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 63
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 64
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 65
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 90
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 91
+psfgen) ERROR: failed on residue THR from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 97
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 98
+psfgen) ERROR: failed on residue VAL from pdb file
+psfgen) duplicate residue key 106
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 107
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 106
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 107
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 106
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 107
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 106
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 107
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 106
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) duplicate residue key 107
+psfgen) ERROR: failed on residue SER from pdb file
+psfgen) extracted 348 residues from pdb file
 psfgen) Info: generating structure...psfgen) Info: skipping improper N-C-CA-HN at beginning of segment.
 psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at beginning of segment.
 psfgen) Info: skipping conformation C-N-CA-C at beginning of segment.
@@ -79,70 +355,185 @@ psfgen) Info: skipping conformation CA-C-N-CA at end of segment.
 psfgen) Info: skipping conformation N-CA-C-O at end of segment.
 psfgen) Info: skipping conformation N-CA-C-N at end of segment.
 segment complete.
-psfgen) reading coordinates from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb for segment PROA
-psfgen) Warning: failed to set coordinate for atom O	 LEU:27	  PROA
-psfgen) Warning: failed to set coordinate for atom OXT	 LEU:27	  PROA
+psfgen) reading coordinates from pdb file /tmp/psfgen_sanitized_8573_1764366417451911.pdb for segment PROA
+psfgen) Warning: failed to set coordinate for atom OXT	 LEU:8	  PROA
+psfgen) Warning: failed to set coordinate for atom OXT	 LEU:44	  PROA
+psfgen) Warning: failed to set coordinate for atom O	 ASN:122	  PROA
 Buscando enlaces disulfuro...
-PROA:27 
+PROA:122 
 PROA:1 
-Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb
-Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb
+Info) Using plugin pdb for structure file /tmp/psfgen_sanitized_8573_1764366417451911.pdb
+Info) Using plugin pdb for coordinates from file /tmp/psfgen_sanitized_8573_1764366417451911.pdb
 Info) Determining bond structure from distance search ...
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_14139_1761053970693828.pdb.
+Info) Finished with coordinate file /tmp/psfgen_sanitized_8573_1764366417451911.pdb.
 Info) Analyzing structure ...
-Info)    Atoms: 273
-Info)    Bonds: 282
+Info)    Atoms: 1610
+Info)    Bonds: 1657
 Info)    Angles: 0  Dihedrals: 0  Impropers: 0  Cross-terms: 0
 Info)    Bondtypes: 0  Angletypes: 0  Dihedraltypes: 0  Impropertypes: 0
-Info)    Residues: 33
+Info)    Residues: 208
 Info)    Waters: 0
 Info)    Segments: 1
-Info)    Fragments: 1   Protein: 1   Nucleic: 0
-Encontrados 6 átomos SG de cisteína
-Calculando distancias entre 6 átomos SG...
-Distancia SG 2 - SG 32: 11.891296558285703 Å
-Distancia SG 2 - SG 8: 8.67663478080338 Å
-Distancia SG 2 - SG 9: 2.044889389346844 Å
-  -> Candidato a enlace disulfuro (distancia: 2.044889389346844 Å)
-Distancia SG 2 - SG 15: 13.153241177080062 Å
-Distancia SG 2 - SG 22: 8.38375068635325 Å
-Distancia SG 32 - SG 8: 3.73609318989071 Å
-Distancia SG 32 - SG 9: 10.7173768680658 Å
-Distancia SG 32 - SG 15: 2.025093218939445 Å
-  -> Candidato a enlace disulfuro (distancia: 2.025093218939445 Å)
-Distancia SG 32 - SG 22: 3.934003304996952 Å
-Distancia SG 8 - SG 9: 7.510961591985285 Å
-Distancia SG 8 - SG 15: 4.7466555331529 Å
-Distancia SG 8 - SG 22: 2.0361902522180824 Å
-  -> Candidato a enlace disulfuro (distancia: 2.0361902522180824 Å)
-Distancia SG 9 - SG 15: 12.120077416985483 Å
-Distancia SG 9 - SG 22: 6.959456122473566 Å
-Distancia SG 15 - SG 22: 5.600302480206388 Å
-Enlaces disulfuro seleccionados: 3
->> Aplicando patch DISU entre PROA:32 y PROA:15
+Info)    Fragments: 6   Protein: 6   Nucleic: 0
+Encontrados 16 átomos SG de cisteína
+Calculando distancias entre 16 átomos SG...
+Distancia SG 125 - SG 168: 25.625866116531007 Å
+Distancia SG 125 - SG 181: 35.91036450640664 Å
+Distancia SG 125 - SG 189: 26.352728808149177 Å
+Distancia SG 125 - SG 196: 27.90127092055945 Å
+Distancia SG 125 - SG 197: 34.77741632142406 Å
+Distancia SG 125 - SG 203: 24.72744486012557 Å
+Distancia SG 125 - SG 4: 29.104211290620256 Å
+Distancia SG 125 - SG 10: 35.009343673317304 Å
+Distancia SG 125 - SG 18: 35.40851599980518 Å
+Distancia SG 125 - SG 26: 35.30787423375511 Å
+Distancia SG 125 - SG 27: 33.46040105897287 Å
+Distancia SG 125 - SG 32: 37.18973341961883 Å
+Distancia SG 125 - SG 40: 33.40214052867891 Å
+Distancia SG 125 - SG 70: 51.93196329939922 Å
+Distancia SG 125 - SG 110: 50.138539620645744 Å
+Distancia SG 168 - SG 181: 35.91141583079667 Å
+Distancia SG 168 - SG 189: 24.57885366077147 Å
+Distancia SG 168 - SG 196: 28.198338116261912 Å
+Distancia SG 168 - SG 197: 35.00794448457613 Å
+Distancia SG 168 - SG 203: 23.56917460295062 Å
+Distancia SG 168 - SG 4: 28.38462898507997 Å
+Distancia SG 168 - SG 10: 43.46781683740682 Å
+Distancia SG 168 - SG 18: 45.19026866584364 Å
+Distancia SG 168 - SG 26: 43.88919081965454 Å
+Distancia SG 168 - SG 27: 41.84096202540106 Å
+Distancia SG 168 - SG 32: 46.38064917403832 Å
+Distancia SG 168 - SG 40: 42.74589891899163 Å
+Distancia SG 168 - SG 70: 51.91615650264851 Å
+Distancia SG 168 - SG 110: 61.55671523950514 Å
+Distancia SG 181 - SG 189: 11.890956516937823 Å
+Distancia SG 181 - SG 196: 8.676796038636299 Å
+Distancia SG 181 - SG 197: 2.0446985478729656 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0446985478729656 Å)
+Distancia SG 181 - SG 203: 13.152803149964905 Å
+Distancia SG 181 - SG 4: 8.384028306063337 Å
+Distancia SG 181 - SG 10: 14.219021694862827 Å
+Distancia SG 181 - SG 18: 22.905171889746455 Å
+Distancia SG 181 - SG 26: 19.39460281058758 Å
+Distancia SG 181 - SG 27: 14.011735101357472 Å
+Distancia SG 181 - SG 32: 23.738994305332795 Å
+Distancia SG 181 - SG 40: 19.324311115185868 Å
+Distancia SG 181 - SG 70: 37.13744131974471 Å
+Distancia SG 181 - SG 110: 46.853494803705466 Å
+Distancia SG 189 - SG 196: 3.735596096164653 Å
+Distancia SG 189 - SG 197: 10.717311398253047 Å
+Distancia SG 189 - SG 203: 2.0251109841158588 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0251109841158588 Å)
+Distancia SG 189 - SG 4: 3.933333329195155 Å
+Distancia SG 189 - SG 10: 19.83997146727974 Å
+Distancia SG 189 - SG 18: 24.67714218189218 Å
+Distancia SG 189 - SG 26: 22.175627851617257 Å
+Distancia SG 189 - SG 27: 18.501335300557457 Å
+Distancia SG 189 - SG 32: 25.870827942565146 Å
+Distancia SG 189 - SG 40: 21.338461632811704 Å
+Distancia SG 189 - SG 70: 37.56894961280478 Å
+Distancia SG 189 - SG 110: 46.72205124664007 Å
+Distancia SG 196 - SG 197: 7.511303532799268 Å
+Distancia SG 196 - SG 203: 4.746046541638656 Å
+Distancia SG 196 - SG 4: 2.0358412282621834 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0358412282621834 Å)
+Distancia SG 196 - SG 10: 16.573218256317016 Å
+Distancia SG 196 - SG 18: 22.68254437958014 Å
+Distancia SG 196 - SG 26: 19.873532221887487 Å
+Distancia SG 196 - SG 27: 15.415009711308254 Å
+Distancia SG 196 - SG 32: 23.899485287728062 Å
+Distancia SG 196 - SG 40: 19.102000214788184 Å
+Distancia SG 196 - SG 70: 37.270021407795944 Å
+Distancia SG 196 - SG 110: 45.737896838446105 Å
+Distancia SG 197 - SG 203: 12.1198791428991 Å
+Distancia SG 197 - SG 4: 6.960049475291977 Å
+Distancia SG 197 - SG 10: 13.459332301855072 Å
+Distancia SG 197 - SG 18: 21.3887369530125 Å
+Distancia SG 197 - SG 26: 17.950704834451013 Å
+Distancia SG 197 - SG 27: 12.995587468028015 Å
+Distancia SG 197 - SG 32: 22.22769324926861 Å
+Distancia SG 197 - SG 40: 17.84789827811026 Å
+Distancia SG 197 - SG 70: 35.49975825434437 Å
+Distancia SG 197 - SG 110: 45.1771673653855 Å
+Distancia SG 203 - SG 4: 5.599554211323405 Å
+Distancia SG 203 - SG 10: 20.617031757698307 Å
+Distancia SG 203 - SG 18: 25.58152547203896 Å
+Distancia SG 203 - SG 26: 23.176657151411774 Å
+Distancia SG 203 - SG 27: 19.27899061724514 Å
+Distancia SG 203 - SG 32: 26.88260625082501 Å
+Distancia SG 203 - SG 40: 22.195268145876323 Å
+Distancia SG 203 - SG 70: 39.19804638993714 Å
+Distancia SG 203 - SG 110: 47.58720413445925 Å
+Distancia SG 4 - SG 10: 16.723822479556972 Å
+Distancia SG 4 - SG 18: 22.256977005298406 Å
+Distancia SG 4 - SG 26: 19.433492581053297 Å
+Distancia SG 4 - SG 27: 15.518664956315506 Å
+Distancia SG 4 - SG 32: 23.338119294819634 Å
+Distancia SG 4 - SG 40: 18.82110313539164 Å
+Distancia SG 4 - SG 70: 35.60715091064861 Å
+Distancia SG 4 - SG 110: 45.02582204928299 Å
+Distancia SG 10 - SG 18: 11.785733051496388 Å
+Distancia SG 10 - SG 26: 8.598204961067685 Å
+Distancia SG 10 - SG 27: 2.040074609731228 Å
+  -> Candidato a enlace disulfuro (distancia: 2.040074609731228 Å)
+Distancia SG 10 - SG 32: 12.940730802812345 Å
+Distancia SG 10 - SG 40: 8.341188932676122 Å
+Distancia SG 10 - SG 70: 33.9336211295226 Å
+Distancia SG 10 - SG 110: 36.14778929864126 Å
+Distancia SG 18 - SG 26: 3.6601085290640887 Å
+Distancia SG 18 - SG 27: 10.736837021792919 Å
+Distancia SG 18 - SG 32: 2.0183239897072296 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0183239897072296 Å)
+Distancia SG 18 - SG 40: 3.967072917792954 Å
+Distancia SG 18 - SG 70: 25.687775744499554 Å
+Distancia SG 18 - SG 110: 24.639974176257883 Å
+Distancia SG 26 - SG 27: 7.530343558091321 Å
+Distancia SG 26 - SG 32: 4.599138907602038 Å
+Distancia SG 26 - SG 40: 2.0308558156590064 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0308558156590064 Å)
+Distancia SG 26 - SG 70: 26.638253594679643 Å
+Distancia SG 26 - SG 110: 28.083300570318613 Å
+Distancia SG 27 - SG 32: 12.03266190508655 Å
+Distancia SG 27 - SG 40: 6.999502346700128 Å
+Distancia SG 27 - SG 70: 32.91362089683831 Å
+Distancia SG 27 - SG 110: 35.323607257030666 Å
+Distancia SG 32 - SG 40: 5.571557480611561 Å
+Distancia SG 32 - SG 70: 24.096991604964746 Å
+Distancia SG 32 - SG 110: 23.525250695362725 Å
+Distancia SG 40 - SG 70: 27.93146097151639 Å
+Distancia SG 40 - SG 110: 28.54120333777136 Å
+Distancia SG 70 - SG 110: 25.588887887374632 Å
+Enlaces disulfuro seleccionados: 6
+>> Aplicando patch DISU entre PROA:18 y PROA:32
 psfgen) applying patch DISU to 2 residues
->> Aplicando patch DISU entre PROA:8 y PROA:22
+>> Aplicando patch DISU entre PROA:189 y PROA:203
 psfgen) applying patch DISU to 2 residues
->> Aplicando patch DISU entre PROA:2 y PROA:9
+>> Aplicando patch DISU entre PROA:26 y PROA:40
 psfgen) applying patch DISU to 2 residues
-Total de patches DISU aplicados: 3
+>> Aplicando patch DISU entre PROA:196 y PROA:4
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:10 y PROA:27
+psfgen) applying patch DISU to 2 residues
+>> Aplicando patch DISU entre PROA:181 y PROA:197
+psfgen) applying patch DISU to 2 residues
+Total de patches DISU aplicados: 6
 psfgen) regenerating all angles
 psfgen) regenerating all dihedrals
-psfgen) Info: guessing coordinates for 268 atoms (2 non-hydrogen)
+psfgen) Info: guessing coordinates for 1593 atoms (2 non-hydrogen)
 psfgen) Warning: poorly guessed coordinates for 5 atoms (2 non-hydrogen):
-psfgen) Warning: poorly guessed coordinate for atom HT1	 ASP:1	  PROA
-psfgen) Warning: poorly guessed coordinate for atom HT2	 ASP:1	  PROA
-psfgen) Warning: poorly guessed coordinate for atom HT3	 ASP:1	  PROA
-psfgen) Warning: poorly guessed coordinate for atom OT1	 LEU:27	  PROA
-psfgen) Warning: poorly guessed coordinate for atom OT2	 LEU:27	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT1	 VAL:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT2	 VAL:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom HT3	 VAL:1	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT1	 ASN:122	  PROA
+psfgen) Warning: poorly guessed coordinate for atom OT2	 ASN:122	  PROA
 psfgen) Info: writing psf file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.psf
-psfgen) total of 539 atoms
-psfgen) total of 548 bonds
-psfgen) total of 992 angles
-psfgen) total of 1458 dihedrals
-psfgen) total of 88 impropers
+psfgen) total of 3194 atoms
+psfgen) total of 3233 bonds
+psfgen) total of 5848 angles
+psfgen) total of 8594 dihedrals
+psfgen) total of 567 impropers
 psfgen) total of 0 explicit exclusions
-psfgen) total of 31 cross-terms
+psfgen) total of 206 cross-terms
 psfgen) Info: psf file complete.
 psfgen) Info: writing pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.pdb
 psfgen) Info: Atoms with guessed coordinates will have occupancy of 0.0.
@@ -150,9 +541,12 @@ psfgen) Info: pdb file complete.
 /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.psf /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.pdb
 PSF_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.psf
 PDB_OUT:/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P84507.pdb
-PROA:32 PROA:15 
-PROA:8 PROA:22 
-PROA:2 PROA:9 
+PROA:18 PROA:32 
+PROA:189 PROA:203 
+PROA:26 PROA:40 
+PROA:196 PROA:4 
+PROA:10 PROA:27 
+PROA:181 PROA:197 
 Info) VMD for LINUXAMD64, version 1.9.3 (November 30, 2016)
 Info) Exiting normally.
 vmd > 

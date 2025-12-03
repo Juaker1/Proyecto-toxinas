@@ -8,8 +8,8 @@ PSF CMAP
  REMARKS defaultpatch CTER PROA:27  
  REMARKS defaultpatch NTER PROA:1  
  REMARKS patch DISU PROA:2  PROA:9  
- REMARKS patch DISU PROA:32  PROA:15  
  REMARKS patch DISU PROA:8  PROA:22  
+ REMARKS patch DISU PROA:32  PROA:15  
 
      509 !NATOM
        1 PROA 1    ALA  N    NH3   -0.300000       14.0070           0

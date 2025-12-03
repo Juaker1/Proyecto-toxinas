@@ -7,6 +7,7 @@ from typing import Any, List
 from openai import OpenAI
 from dotenv import load_dotenv
 
+load_dotenv()
 # ---------------------------------------------------------------------------
 # Configuración del cliente vLLM
 # ---------------------------------------------------------------------------

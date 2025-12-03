@@ -1,194 +1,34 @@
 [
   {
+    "peptide_id": 17,
+    "accession": "D2Y1Y0",
+    "peptide_name": "Hainantoxin-III 2",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
     "peptide_id": 29,
-    "accession": "D2Y2I3",
-    "peptide_name": "Hainantoxin-III 12",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 46,
-    "accession": "D2Y1Y3",
-    "peptide_name": "Hainantoxin-III 5",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 110,
-    "accession": "D2Y2I6",
-    "peptide_name": "Mu-theraphotoxin-Hhn2i",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVNL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 113,
-    "accession": "P84508",
-    "peptide_name": "PDB-derived peptide (6BTV chain A)",
-    "sequence": "DCLGWFKSCDPKNDKCCKNYTCSRRDRWCKYYL",
-    "description_present": true,
-    "description": "Inhibits several voltage-gated sodium channels and only one voltage-gated calcium channel (Cav2.2/CACNA1B (IC(50)=1.1 uM) and Nav1.2/SCN2A (IC(50)=3.7-80 nM), Nav1.3/SCN3A (IC(50)=88-5570 nM), Nav1.1/SCN1A (IC(50)=170-407 nM), Nav1.7/SCN9A (IC(50)=95.5-230 nM), Nav1.6/SCN6A (IC(50)=49.9-3990 nM), Nav1.4/SCN4A (IC(50)=113-400 nM or >10 uM), Nav1.5/SCN5A (IC(50)=1524-1634 nM or >10 uM)) (PubMed:16267209, PubMed:28880874, PubMed:29703751). The toxin acts by shifting the voltage dependence of channel activation to more depolarized potentials and by blocking the inward component of the sodium current (PubMed:16267209). It shows moderate affinity for lipid bilayers without cholesterol and high affinity for lipid bilayers containing cholesterol (PubMed:29703751). In vivo, this toxin causes general ataxia, lack of response to stimuli, and semiparalysis (PubMed:16267209). After a few minutes, the mice are unable to stand, and breathing is reduced in rhythm and intensity (PubMed:16267209). Symptoms gradually increase with progressive slowing of breathing and flaccid paralysis; death occurred within 10 to 20 minutes post injection (PubMed:16267209). Animals remain totally flaccid, and no symptoms of excitatory neurotoxicity are observed (PubMed:16267209).",
-    "nav1_7_ic50_db": {
-      "value": 0.2,
-      "unit": "μM",
-      "peptide_code": "β-TRTX-Cm1b"
-    },
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 95.5,
-          "value_max": 230,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Nav1.7/SCN9A (IC(50)=95.5-230 nM)",
-          "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 95.5 a 230 nM."
-        }
-      ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 95.5-230 nM."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 114,
-    "accession": "P84510",
-    "peptide_name": "PDB-derived peptide (5WE3 chain A)",
-    "sequence": "DCLGFLWKCNPSNDKCCRPNLVCSRKDKWCKYQI",
-    "description_present": true,
-    "description": "Potent inhibitor of Nav1.2/SCN2A voltage-gated sodium channels (IC(50)=0.6-0.7 nM) (PubMed:16267209, PubMed:29703751). Also weakly inhibits Nav1.1/SCN1A, Nav1.4/SCN4A, Nav1.5/SCN5A, Nav1.7/SCN9A and Nav1.8/SCN10A (IC(50)=20-610 nM) (PubMed:16267209, PubMed:29703751). It acts by shifting the voltage dependence of channel activation to more depolarized potentials and by blocking the inward component of the sodium current (PubMed:16267209). It shows low affinity for lipid bilayers (PubMed:29703751). In vivo, this toxin causes general ataxia, lack of response to stimuli, and semiparalysis (PubMed:16267209). After a few minutes, the mice are unable to stand, and breathing is reduced in rhythm and intensity (PubMed:16267209). Symptoms gradually increase with progressive slowing of breathing and flaccid paralysis; death occurred within 10 to 20 minutes post injection (PubMed:16267209). Animals remain totally flaccid, and no symptoms of excitatory neurotoxicity are observed (PubMed:16267209).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 20,
-          "value_max": 610,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Also weakly inhibits Nav1.7/SCN9A and Nav1.8/SCN10A (IC(50)=20-610 nM) (PubMed:16267209, PubMed:29703751).",
-          "type": "range",
-          "interpretation": "IC50 para Nav1.7/SCN9A está en el rango de 20 a 610 nM, indicando actividad débil frente a este canal."
-        }
-      ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 20-610 nM. No se mencionaron valores de Kd para este canal en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 22,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 158,
-    "accession": "D2Y1Z4",
-    "peptide_name": "Hainantoxin-III 6",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 197,
-    "accession": "D2Y1Z1",
-    "peptide_name": "Mu-theraphotoxin-Hhn2p",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSCKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 229,
     "accession": "B3EWN2",
     "peptide_name": "Beta-theraphotoxin-Hlv1a",
     "sequence": "ACLGFGEKCNPSNDKCCKSSSLVCSQKHKWCKYGW",
@@ -199,7 +39,7 @@
       "target": "Nav1.7",
       "kd_values": [],
       "ic50_values": [],
-      "summary": "No valores de Kd ni IC50 para Nav1.7 encontrados. El texto menciona IC50=1 µM para Nav1.3/SCN3A, pero no para Nav1.7."
+      "summary": "El texto menciona IC50 para Nav1.3/SCN3A (1 µM), pero no proporciona valores de Kd ni IC50 para Nav1.7/SCN9A. No se encontraron datos cuantitativos relevantes para el objetivo objetivo."
     },
     "hit_meta": {
       "score": 9,
@@ -208,83 +48,7 @@
     }
   },
   {
-    "peptide_id": 250,
-    "accession": "D2Y1Y0",
-    "peptide_name": "Hainantoxin-III 2",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 271,
-    "accession": "D2Y2D3",
-    "peptide_name": "Hainantoxin-III 11",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 281,
-    "accession": "D2Y2I5",
-    "peptide_name": "Mu-theraphotoxin-Hhn2h",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYS",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 323,
+    "peptide_id": 60,
     "accession": "D2Y2D2",
     "peptide_name": "Hainantoxin-III 10",
     "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
@@ -303,7 +67,7 @@
           "compound": "Toxin"
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
     },
     "hit_meta": {
       "score": 9,
@@ -312,84 +76,18 @@
     }
   },
   {
-    "peptide_id": 369,
-    "accession": "D2Y232",
-    "peptide_name": "PDB-derived peptide (1NIY chain A)",
-    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "peptide_id": 67,
+    "accession": "P0DP95",
+    "peptide_name": "Mu-theraphotoxin-Osp1a",
+    "sequence": "GCKGFGKACKYGADECCKNLVCSKKHKWCKYTL",
     "description_present": true,
-    "description": "Neurotoxin that selectively inhibits neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) (IC(50)=44.6 nM) (PubMed:12518233, PubMed:14512091). It is active on Nav1.2/SCN2A (IC(50)=22.4 nM), Nav1.6/SCN8A (IC(50)=50.1 nM) and Nav1.7/SCN9A (IC(50)=48.9 nM) (PubMed:29703751). It shows low affinity for lipid bilayers (PubMed:29703751).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 48.9,
-          "unit": "nM",
-          "context": "It shows low affinity for lipid bilayers (PubMed:29703751). It is active on Nav1.2/SCN2A (IC(50)=22.4 nM), Nav1.6/SCN8A (IC(50)=50.1 nM) and Nav1.7/SCN9A (IC(50)=48.9 nM) (PubMed:29703751).",
-          "type": "exact",
-          "compound": "Neurotoxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (48.9 nM) para Nav1.7/SCN9A. El compuesto también mostró actividad contra otros canales (Nav1.2, Nav1.6) con valores de IC50 menores o mayores, pero solo el valor para Nav1.7/SCN9A fue especificado."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 397,
-    "accession": "D2Y2D7",
-    "peptide_name": "Mu-theraphotoxin-Hhn1b 3",
-    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
-    "description_present": true,
-    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "description": "Voltage-gated sodium channel Nav1.7/SCN9A inhibitor.",
     "nav1_7_ic50_db": null,
     "ai_analysis": {
       "target": "Nav1.7",
       "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 44.6,
-          "unit": "nM",
-          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
-          "type": "exact",
-          "compound": "Neurotoxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, basado en la descripción de inhibición de canales tetrodotoxina-sensibles (Nav1.7)."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 403,
-    "accession": "P56676",
-    "peptide_name": "PDB-derived peptide (1QK6 chain A)",
-    "sequence": "ACKGVFDACTPGKNECCPNRVCSDKHKWCKWKL",
-    "description_present": true,
-    "description": "Lethal toxin with multiple biological activities. Inhibits voltage-gated TTX-sensitive sodium channels in DRG neurons (IC(50)=55 nM) and also shows activity when directly tested on Nav1.7/SCN9A (IC(50)=25.1-630 nM) (PubMed:17451655, PubMed:21731778, PubMed:31234412). Inhibits N-type calcium channels (Cav2.2/CACNA1B (IC(50)=100 nM)) (PubMed:11024489, PubMed:17451655). Also blocks neuromuscular transmission (PubMed:10736477, PubMed:8212049, PubMed:9028007). In vivo, intrathecal injected toxin shows analgesic activity in the rat formalin-induced pain model, without induction of motor dysfunction in rats.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 25.1,
-          "value_max": 630,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Nav1.7/SCN9A (IC(50)=25.1-630 nM) (PubMed:17451655, PubMed:21731778, PubMed:31234412)",
-          "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 25.1 a 630 nM, indicando una amplia variabilidad en la actividad inhibidora."
-        }
-      ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 25.1-630 nM. El texto también menciona un IC50 de 55 nM para canales TTX-sensibles, pero no se relaciona directamente con Nav1.7/SCN9A."
+      "ic50_values": [],
+      "summary": "No se encontraron valores cuantitativos de Kd ni IC50 para Nav1.7. El texto solo menciona la inhibición de Nav1.7/SCN9A sin proporcionar datos numéricos."
     },
     "hit_meta": {
       "score": 9,
@@ -398,41 +96,55 @@
     }
   },
   {
-    "peptide_id": 430,
-    "accession": "P0DL72",
-    "peptide_name": "PDB-derived peptide (6MK5 chain A)",
-    "sequence": "DCLGFMRKCIPDNDKCCRPNLVCSRTHKWCKYVF",
+    "peptide_id": 82,
+    "accession": "D2Y1Z7",
+    "peptide_name": "Hainantoxin-III 7",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
     "description_present": true,
-    "description": "Potent voltage-gated sodium channel blocker (PubMed:25658507). Potently inhibits the voltage-gated sodium channels Nav1.7/SCN9A (IC(50)=0.58-10 nM) (PubMed:25658507, PubMed:26999206). Also shows a moderate activity on Nav1.1/SCN1A (IC(50)=6 nM), Nav1.2/SCN2A (IC(50)=5-128 nM), Nav1.3/SCN3A (IC(50)=20.3-170 nM), and Nav1.6/SCN8A (IC(50)=17-20.1 nM) (PubMed:25658507, PubMed:26999206). Shows an unclear inhibition of Nav1.4/SCN4A (IC(50)=200 nM to >10 uM), Nav1.5/SCN5A (IC(50)=140 nM to >10 uM) and Nav1.8/SCN10A (IC(50)=68-12200 nM) (PubMed:25658507, PubMed:26999206). Weakly blocks the low voltage-gated calcium channels Cav3.1/CACNA1G (30% inhibition of the peak current at 9.8 nM) (By similarity). shows moderate affinity for lipid bilayers (By similarity). In vivo, when tested on the OD1-induced mouse model of Nav1.7/SCN9A-mediated pain, the toxin is effective when co-administered with OD1, but lacks efficacy when delivered systemically (PubMed:26999206).",
-    "nav1_7_ic50_db": {
-      "value": 0.1,
-      "unit": "μM",
-      "peptide_code": "ω-TRTX-Gr2a"
-    },
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
     "ai_analysis": {
       "target": "Nav1.7/SCN9A",
       "kd_values": [],
       "ic50_values": [
         {
-          "value_min": 0.58,
-          "value_max": 10,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Potently inhibits the voltage-gated sodium channels Nav1.7/SCN9A (IC(50)=0.58-10 nM) (PubMed:25658507, PubMed:26999206).",
-          "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 0.58 a 10 nM, indicando alta potencia."
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
         }
       ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 0.58-10 nM, lo que demuestra una actividad potente contra este canal."
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
     },
     "hit_meta": {
       "score": 9,
-      "iC5": 22,
+      "iC5": 21,
       "gap": 5
     }
   },
   {
-    "peptide_id": 454,
+    "peptide_id": 164,
+    "accession": "D2Y1Y9",
+    "peptide_name": "Mu-theraphotoxin-Hhn2n",
+    "sequence": "GCKGFSDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto menciona que el neurotoxina bloquea canales de sodio (Nav) pero no proporciona valores cuantitativos de Kd ni IC50 para Nav1.7. No se encontraron datos numéricos para este objetivo."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 172,
     "accession": "P0DJA9",
     "peptide_name": "Toxin GTx1-15",
     "sequence": "DCLGFMRKCIPDNDKCCRPNLVCSRTHKWCKYVF",
@@ -453,7 +165,7 @@
           "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 0.58 a 10 nM, indicando una alta potencia inhibidora."
         }
       ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 0.58-10 nM. El texto menciona actividad potente contra este canal, aunque también incluye valores para otros canales (Nav1.1, Nav1.2, etc.) que no son relevantes para el objetivo actual."
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 0.58-10 nM. No se mencionaron valores de Kd en el texto."
     },
     "hit_meta": {
       "score": 9,
@@ -462,7 +174,7 @@
     }
   },
   {
-    "peptide_id": 471,
+    "peptide_id": 204,
     "accession": "D2Y1Y1",
     "peptide_name": "Hainantoxin-III",
     "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
@@ -481,7 +193,7 @@
           "compound": "Toxin"
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
     },
     "hit_meta": {
       "score": 9,
@@ -490,9 +202,9 @@
     }
   },
   {
-    "peptide_id": 479,
-    "accession": "D2Y1Z7",
-    "peptide_name": "Hainantoxin-III 7",
+    "peptide_id": 249,
+    "accession": "D2Y1Y3",
+    "peptide_name": "Hainantoxin-III 5",
     "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
     "description_present": true,
     "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
@@ -509,7 +221,7 @@
           "compound": "Toxin"
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
     },
     "hit_meta": {
       "score": 9,
@@ -518,178 +230,28 @@
     }
   },
   {
-    "peptide_id": 510,
-    "accession": "D2Y1Z8",
-    "peptide_name": "Hainantoxin-III 8",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "peptide_id": 379,
+    "accession": "P84510",
+    "peptide_name": "PDB-derived peptide (5WE3 chain A)",
+    "sequence": "DCLGFLWKCNPSNDKCCRPNLVCSRKDKWCKYQI",
     "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 512,
-    "accession": "D2Y235",
-    "peptide_name": "Mu-theraphotoxin-Hhn1d",
-    "sequence": "ECLGFGKGCNPSSDQCCKSSNLVCSRKHRWCKYEI",
-    "description_present": true,
-    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "description": "Potent inhibitor of Nav1.2/SCN2A voltage-gated sodium channels (IC(50)=0.6-0.7 nM) (PubMed:16267209, PubMed:29703751). Also weakly inhibits Nav1.1/SCN1A, Nav1.4/SCN4A, Nav1.5/SCN5A, Nav1.7/SCN9A and Nav1.8/SCN10A (IC(50)=20-610 nM) (PubMed:16267209, PubMed:29703751). It acts by shifting the voltage dependence of channel activation to more depolarized potentials and by blocking the inward component of the sodium current (PubMed:16267209). It shows low affinity for lipid bilayers (PubMed:29703751). In vivo, this toxin causes general ataxia, lack of response to stimuli, and semiparalysis (PubMed:16267209). After a few minutes, the mice are unable to stand, and breathing is reduced in rhythm and intensity (PubMed:16267209). Symptoms gradually increase with progressive slowing of breathing and flaccid paralysis; death occurred within 10 to 20 minutes post injection (PubMed:16267209). Animals remain totally flaccid, and no symptoms of excitatory neurotoxicity are observed (PubMed:16267209).",
     "nav1_7_ic50_db": null,
     "ai_analysis": {
       "target": "Nav1.7",
       "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción selectiva del neurotoxina contra canales de sodio, pero no incluye datos numéricos."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 613,
-    "accession": "B3EWN3",
-    "peptide_name": "Beta/kappa-theraphotoxin-Hlv1a",
-    "sequence": "ACKGLFVTCTPGKDECCPNHVCSSKHKWCKYKI",
-    "description_present": true,
-    "description": "Spider venom neurotoxin that blocks voltage-gated sodium channel Nav1.3/SCN3A in human (IC(50)=80 nM) and rat (IC(50)=160 nM). Partially inhibits human Kv11.1/KCNH2/ERG (25% at 175 uM).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "El texto no menciona Nav1.7/SCN9A. Se reportan valores para Nav1.3/SCN3A (IC50=80 nM en humano, 160 nM en ratón) y Kv11.1/KCNH2/ERG (25% a 175 µM), pero no para Nav1.7."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 621,
-    "accession": "P83303",
-    "peptide_name": "PDB-derived peptide (1MB6 chain A)",
-    "sequence": "ECLEIFKACNPSNDQCCKSSKLVCSRKTRWCKYQI",
-    "description_present": true,
-    "description": "This lethal neurotoxin (without cyclization at position 53) inhibits neuronal voltage-gated sodium channel Nav1.2/SCN2A (IC(50)=10-150 nM), rNav1.3/SCN3A (IC(50)=338 nM), Nav1.6/SCN8A (IC(50)=117 nM), and hNav1.7/SCN9A (IC(50)=9.6-33 nM) (PubMed:18628201, PubMed:20855463, PubMed:23760503, PubMed:25658507, PubMed:29703751, PubMed:31234412). It inhibits activation of sodium channel by trapping the voltage sensor of domain II (DIIS4) in the closed configuration (PubMed:18628201, PubMed:23760503). The toxin neither shifts the Nav1.7/SCN9A activation curve nor modifies the slope factor (PubMed:20855463). It does not slow fast-inactivation of hNav1.7/SCN9A channels (PubMed:20855463). In addition, it has only a weak affinity for lipid membranes (PubMed:18054060, PubMed:28115115, PubMed:29703751). This toxin also exists with a pyroglutamate at position 53 (PubMed:23826086). The sole difference observed between modified (mHwTx-IV) and unmodified toxins is that moderate or high depolarization voltages (200 mV) permit the unmodified toxin to dissociate, whereas mHwTx-IV toxin does not dissociate, even at high depolarization voltages (PubMed:23826086). These data indicate that mHwTx-IV strongly binds to voltage sensor of sodium channel even at extreme depolarization voltages (PubMed:23826086).",
-    "nav1_7_ic50_db": {
-      "value": 17.0,
-      "unit": "nM",
-      "peptide_code": "μ-TRTX-Hh2a"
-    },
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
       "ic50_values": [
         {
-          "value_min": 9.6,
-          "value_max": 33,
+          "value_min": 20,
+          "value_max": 610,
           "unit_min": "nM",
           "unit_max": "nM",
-          "context": "hNav1.7/SCN9A (IC(50)=9.6-33 nM)",
+          "context": "Also weakly inhibits Nav1.7/SCN9A and Nav1.8/SCN10A (IC(50)=20-610 nM) (PubMed:16267209, PubMed:29703751)",
           "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 9.6 a 33 nM, según los datos proporcionados."
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 20 a 610 nM, indicando una actividad débil frente a este canal."
         }
       ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 9.6-33 nM. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 758,
-    "accession": "D2Y1X9",
-    "peptide_name": "PDB-derived peptide (2JTB chain A)",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 831,
-    "accession": "D2Y1Y9",
-    "peptide_name": "Mu-theraphotoxin-Hhn2n",
-    "sequence": "GCKGFSDSCTPGKNECCPNYACSSKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 902,
-    "accession": "P0DQO3",
-    "peptide_name": "Mu/omega-theraphotoxin-Tap1a",
-    "sequence": "DDCLGMFSSCDPNNDKCCPNRKCSRKDQWCKYQLW",
-    "description_present": true,
-    "description": "Gating-modifier toxin that inhibits both sodium (Nav) and calcium (Cav3) channels by inducing hyperpolarizing shift in voltage-dependence of activation and steady state inactivation. Inhibits Nav1.1/SCN1A, Nav1.2/SCN2A, Nav1.3/SCN3A, Nav1.6/SCN6A, Nav1.7/SCN9A and Cav3.1/CACNA1G sodium and calcium channels at nanomolar concentrations (IC(50)=81-301 nM). Surprisingly, selectively slows fast inactivation of Nav1.3/SCN3A. Also shows moderate inhibition of Cav3.2/CACNA1H calcium channels (IC(50)=1233 nM). Ex vivo, nearly ablates neuronal mechanosensitivity in afferent fibers innervating the colon and the bladder. In vivo, in a mouse model of irritable bowel syndrome, intracolonic administration of the toxin reverses colonic mechanical hypersensitivity.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 81,
-          "value_max": 301,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Inhibits Nav1.1/SCN1A, Nav1.2/SCN2A, Nav1.3/SCN3A, Nav1.6/SCN6A, Nav1.7/SCN9A and Cav3.1/CACNA1G sodium and calcium channels at nanomolar concentrations (IC(50)=81-301 nM).",
-          "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 81 a 301 nM, indicando una actividad moderada contra este canal."
-        }
-      ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 81-301 nM, lo que sugiere una actividad moderada contra este canal."
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 20-610 nM, reflejando una actividad débil frente a este canal."
     },
     "hit_meta": {
       "score": 9,
@@ -698,26 +260,26 @@
     }
   },
   {
-    "peptide_id": 905,
-    "accession": "D2Y233",
-    "peptide_name": "Mu-theraphotoxin-Hhn1b 2",
+    "peptide_id": 430,
+    "accession": "D2Y232",
+    "peptide_name": "PDB-derived peptide (1NIY chain A)",
     "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
     "description_present": true,
-    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "description": "Neurotoxin that selectively inhibits neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) (IC(50)=44.6 nM) (PubMed:12518233, PubMed:14512091). It is active on Nav1.2/SCN2A (IC(50)=22.4 nM), Nav1.6/SCN8A (IC(50)=50.1 nM) and Nav1.7/SCN9A (IC(50)=48.9 nM) (PubMed:29703751). It shows low affinity for lipid bilayers (PubMed:29703751).",
     "nav1_7_ic50_db": null,
     "ai_analysis": {
-      "target": "Nav1.7",
+      "target": "Nav1.7/SCN9A",
       "kd_values": [],
       "ic50_values": [
         {
-          "value": 44.6,
+          "value": 48.9,
           "unit": "nM",
-          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+          "context": "It is active on Nav1.2/SCN2A (IC(50)=22.4 nM), Nav1.6/SCN8A (IC(50)=50.1 nM) and Nav1.7/SCN9A (IC(50)=48.9 nM) (PubMed:29703751).",
           "type": "exact",
           "compound": "Neurotoxin"
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, basado en la descripción de inhibición de canales tetrodotoxina-sensibles (Nav1.7)."
+      "summary": "Se encontró 1 valor exacto de IC50 (48.9 nM) para Nav1.7/SCN9A, según el texto."
     },
     "hit_meta": {
       "score": 9,
@@ -726,26 +288,28 @@
     }
   },
   {
-    "peptide_id": 918,
-    "accession": "D2Y2D1",
-    "peptide_name": "Hainantoxin-III 9",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "peptide_id": 442,
+    "accession": "P56676",
+    "peptide_name": "PDB-derived peptide (1QK6 chain A)",
+    "sequence": "ACKGVFDACTPGKNECCPNRVCSDKHKWCKWKL",
     "description_present": true,
-    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "description": "Lethal toxin with multiple biological activities. Inhibits voltage-gated TTX-sensitive sodium channels in DRG neurons (IC(50)=55 nM) and also shows activity when directly tested on Nav1.7/SCN9A (IC(50)=25.1-630 nM) (PubMed:17451655, PubMed:21731778, PubMed:31234412). Inhibits N-type calcium channels (Cav2.2/CACNA1B (IC(50)=100 nM)) (PubMed:11024489, PubMed:17451655). Also blocks neuromuscular transmission (PubMed:10736477, PubMed:8212049, PubMed:9028007). In vivo, intrathecal injected toxin shows analgesic activity in the rat formalin-induced pain model, without induction of motor dysfunction in rats.",
     "nav1_7_ic50_db": null,
     "ai_analysis": {
       "target": "Nav1.7/SCN9A",
       "kd_values": [],
       "ic50_values": [
         {
-          "value": 232,
-          "unit": "nM",
-          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
-          "type": "exact",
-          "compound": "Toxin"
+          "value_min": 25.1,
+          "value_max": 630,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Nav1.7/SCN9A (IC(50)=25.1-630 nM) (PubMed:17451655, PubMed:21731778, PubMed:31234412)",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 25.1 a 630 nM, indicando una amplia variabilidad en la actividad inhibidora."
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 25.1-630 nM. El texto también menciona un valor de IC50=55 nM para canales TTX-sensibles, pero no se relaciona directamente con Nav1.7/SCN9A."
     },
     "hit_meta": {
       "score": 9,
@@ -754,47 +318,7 @@
     }
   },
   {
-    "peptide_id": 923,
-    "accession": "P0DP95",
-    "peptide_name": "Mu-theraphotoxin-Osp1a",
-    "sequence": "GCKGFGKACKYGADECCKNLVCSKKHKWCKYTL",
-    "description_present": true,
-    "description": "Voltage-gated sodium channel Nav1.7/SCN9A inhibitor.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "El texto no contiene valores cuantitativos de Kd ni IC50 para Nav1.7/SCN9A. Solo describe el tipo de inhibidor sin especificar métricas."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 998,
-    "accession": "D2Y200",
-    "peptide_name": "Mu-theraphotoxin-Hhn2d",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVLL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1007,
+    "peptide_id": 449,
     "accession": "D2Y1Y2",
     "peptide_name": "Hainantoxin-III 4",
     "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
@@ -813,7 +337,7 @@
           "compound": "Toxin"
         }
       ],
-      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. No se mencionaron valores de Kd en el texto."
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
     },
     "hit_meta": {
       "score": 9,
@@ -822,7 +346,466 @@
     }
   },
   {
-    "peptide_id": 1046,
+    "peptide_id": 459,
+    "accession": "D2Y2D3",
+    "peptide_name": "Hainantoxin-III 11",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 476,
+    "accession": "A0A0J9X1W9",
+    "peptide_name": "PDB-derived peptide (2MPQ chain A)",
+    "sequence": "ACLGFGKSCNPSNDQCCKSSSLACSTKHKWCKYEL",
+    "description_present": true,
+    "description": "Gating-modifier toxin that reversibly and voltage-independently inhibits human Nav1.1/SCN1A and Nav1.7/SCN9A (IC(50)=111 nM) (PubMed:25754331). It also shows moderate inhibition on Nav1.2/SCN2A (1 uM inhibits current by 55%), Nav1.6/SCN8A (31%), Nav1.3/SCN5A (27%) and Nav1.4/SCN4A (23%) (PubMed:25754331). This toxin inhibits Nav1.7/SCN9A by interacting with the S3b-S4 paddle motif in channel domain II (PubMed:25754331).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 111,
+          "unit": "nM",
+          "context": "Gating-modifier toxin that reversibly and voltage-independently inhibits human Nav1.1/SCN1A and Nav1.7/SCN9A (IC(50)=111 nM) (PubMed:25754331).",
+          "type": "exact",
+          "compound": "Gating-modifier toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (111 nM) para Nav1.7/SCN9A. El texto también menciona inhibición de otros canales (Nav1.2, Nav1.6, etc.) con valores de inhibición, pero no se proporcionan valores cuantitativos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 23,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 478,
+    "accession": "B3EWN3",
+    "peptide_name": "Beta/kappa-theraphotoxin-Hlv1a",
+    "sequence": "ACKGLFVTCTPGKDECCPNHVCSSKHKWCKYKI",
+    "description_present": true,
+    "description": "Spider venom neurotoxin that blocks voltage-gated sodium channel Nav1.3/SCN3A in human (IC(50)=80 nM) and rat (IC(50)=160 nM). Partially inhibits human Kv11.1/KCNH2/ERG (25% at 175 uM).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no menciona Nav1.7/SCN9A. Se reportan valores para Nav1.3/SCN3A (IC50=80 nM en humano, 160 nM en ratón) y Kv11.1/KCNH2/ERG (25% a 175 µM), pero no para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 574,
+    "accession": "D2Y2D7",
+    "peptide_name": "Mu-theraphotoxin-Hhn1b 3",
+    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "description_present": true,
+    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 44.6,
+          "unit": "nM",
+          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+          "type": "exact",
+          "compound": "Neurotoxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, indicando actividad selectiva contra canales TTX-sensibles."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 23,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 621,
+    "accession": "D2Y1X9",
+    "peptide_name": "PDB-derived peptide (2JTB chain A)",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 627,
+    "accession": "D2Y200",
+    "peptide_name": "Mu-theraphotoxin-Hhn2d",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVLL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 637,
+    "accession": "D2Y2I5",
+    "peptide_name": "Mu-theraphotoxin-Hhn2h",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYS",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 642,
+    "accession": "D2Y2I6",
+    "peptide_name": "Mu-theraphotoxin-Hhn2i",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVNL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 664,
+    "accession": "D2Y2D1",
+    "peptide_name": "Hainantoxin-III 9",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 778,
+    "accession": "P60975",
+    "peptide_name": "Mu-theraphotoxin-Hhn1a",
+    "sequence": "ECLGFGKGCNPSNDQCCKSANLVCSRKHRWCKYEI",
+    "description_present": true,
+    "description": "Inhibits selectively tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not act by binding to receptor site 3 to slow the inactivation kinetics of sodium currents.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "El texto no menciona valores cuantitativos de Kd ni IC50 para Nav1.7. Describe el mecanismo de inhibición general sin proporcionar datos numéricos."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 23,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 834,
+    "accession": "D2Y1Z8",
+    "peptide_name": "Hainantoxin-III 8",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 881,
+    "accession": "D2Y235",
+    "peptide_name": "Mu-theraphotoxin-Hhn1d",
+    "sequence": "ECLGFGKGCNPSSDQCCKSSNLVCSRKHRWCKYEI",
+    "description_present": true,
+    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la selectividad del neurotoxina hacia canales Nav, pero no proporciona datos numéricos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 23,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 964,
+    "accession": "P0DQO3",
+    "peptide_name": "Mu/omega-theraphotoxin-Tap1a",
+    "sequence": "DDCLGMFSSCDPNNDKCCPNRKCSRKDQWCKYQLW",
+    "description_present": true,
+    "description": "Gating-modifier toxin that inhibits both sodium (Nav) and calcium (Cav3) channels by inducing hyperpolarizing shift in voltage-dependence of activation and steady state inactivation. Inhibits Nav1.1/SCN1A, Nav1.2/SCN2A, Nav1.3/SCN3A, Nav1.6/SCN6A, Nav1.7/SCN9A and Cav3.1/CACNA1G sodium and calcium channels at nanomolar concentrations (IC(50)=81-301 nM). Surprisingly, selectively slows fast inactivation of Nav1.3/SCN3A. Also shows moderate inhibition of Cav3.2/CACNA1H calcium channels (IC(50)=1233 nM). Ex vivo, nearly ablates neuronal mechanosensitivity in afferent fibers innervating the colon and the bladder. In vivo, in a mouse model of irritable bowel syndrome, intracolonic administration of the toxin reverses colonic mechanical hypersensitivity.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value_min": 81,
+          "value_max": 301,
+          "unit_min": "nM",
+          "unit_max": "nM",
+          "context": "Inhibits Nav1.1/SCN1A, Nav1.2/SCN2A, Nav1.3/SCN3A, Nav1.6/SCN6A, Nav1.7/SCN9A and Cav3.1/CACNA1G sodium and calcium channels at nanomolar concentrations (IC(50)=81-301 nM).",
+          "type": "range",
+          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 81 a 301 nM, indicando una actividad moderada a alta."
+        }
+      ],
+      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 81-301 nM. El texto menciona inhibición de Nav1.7/SCN9A en este rango, junto con otros canales, pero se enfoca en el valor para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 22,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1113,
+    "accession": "D2Y1Z4",
+    "peptide_name": "Hainantoxin-III 6",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1114,
+    "accession": "D2Y2I3",
+    "peptide_name": "Hainantoxin-III 12",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSSKHKWCKVYL",
+    "description_present": true,
+    "description": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A). This toxin suppress Nav1.7 current amplitude without significantly altering the activation, inactivation, and repriming kinetics. Short extreme depolarizations partially activate the toxin-bound channel, indicating voltage-dependent inhibition of this toxin. This toxin increases the deactivation of the Nav1.7 current after extreme depolarizations. The toxin-Nav1.7 complex is gradually dissociated upon prolonged strong depolarizations in a voltage-dependent manner, and the unbound toxin rebinds to Nav1.7 after a long repolarization. Moreover, analysis of chimeric channels showed that the DIIS3-S4 linker is critical for toxin binding to Nav1.7. These data are consistent with this toxin interacting with Nav1.7 site 4 and trapping the domain II voltage sensor in the closed state.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7/SCN9A",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 232,
+          "unit": "nM",
+          "context": "Selective antagonist of neuronal tetrodotoxin (TTX)-sensitive voltage-gated sodium channels (IC(50)=1270 nM on Nav1.1/SCN1A, 270 nM on Nav1.2/SCN2A, 491 nM on Nav1.3/SCN3A and 232 nM on Nav1.7/SCN9A).",
+          "type": "exact",
+          "compound": "Toxin"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (232 nM) para Nav1.7/SCN9A. El texto menciona un antagonista selectivo que inhibe el flujo de Nav1.7 con IC50=232 nM."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1167,
+    "accession": "D2Y233",
+    "peptide_name": "Mu-theraphotoxin-Hhn1b 2",
+    "sequence": "ECLGFGKGCNPSNDQCCKSSNLVCSRKHRWCKYEI",
+    "description_present": true,
+    "description": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [
+        {
+          "value": 44.6,
+          "unit": "nM",
+          "context": "Neurotoxin. Selectively blocks neuronal tetrodotoxin-sensitive voltage-gated sodium channels (Nav) with an IC(50) of 44.6 nM. Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels.",
+          "type": "exact"
+        }
+      ],
+      "summary": "Se encontró 1 valor exacto de IC50 (44.6 nM) para Nav1.7, basado en la inhibición de canales de sodio tetrodotoxina-sensibles (probablemente Nav1.7)."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 23,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1208,
+    "accession": "A0A1S4NYE8",
+    "peptide_name": "PDB-derived peptide (5I1X chain A)",
+    "sequence": "EDCLGWFSRCSPKNDKCCPNYKCSSKDLWCKYKIW",
+    "description_present": true,
+    "description": "Gating-modifier toxin that both inhibits the peak current of human Nav1.1/SCN1A, rat Nav1.2/SCN2A, human Nav1.6/SCN8A, and human Nav1.7/SCN9A and concurrently inhibits fast inactivation of human Nav1.1 and rat Nav1.3/SCN3A. The relative rank order potency for Nav modulation is Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > Nav1.2 > Nav1.1 (inactivation) > Nav1.1 > Nav1.6 > Nav1.3 (IC(50)=8 uM). The DII and DIV S3-S4 loops of Nav channel voltage sensors are important for the interaction of this toxin with Nav channels but cannot account for its unique subtype selectivity. It is the variability of the S1-S2 loops between NaV channels which contributes substantially to the selectivity profile observed for this toxin, particularly with regards to fast inactivation. This toxin may bind the channel in the resting state (Probable).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "error": "Error parseando JSON: No JSON found in model response: line 1 column 1 (char 0)",
+      "raw_response": "<think>\nOkay, let's tackle this query. The user wants me to extract Kd and IC50 values for Nav1.7/SCN9A from the provided text. First, I need to scan through the text for any mentions of Nav1.7 or SCN9A. \n\nLooking at the text, there's a part that says: \"The relative rank order potency for Nav modulation is Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > Nav1.2 > Nav1.1 (inactivation) > Nav1.1 > Nav1.6 > Nav1.3 (IC(50)=8 uM).\" \n\nSo, the key here is the ranking. The user mentioned that if there's a ranking like Nav1.3 > Nav1.7 > ... > Nav1.3 (IC50=8 uM), then Nav1.7 is between 45 nM and 8 µM. But wait, the text has Nav1.3 with EC50=45 nM and Nav1.3 (IC50=8 uM). Wait, that's a bit confusing. Let me parse that again.\n\nThe text says Nav1.3 (inactivation EC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 uM). So, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. But the ranking is Nav1.3 (EC50) > Nav1.7 > ... > Nav1.3 (IC50). So, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. But the ranking is based on potency, which is inversely related to IC50. So, the higher the EC50 or lower the IC50, the more potent the compound.\n\nWait, the user's instruction says that if there's a ranking like Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. But in the text, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. So, the ranking is based on EC50 and IC50? Or is it based on the potency, which is determined by the EC50 or IC50?\n\nThe user's example earlier had a similar case where Nav1.3 (EC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM). The interpretation was that Nav1.7 is between 45 nM and 8 µM. But in this case, the text has Nav1.3 (EC50=45 nM) and Nav1.3 (IC50=8 µM). Wait, that's conflicting. Wait, the text says \"Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > ... > Nav1.3 (IC(50)=8 uM)\". So, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. But the ranking is based on the potency, which is determined by the EC50 or IC50. \n\nBut the user's instruction says that if there's a ranking like Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. However, in this case, the text has Nav1.3 (EC50=45 nM) and Nav1.3 (IC50=8 µM). So, the EC50 is 45 nM, and the IC50 is 8 µM. But the ranking is Nav1.3 (EC50) > Nav1.7 > ... > Nav1.3 (IC50). So, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. Therefore, Nav1.7 is between 45 nM (EC50) and 8 µM (IC50). But the user's example had EC50 and IC50 for Nav1.3, but here, the EC50 is 45 nM and the IC50 is 8 µM. \n\nSo, the user's instruction says that if the ranking is Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. But in this case, the EC50 is 45 nM and the IC50 is 8 µM. So, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. Therefore, Nav1.7 is between 45 nM (EC50) and 8 µM (IC50). \n\nBut the user's instruction says that if the ranking is Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. However, in this case, the EC50 is 45 nM and the IC50 is 8 µM. So, the EC50 is 45 nM, and the IC50 is 8 µM. Therefore, Nav1.7 is between 45 nM (EC50) and 8 µM (IC50). \n\nBut the user's example had EC50 and IC50 for Nav1.3, but here, the EC50 is 45 nM and the IC50 is 8 µM. So, the ranking is based on the EC50 and IC50. Therefore, Nav1.7 is between 45 nM (EC50) and 8 µM (IC50). \n\nBut the user's instruction says that if the ranking is Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. However, in this case, the EC50 is 45 nM and the IC50 is 8 µM. Therefore, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. So, the ranking is based on the EC50 and IC50. \n\nBut the user's instruction says that the ranking is based on the EC50 and IC50. Therefore, Nav1.7 is between 45 nM (EC50) and 8 µM (IC50). \n\nSo, the IC50 for Nav1.7 is between 45 nM and 8 µM. But the user's example had EC50 and IC50 for Nav1.3. So, in this case, the EC50 for Nav1.3 is 45 nM, and the IC50 for Nav1.3 is 8 µM. Therefore, Nav1.7 is between 45 nM and 8 µM. \n\nBut the user's instruction says that if the ranking is Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. However, in this case, the EC50 is 45 nM and the IC50 is 8 µM. Therefore, the EC50 is 45 nM, and the IC50 is 8 µM. \n\nSo, the correct approach is to take the EC50 of Nav1.3 (45 nM) and the IC50 of Nav1.3 (8 µM) as the bounds for Nav1.7. Therefore, the IC50 for Nav1.7 is between 45 nM and 8 µM. \n\nBut the user's instruction says that if the ranking is Nav1.3 (IC50=45 nM) > Nav1.7 > ... > Nav1.3 (IC50=8 µM), then Nav1.7 is between 45 nM and 8 µM. However, in this case, the EC50 is 45 nM and the IC50 is 8 µM. Therefore, the EC50 is 45 nM, and the IC50 is 8 µM. \n\nSo, the answer should be that the IC50 for Nav1.7 is between 45"
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 22,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1248,
+    "accession": "D2Y1Z1",
+    "peptide_name": "Mu-theraphotoxin-Hhn2p",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSCKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1277,
+    "accession": "D2Y201",
+    "peptide_name": "Mu-theraphotoxin-Hhn2e",
+    "sequence": "GCKGFGDSCTPGKNECCPNYACSGKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 9,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1307,
     "accession": "P0DP93",
     "peptide_name": "Mu-theraphotoxin-CCy1a",
     "sequence": "DDCLGIFKSCNPDNDKCCESYKCSRRDKWCKYVL",
@@ -842,325 +825,7 @@
     }
   },
   {
-    "peptide_id": 1055,
-    "accession": "D2Y201",
-    "peptide_name": "Mu-theraphotoxin-Hhn2e",
-    "sequence": "GCKGFGDSCTPGKNECCPNYACSGKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1078,
-    "accession": "P60975",
-    "peptide_name": "Mu-theraphotoxin-Hhn1a",
-    "sequence": "ECLGFGKGCNPSNDQCCKSANLVCSRKHRWCKYEI",
-    "description_present": true,
-    "description": "Inhibits selectively tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not act by binding to receptor site 3 to slow the inactivation kinetics of sodium currents.",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la inhibición selectiva de canales de sodio, pero no incluye datos numéricos para Nav1.7."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1089,
-    "accession": "A0A1S4NYE8",
-    "peptide_name": "PDB-derived peptide (5I1X chain A)",
-    "sequence": "EDCLGWFSRCSPKNDKCCPNYKCSSKDLWCKYKIW",
-    "description_present": true,
-    "description": "Gating-modifier toxin that both inhibits the peak current of human Nav1.1/SCN1A, rat Nav1.2/SCN2A, human Nav1.6/SCN8A, and human Nav1.7/SCN9A and concurrently inhibits fast inactivation of human Nav1.1 and rat Nav1.3/SCN3A. The relative rank order potency for Nav modulation is Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > Nav1.2 > Nav1.1 (inactivation) > Nav1.1 > Nav1.6 > Nav1.3 (IC(50)=8 uM). The DII and DIV S3-S4 loops of Nav channel voltage sensors are important for the interaction of this toxin with Nav channels but cannot account for its unique subtype selectivity. It is the variability of the S1-S2 loops between NaV channels which contributes substantially to the selectivity profile observed for this toxin, particularly with regards to fast inactivation. This toxin may bind the channel in the resting state (Probable).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 45,
-          "value_max": 8000,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "The relative rank order potency for Nav modulation is Nav1.3 (inactivation EC(50)=45 nM) > Nav1.7 > Nav1.2 > Nav1.1 (inactivation) > Nav1.1 > Nav1.6 > Nav1.3 (IC(50)=8 uM).",
-          "type": "range",
-          "interpretation": "Nav1.7 está en un rango de potencia entre 45 nM (Nav1.3, más potente) y 8000 nM (8 µM, Nav1.3 con IC50, menos potente). El símbolo > indica que Nav1.7 es menos potente que Nav1.3 (45 nM) pero más potente que los canales posteriores en la serie."
-        }
-      ],
-      "summary": "Se infiere un rango de IC50 para Nav1.7/SCN9A basado en el orden relativo de potencia: entre 45 nM y 8000 nM (8 µM)."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 22,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1119,
-    "accession": "A0A0J9X1W9",
-    "peptide_name": "PDB-derived peptide (2MPQ chain A)",
-    "sequence": "ACLGFGKSCNPSNDQCCKSSSLACSTKHKWCKYEL",
-    "description_present": true,
-    "description": "Gating-modifier toxin that reversibly and voltage-independently inhibits human Nav1.1/SCN1A and Nav1.7/SCN9A (IC(50)=111 nM) (PubMed:25754331). It also shows moderate inhibition on Nav1.2/SCN2A (1 uM inhibits current by 55%), Nav1.6/SCN8A (31%), Nav1.3/SCN5A (27%) and Nav1.4/SCN4A (23%) (PubMed:25754331). This toxin inhibits Nav1.7/SCN9A by interacting with the S3b-S4 paddle motif in channel domain II (PubMed:25754331).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value": 111,
-          "unit": "nM",
-          "context": "Gating-modifier toxin that reversibly and voltage-independently inhibits human Nav1.1/SCN1A and Nav1.7/SCN9A (IC(50)=111 nM) (PubMed:25754331).",
-          "type": "exact",
-          "compound": "Gating-modifier toxin"
-        }
-      ],
-      "summary": "Se encontró 1 valor exacto de IC50 (111 nM) para Nav1.7/SCN9A. El texto también menciona inhibición de otros canales, pero solo se extrajo el valor relevante para Nav1.7/SCN9A."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 23,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1120,
-    "accession": "P0DL84",
-    "peptide_name": "Beta-theraphotoxin-Cd1a",
-    "sequence": "DCLGWFKSCDPKNDKCCKNYSCSRRDRWCKYDL",
-    "description_present": true,
-    "description": "Potent inhibitor of hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp), and modest inhibitor of Cav2.2/CACNA1B (IC(50)~3 uM on rat and human channel) (PubMed:28880874). It also seems to be potent on hNav1.1/SCN1A (IC(50)=2.18 uM), hNav1.2/SCN2A (IC(50)=0.13 uM), hNav1.7/SCN9A (IC(50)=3.34 uM) and hNav1.8/SCN10A (IC(50)=6.92 uM) (tested in fluorimetric assays, which shows results with lower activity than results obtained by patch-clamp) (PubMed:28880874). This toxin inhibits Cav2.2/CACNA1B by acting near the pore region, but without overlapping the omega-conotoxin binding site (PubMed:28880874). It also seems to interfere with inactivation of Cav2.2/CACNA1B with no apparent effects on the activation gating of the channel (PubMed:28880874). Conversely, at Nav1.7/SCN9A it acts as a typical gating modifier toxin, interacting with one or more of the voltage sensor domains and changing the gating properties of this channel (PubMed:28880874). In vivo, it reversibly paralyzes sheep blowflies (PubMed:28880874). In addition, low doses of this toxin (400 pmol) fully reverse Nav1.7/SCN9A-evoked pain behaviors in mice (without side effects), demonstrating its analgesic potential (PubMed:28880874).",
-    "nav1_7_ic50_db": {
-      "value": 2.2,
-      "unit": "nM",
-      "peptide_code": "β-TRTX-Cd1a"
-    },
-    "ai_analysis": {
-      "error": "Error parseando JSON: No JSON found in model response: line 1 column 1 (char 0)",
-      "raw_response": "<think>\nOkay, let's tackle this query. The user wants me to extract Kd and IC50 values for Nav1.7/SCN9A from the provided text. First, I need to scan through the text to find any mentions of Nav1.7 or SCN9A. \n\nLooking at the text, there are several instances where IC50 values are mentioned. The first one is \"IC(50)=16 nM\" for hNav1.7/SCN9A. Then later, there's another mention: \"hNav1.7/SCN9A (IC(50)=3.34 uM)\". Also, there's a note about \"IC(50)=3.34 uM\" for Nav1.7/SCN9A. \n\nWait, the user specified to extract values for Nav1.7/SCN9A. The text mentions \"hNav1.7/SCN9A\" which is the human version, so that's acceptable. The IC50 values here are 16 nM, 3.34 uM, and another 3.34 uM. \n\nNow, checking the units: 16 nM is already in nM. The 3.34 uM needs to be converted to nM. Since 1 µM is 1000 nM, 3.34 µM is 3340 nM. But the text also mentions \"IC(50)=3.34 uM\" in the same sentence as \"hNav1.7/SCN9A (IC(50)=3.34 uM)\", so that's a direct value. \n\nAlso, there's a mention of \"IC(50)=3.34 uM\" again, so that's another entry. But wait, the user might be looking for all instances. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" and \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" again. So that's two entries, but maybe they are the same. \n\nAlso, the text mentions \"IC(50)=16 nM\" in patch-clamp assays, and \"IC(50)=3.34 uM\" in fluorimetric assays. The user might want both values. \n\nNow, for Kd values, the text doesn't mention any Kd values for Nav1.7/SCN9A. The only Kd mentioned is in the first sentence, but that's for hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp). Wait, the first sentence says \"Potent inhibitor of hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp), and modest inhibitor of Cav2.2/CACNA1B (IC(50)~3 uM on rat and human channel) (PubMed:28880874).\"\n\nSo the Kd is not mentioned here. The text only mentions IC50 values. Therefore, kd_values should be empty. \n\nNow, for the IC50 values, we have three entries: 16 nM, 3.34 uM (which is 3340 nM), and another 3.34 uM. Wait, but the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. So that's two instances. But maybe they are the same value. \n\nSo, the IC50 values would be:\n\n- 16 nM (exact)\n- 3.34 uM (converted to 3340 nM, approximate)\n- 3.34 uM (same as above)\n\nBut the user might want to extract all instances. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice, so that's two entries. But maybe they are the same. \n\nWait, the text says: \"It also seems to be potent on hNav1.7/SCN9A (IC(50)=3.34 uM) and hNav1.7/SCN9A (IC(50)=3.34 uM)\". So that's two instances. But the user might want to list them as separate entries. \n\nBut in the JSON structure, each entry is an object. So, for the first instance, 16 nM is exact. Then, the two instances of 3.34 uM would be two entries. However, the user might consider them as the same value. But according to the instructions, we need to extract all mentions. \n\nSo, the IC50_values would include:\n\n1. 16 nM (exact)\n2. 3.34 uM (approximate, converted to 3340 nM)\n3. 3.34 uM (same as above, but as a separate entry)\n\nBut the user might have a typo, but the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. So, two entries. \n\nBut the user's example in the previous interaction had a similar case where the same value was mentioned twice, but in that case, the user included both. \n\nSo, the JSON should have:\n\nic50_values: [\n  { value: 16, unit: nM, type: exact, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... }\n]\n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice, so that's two entries. \n\nBut the user might have a mistake here. However, according to the instructions, we need to extract all mentions. \n\nSo, the final JSON would have:\n\n- ic50_values with 16 nM (exact), and two entries of 3.34 uM (approximate, converted to 3340 nM). \n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. \n\nSo, the answer would include all three entries. \n\nBut the user's previous example had a similar case where the same value was mentioned twice, and the assistant included both. \n\nTherefore, the correct JSON would have:\n\nic50_values: [\n  { value: 16, unit: nM, type: exact, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... },\n  { value: 3340, unit: nM, type: approximate, context: ... }\n]\n\nBut the user might have intended that the 3.34 uM is the same value. However, the text says \"hNav1.7/SCN9A (IC(50)=3.34 uM)\" twice. \n\nSo, the answer should include all three entries. \n\nBut the user might have made a mistake in the text, but according to the instructions, we need to extract all mentions. \n\nTherefore, the JSON would have the three entries. \n\nBut the user's example in the previous interaction had a similar case where the same value was mentioned twice, and the assistant included both. \n\nSo, the final answer would be:\n\n{\n  \"target\": \"Nav1.7\",\n  \"kd_values\": [],\n  \"ic50_values\": [\n    {\n      \"value\": 16,\n      \"unit\": \"nM\",\n      \"context\": \"Potent inhibitor of hNav1.7/SCN9A (IC(50)=16 nM, tested in patch-clamp), and modest inhibitor of Cav2.2/CACNA1B (IC(50)~3 uM on rat and human channel) (PubMed:28880874).\",\n      \"type\": \"exact\",\n      \"compound\": \"Compound\"\n    },\n    {\n      \"value_min\": 3340,\n      \"value_max\": null,\n      \"unit_min\": \"nM\",\n      \"unit_max\": null,\n      \"context\": \"hNav1.7/SCN9A (IC(50)=3.34 uM)\",\n      \"type\": \"approximate\",\n      \"interpretation\": \"3.34 µM = 3340 nM\",\n      \"compound\": \"Compound\"\n    },\n    {\n      \"value_min\": 3340,\n      \"value_max\": null,\n      \"unit_min\": \"nM\",\n      \"unit_max\": null,\n      \"context\": \"hNav1.7/SCN9A (IC(50)=3.34 uM)\",\n      \"type\": \"approximate\",\n      \"interpretation\": \"3.34 µM = 3340 nM\",\n      \"compound\": \""
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1198,
-    "accession": "P84507",
-    "peptide_name": "PDB-derived peptide (5EPM chain D)",
-    "sequence": "DCLGWFKSCDPKNDKCCKNYTCSRRDRWCKYDL",
-    "description_present": true,
-    "description": "Inhibits many voltage-gated sodium channels and one voltage-gated calcium channel (Cav2.2/CACNA1B (IC(50)=400 nM), Nav1.2/SCN2A (IC(50)=3-70 nM), Nav1.1/SCN1A (IC(50)=523-1060 nM), Nav1.7/SCN9A (IC(50)=129.1-5120 nM), Nav1.4/SCN4A (IC(50)=263-888 nM or >10 uM) and Nav1.5/SCN5A (IC(50)=188-323 nM or >10 uM)) (PubMed:16267209, PubMed:27129258, PubMed:28880874, PubMed:29703751). It acts by shifting the voltage dependence of channel activation to more depolarized potentials and by blocking the inward component of the sodium current (PubMed:16267209). It shows moderate affinity for lipid bilayers (PubMed:29703751). On Nav1.7/SCN9A, it has been shown to interact with the S3-S4 loop of domain DII (site 4) (PubMed:27129258). Is significantly more potent against Nav1.2/SCN2A than the other Nav channel subtypes (PubMed:16267209). In vivo, this toxin causes general ataxia, lack of response to stimuli, and semiparalysis (PubMed:16267209). After a few minutes, the mice are unable to stand, and breathing is reduced in rhythm and intensity (PubMed:16267209). Symptoms gradually increase with progressive slowing of breathing and flaccid paralysis, death occurred within 10 to 20 minutes post injection (PubMed:16267209). Animals remain totally flaccid, and no symptoms of excitatory neurotoxicity are observed (PubMed:16267209).",
-    "nav1_7_ic50_db": {
-      "value": 5.1,
-      "unit": "μM",
-      "peptide_code": "β-TRTX-Cm1a"
-    },
-    "ai_analysis": {
-      "target": "Nav1.7/SCN9A",
-      "kd_values": [],
-      "ic50_values": [
-        {
-          "value_min": 129.1,
-          "value_max": 5120,
-          "unit_min": "nM",
-          "unit_max": "nM",
-          "context": "Nav1.7/SCN9A (IC(50)=129.1-5120 nM)",
-          "type": "range",
-          "interpretation": "El IC50 para Nav1.7/SCN9A está en el rango de 129.1 a 5120 nM, indicando una amplia variabilidad en la actividad inhibidora."
-        }
-      ],
-      "summary": "Se encontró un rango de IC50 para Nav1.7/SCN9A: 129.1-5120 nM. No se reportaron valores de Kd para este canal."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 1287,
-    "accession": "P0CH54",
-    "peptide_name": "PDB-derived peptide (8FD4 chain A)",
-    "sequence": "SCKVPFNECKYGADECCKGYVCSKRDGWCKYHIN",
-    "description_present": true,
-    "description": "Probable ion channel inhibitor.",
-    "nav1_7_ic50_db": {
-      "value": 9.2,
-      "unit": "μM",
-      "peptide_code": "μ-TRTX-Cg4a"
-    },
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "El texto no contiene información cuantitativa sobre Kd o IC50 para Nav1.7. Solo menciona 'probable ion channel inhibitor' sin valores numéricos específicos."
-    },
-    "hit_meta": {
-      "score": 9,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 18,
-    "accession": "D2Y1Y7",
-    "peptide_name": "Mu-theraphotoxin-Hhn2l",
-    "sequence": "GCKGFGDSCTPGKNECCPDHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 170,
-    "accession": "D2Y1Z3",
-    "peptide_name": "Mu-theraphotoxin-Hhn2j 3",
-    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 367,
-    "accession": "D2Y1Y6",
-    "peptide_name": "Mu-theraphotoxin-Hhn2k",
-    "sequence": "GCKGFDDSCTPGKNECCPNHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 494,
-    "accession": "D2Y1Z5",
-    "peptide_name": "Mu-theraphotoxin-Hhn2j 4",
-    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 583,
-    "accession": "D2Y1Z0",
-    "peptide_name": "Mu-theraphotoxin-Hhn2o",
-    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKAYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 595,
-    "accession": "D2Y202",
-    "peptide_name": "Mu-theraphotoxin-Hhn2f",
-    "sequence": "GCRGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 663,
-    "accession": "D2Y1Y5",
-    "peptide_name": "Mu-theraphotoxin-Hhn2j 2",
-    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
-    "description_present": true,
-    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
-    "nav1_7_ic50_db": null,
-    "ai_analysis": {
-      "target": "Nav1.7",
-      "kd_values": [],
-      "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
-    },
-    "hit_meta": {
-      "score": 8,
-      "iC5": 21,
-      "gap": 5
-    }
-  },
-  {
-    "peptide_id": 708,
+    "peptide_id": 124,
     "accession": "D2Y1Y8",
     "peptide_name": "Mu-theraphotoxin-Hhn2m",
     "sequence": "GCKGFGDSCTPGKNECCPNPACSNKHKWCKVYL",
@@ -1171,7 +836,7 @@
       "target": "Nav1.7",
       "kd_values": [],
       "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
     },
     "hit_meta": {
       "score": 8,
@@ -1180,9 +845,69 @@
     }
   },
   {
-    "peptide_id": 734,
-    "accession": "D2Y1Y4",
-    "peptide_name": "Mu-theraphotoxin-Hhn2j 1",
+    "peptide_id": 194,
+    "accession": "D2Y1Y6",
+    "peptide_name": "Mu-theraphotoxin-Hhn2k",
+    "sequence": "GCKGFDDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 367,
+    "accession": "D2Y202",
+    "peptide_name": "Mu-theraphotoxin-Hhn2f",
+    "sequence": "GCRGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 434,
+    "accession": "D2Y1Y7",
+    "peptide_name": "Mu-theraphotoxin-Hhn2l",
+    "sequence": "GCKGFGDSCTPGKNECCPDHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 614,
+    "accession": "D2Y1Y5",
+    "peptide_name": "Mu-theraphotoxin-Hhn2j 2",
     "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
     "description_present": true,
     "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
@@ -1191,7 +916,7 @@
       "target": "Nav1.7",
       "kd_values": [],
       "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
     },
     "hit_meta": {
       "score": 8,
@@ -1200,7 +925,27 @@
     }
   },
   {
-    "peptide_id": 881,
+    "peptide_id": 819,
+    "accession": "D2Y1Z3",
+    "peptide_name": "Mu-theraphotoxin-Hhn2j 3",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 865,
     "accession": "D2Y1Z6",
     "peptide_name": "Mu-theraphotoxin-Hhn2j 4",
     "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
@@ -1211,7 +956,7 @@
       "target": "Nav1.7",
       "kd_values": [],
       "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
     },
     "hit_meta": {
       "score": 8,
@@ -1220,7 +965,47 @@
     }
   },
   {
-    "peptide_id": 1126,
+    "peptide_id": 954,
+    "accession": "D2Y1Z0",
+    "peptide_name": "Mu-theraphotoxin-Hhn2o",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKAYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1045,
+    "accession": "D2Y1Z5",
+    "peptide_name": "Mu-theraphotoxin-Hhn2j 4",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1151,
     "accession": "D2Y1Z9",
     "peptide_name": "Mu-theraphotoxin-Hhn2c",
     "sequence": "GCKGFGDSCAPGKNECCPNHACSNKHKWCKVYL",
@@ -1231,7 +1016,27 @@
       "target": "Nav1.7",
       "kd_values": [],
       "ic50_values": [],
-      "summary": "No valores cuantitativos de Kd ni IC50 se encontraron. El texto describe la acción selectiva del neurotoxina contra canales Nav sensibles a tetrodotoxina, pero no menciona valores numéricos para Kd o IC50."
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
+    },
+    "hit_meta": {
+      "score": 8,
+      "iC5": 21,
+      "gap": 5
+    }
+  },
+  {
+    "peptide_id": 1173,
+    "accession": "D2Y1Y4",
+    "peptide_name": "Mu-theraphotoxin-Hhn2j 1",
+    "sequence": "GCKGFGDSCTPGKNECCPNHACSNKHKWCKVYL",
+    "description_present": true,
+    "description": "Lethal neurotoxin. Selectively blocks tetrodotoxin-sensitive voltage-gated sodium channels (Nav). Does not affect tetrodotoxin-resistant voltage-gated sodium channels or calcium channels (By similarity).",
+    "nav1_7_ic50_db": null,
+    "ai_analysis": {
+      "target": "Nav1.7",
+      "kd_values": [],
+      "ic50_values": [],
+      "summary": "No valores cuantitativos de Kd ni IC50 fueron mencionados. El texto describe la acción general del neurotoxina sin proporcionar datos numéricos específicos para Nav1.7/SCN9A."
     },
     "hit_meta": {
       "score": 8,

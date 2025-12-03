@@ -7,18 +7,14 @@ Info)    Molecular Dynamics', J. Molec. Graphics 1996, 14.1, 33-38.
 Info) -------------------------------------------------------------
 Info) Multithreading available, 12 CPUs detected.
 Info)   CPU features: SSE2 AVX AVX2 FMA 
-Info) Free system memory: 13GB (86%)
+Info) Free system memory: 13GB (84%)
 Info) Creating CUDA device pool and initializing hardware...
 Info) Detected 1 available CUDA accelerator:
 Info) [0] NVIDIA GeForce RTX 3060 28 SM_8.6 @ 1.81 GHz, 12GB RAM, KTO, AE1, ZCP
-Warning) Unable to open dynamic library '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so'.
-Warning) libexpat.so.0: failed to map segment from shared object
-Warning) Unable to dlopen '/home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so':
-  Unable to dlopen plugin file /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile/hoomdplugin.so
-Info) Dynamically loaded 1 plugins in directory:
+Info) Dynamically loaded 2 plugins in directory:
 Info) /home/juaker/miniconda3/envs/vmd/lib/plugins/LINUXAMD64/molfile
 1.6.4
-Iniciando construcción PSF para: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P0DL84.pdb
+Iniciando construcción PSF para: /tmp/peptide_amt1sxcq.pdb
 Topologías: "/mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/resources/top_all36_prot.rtf"
 Prefijo salida: /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_psfs/P0DL84
 Segmento: PROA
@@ -48,10 +44,10 @@ psfgen) aliasing residue HSP to HSP
 psfgen) aliasing residue MSE to MET
 psfgen) aliasing residue SEC to CYS
 psfgen) aliasing residue CYX to CYS
-Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P0DL84.pdb
-Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P0DL84.pdb
+Info) Using plugin pdb for structure file /tmp/peptide_amt1sxcq.pdb
+Info) Using plugin pdb for coordinates from file /tmp/peptide_amt1sxcq.pdb
 Info) Determining bond structure from distance search ...
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/P0DL84.pdb.
+Info) Finished with coordinate file /tmp/peptide_amt1sxcq.pdb.
 Info) Analyzing structure ...
 Info)    Atoms: 279
 Info)    Bonds: 289
@@ -61,11 +57,11 @@ Info)    Residues: 33
 Info)    Waters: 0
 Info)    Segments: 1
 Info)    Fragments: 1   Protein: 1   Nucleic: 0
-Info) Opened coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb for writing.
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb.
+Info) Opened coordinate file /tmp/psfgen_sanitized_10271_1764366438538647.pdb for writing.
+Info) Finished with coordinate file /tmp/psfgen_sanitized_10271_1764366438538647.pdb.
 Construyendo segmento PROA...
 psfgen) building segment PROA
-psfgen) reading residues from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb
+psfgen) reading residues from pdb file /tmp/psfgen_sanitized_10271_1764366438538647.pdb
 psfgen) extracted 33 residues from pdb file
 psfgen) Info: generating structure...psfgen) Info: skipping improper N-C-CA-HN at beginning of segment.
 psfgen) Info: skipping cross-term C-N-CA-C-N-CA-C-N at beginning of segment.
@@ -78,16 +74,16 @@ psfgen) Info: skipping conformation CA-C-N-CA at end of segment.
 psfgen) Info: skipping conformation N-CA-C-O at end of segment.
 psfgen) Info: skipping conformation N-CA-C-N at end of segment.
 segment complete.
-psfgen) reading coordinates from pdb file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb for segment PROA
+psfgen) reading coordinates from pdb file /tmp/psfgen_sanitized_10271_1764366438538647.pdb for segment PROA
 psfgen) Warning: failed to set coordinate for atom O	 LEU:27	  PROA
 psfgen) Warning: failed to set coordinate for atom OXT	 LEU:27	  PROA
 Buscando enlaces disulfuro...
 PROA:27 
 PROA:1 
-Info) Using plugin pdb for structure file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb
-Info) Using plugin pdb for coordinates from file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb
+Info) Using plugin pdb for structure file /tmp/psfgen_sanitized_10271_1764366438538647.pdb
+Info) Using plugin pdb for coordinates from file /tmp/psfgen_sanitized_10271_1764366438538647.pdb
 Info) Determining bond structure from distance search ...
-Info) Finished with coordinate file /mnt/c/Users/joaco/Desktop/Prueba-streamlit/Proyecto-toxinas/pdbs/filtered_aligned/psfgen_sanitized_13800_1761053966613904.pdb.
+Info) Finished with coordinate file /tmp/psfgen_sanitized_10271_1764366438538647.pdb.
 Info) Analyzing structure ...
 Info)    Atoms: 279
 Info)    Bonds: 289
@@ -99,24 +95,24 @@ Info)    Segments: 1
 Info)    Fragments: 1   Protein: 1   Nucleic: 0
 Encontrados 6 átomos SG de cisteína
 Calculando distancias entre 6 átomos SG...
-Distancia SG 2 - SG 32: 12.199177115710656 Å
-Distancia SG 2 - SG 8: 8.613711914413399 Å
-Distancia SG 2 - SG 9: 2.029166424840889 Å
-  -> Candidato a enlace disulfuro (distancia: 2.029166424840889 Å)
-Distancia SG 2 - SG 15: 13.111809985705404 Å
-Distancia SG 2 - SG 22: 8.283228661428652 Å
-Distancia SG 32 - SG 8: 4.039730629067439 Å
-Distancia SG 32 - SG 9: 11.153884590146447 Å
-Distancia SG 32 - SG 15: 2.0056413083490283 Å
-  -> Candidato a enlace disulfuro (distancia: 2.0056413083490283 Å)
-Distancia SG 32 - SG 22: 4.195826965125281 Å
-Distancia SG 8 - SG 9: 7.568253210717666 Å
-Distancia SG 8 - SG 15: 4.772536673311674 Å
-Distancia SG 8 - SG 22: 2.0303049149949834 Å
-  -> Candidato a enlace disulfuro (distancia: 2.0303049149949834 Å)
-Distancia SG 9 - SG 15: 12.23233538031178 Å
-Distancia SG 9 - SG 22: 7.04335564596163 Å
-Distancia SG 15 - SG 22: 5.625635884313021 Å
+Distancia SG 2 - SG 32: 12.19959254257757 Å
+Distancia SG 2 - SG 8: 8.61327287472069 Å
+Distancia SG 2 - SG 9: 2.0293225884608432 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0293225884608432 Å)
+Distancia SG 2 - SG 15: 13.111912904375641 Å
+Distancia SG 2 - SG 22: 8.283422601357236 Å
+Distancia SG 32 - SG 8: 4.040512270888152 Å
+Distancia SG 32 - SG 9: 11.153979410671074 Å
+Distancia SG 32 - SG 15: 2.004934750857027 Å
+  -> Candidato a enlace disulfuro (distancia: 2.004934750857027 Å)
+Distancia SG 32 - SG 22: 4.196193421617371 Å
+Distancia SG 8 - SG 9: 7.567529020115825 Å
+Distancia SG 8 - SG 15: 4.7728601653776686 Å
+Distancia SG 8 - SG 22: 2.0299224989092637 Å
+  -> Candidato a enlace disulfuro (distancia: 2.0299224989092637 Å)
+Distancia SG 9 - SG 15: 12.232006138145673 Å
+Distancia SG 9 - SG 22: 7.0431195253583025 Å
+Distancia SG 15 - SG 22: 5.625320538034447 Å
 Enlaces disulfuro seleccionados: 3
 >> Aplicando patch DISU entre PROA:32 y PROA:15
 psfgen) applying patch DISU to 2 residues

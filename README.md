@@ -1,536 +1,336 @@
-# Proyecto Toxinas - Análisis de Toxinas Nav1.7
+<div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
-[![Mol*](https://img.shields.io/badge/Mol*-Latest-orange.svg)](https://molstar.org/)
-[![NetworkX](https://img.shields.io/badge/NetworkX-Latest-red.svg)](https://networkx.org/)
+# Proyecto Toxinas – Análisis de Toxinas Nav1.7
 
-Un proyecto de análisis computacional para estudiar Toxinas que interactúan con canales de sodio Nav1.7, utilizando análisis de grafos moleculares y visualización 3D interactiva con métricas de centralidad avanzadas.
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Backend-Flask-green.svg)](https://flask.palletsprojects.com/)
+[![Graphein](https://img.shields.io/badge/Graphs-Graphein-red.svg)](https://github.com/a-r-j/graphein)
+[![Mol*](https://img.shields.io/badge/Viewer-Mol*-%23ff8800.svg)](https://molstar.org/)
 
-## 🧬 Descripción
+Análisis estructural de toxinas que modulan Nav1.7 mediante grafos moleculares, métricas de centralidad avanzadas y visualización 3D interactiva.
 
-Este proyecto proporciona herramientas para analizar la estructura y propiedades de péptidos tóxicos que se dirigen específicamente a los canales de sodio Nav1.7. Combina análisis de grafos moleculares con visualización 3D interactiva para identificar residuos críticos y patrones estructurales.
+</div>
 
-### Características Principales
+---
 
-- **Análisis de Centralidad**: Cálculo de métricas de centralidad (betweenness, closeness, degree) para identificar residuos importantes
-- **Visualización 3D**: Integración completa con Molstar para visualización molecular interactiva
-- **Exportación de Datos**: Funcionalidad completa de exportación CSV con todas las métricas de residuos
-- **Base de Datos**: Sistema de almacenamiento SQLite para gestión eficiente de estructuras PDB
-- **Análisis de IC50**:  Integración de datos de actividad biológica; todos los valores se convierten a nM para permitir análisis comparativos de actividad  
+## 🧾 Resumen
 
-- **Correlación Estructura-Actividad**: Análisis combinado de métricas estructurales y datos IC50
-- **Filtro de Toxinas NaSpTx**: Búsqueda basada en motivos (X1X2-S-WCKX3) con scoring heurístico y soporte para ≥6 cisteínas.
-- **Visualización Multi-Modo**: Modos Vectores Dipolares, Puentes Disulfuro y Ambos con ΔZ resaltado y transición instantánea.
-- **Ordenamiento Angular vs WT**: Toxinas filtradas ordenadas por desviación del ángulo respecto al dipolo WT `hwt4_Hh2a_WT` (calculado desde PSF/PDB generados).
+La creciente necesidad de analgésicos selectivos no opioides ha consolidado a NaV1.7 como un blanco terapéutico clave en el tratamiento del dolor. No obstante, los flujos computacionales para la identificación y priorización de inhibidores peptídicos derivados de venenos se encuentran fragmentados y carecen de estandarización. Este trabajo presenta una plataforma bioinformática modular que automatiza el proceso completo de adquisición, normalización y análisis estructural de toxinas tipo *knottin*. El sistema integra filtrado farmacofórico basado en secuencia, descriptores topológicos obtenidos desde grafos moleculares y propiedades electrostáticas globales como la orientación del momento dipolar. Se procesaron 1308 péptidos maduros provenientes de UniProt, obteniéndose 44 candidatos compatibles con el modelo inhibitorio de NaV1.7. Los resultados evidencian que la plataforma permite analizar de forma consistente la arquitectura interna de estas toxinas y priorizar variantes con potencial bioactividad. Así, se entrega un marco escalable y reproducible para apoyar el descubrimiento racional de inhibidores peptídicos del canal NaV1.7.
 
-## 🚀 Instalación Rápida
+---
 
-### Prerrequisitos
+## 🧬 Descripción General
 
-- Python 3.8+
-- pip (gestor de paquetes de Python)
+Este proyecto (desarrollado en el repositorio [`Juaker1/Proyecto-toxinas`](https://github.com/Juaker1/Proyecto-toxinas)) implementa una **plataforma de análisis computacional** para péptidos tóxicos que interactúan con el canal de sodio **Nav1.7**. Combina:
 
-### Configuración del Entorno
+- Construcción de **grafos moleculares** a partir de estructuras PDB (nivel residuo o atómico).
+- Cálculo de **métricas de centralidad** y propiedades topológicas.
+- **Visualización 3D** con Mol* + grafo interactivo en paralelo.
+- Una **base de datos SQLite** con péptidos, familias, PDB/PSF y datos de actividad (IC50).
+- Herramientas para **búsqueda de motivos NaSpTx**, análisis de dipolos y exportación avanzada por familias.
 
-1. **Clonar el repositorio**:
+El backend sigue una arquitectura en capas (Clean Architecture / Ports & Adapters) documentada en `src/README.md`.
+
+---
+
+## ✨ Características Principales
+
+- **Análisis de Grafos Moleculares**:
+  - Construcción de grafos con `graphein` y `networkx` a partir de PDB.
+  - Soporte para granularidad por **residuo (CA)** o **átomo**.
+  - Distancia umbral y separación secuencial configurables.
+
+- **Métricas de Centralidad y Propiedades**:
+  - Degree, betweenness, closeness, eigenvector, clustering, etc.
+  - Identificación de residuos clave y motivos estructurales.
+
+- **Interfaz Web Interactiva (Flask + Mol*)**:
+  - Visualización 3D con Mol* y panel de métricas.
+  - Modos de visualización de **dipolos**, **puentes disulfuro** y combinados.
+  - Filtro de toxinas NaSpTx basado en motivo **X1X2-S-WCKX3**.
+
+- **Base de Datos Integrada (SQLite)**:
+  - Tablas para proteínas, péptidos, familias y `Nav1_7_InhibitorPeptides`.
+  - Almacenamiento de PDB/PSF, secuencias y metadatos.
+  - Normalización automática de **IC50 a nM**.
+
+- **Análisis de Relación Estructura-Actividad (SAR)**:
+  - Unión entre métricas de grafo y actividad inhibidora.
+  - Exportación por familias (μ-TRTX-H, μ-TRTX-C, κ-TRTX, etc.).
+
+- **Pipeline Completo UniProt → DB → Artefactos**:
+  - Búsqueda en UniProt, descarga XML, extracción de péptidos y recorte de PDB.
+  - Inserción de dataset Nav1.7 curado y asociación con PDB/PSF locales.
+  - Exportación de PDB filtrados, generación de PSF/PDB para análisis de dipolos.
+  - Generación opcional de un JSON con anotaciones IA sobre los accesiones filtrados.
+
+---
+
+## 🏗 Arquitectura (Resumen)
+
+El código de aplicación se encuentra bajo `src/` y sigue una arquitectura en capas:
+
+- `src/domain/` – **Dominio**: entidades (toxina, familia, grafo, métricas), value objects, servicios puros.
+- `src/application/` – **Casos de uso**: orquestan repositorios, adaptadores de grafos, exportadores y cálculo de dipolos.
+- `src/infrastructure/` – **Infraestructura**: adaptadores SQLite, Graphein/NetworkX, export a Excel, preprocesado PDB, cálculo de dipolos.
+- `src/interfaces/` – **Interfaces HTTP + Web**: aplicación Flask, controladores REST `/v2/*`, templates Jinja y JS/CSS (Mol*, viewer, paneles de métricas, filtros de toxinas, etc.).
+- `src/utils/` – Utilidades genéricas (por ejemplo, generación de Excel).
+
+Para más detalle, ver `src/README.md` y los README específicos de cada subcarpeta.
+
+---
+
+## 🧱 Requisitos y Entornos
+
+El proyecto está pensado para ejecutarse en **Python 3.9** con un entorno de **conda** que incluye VMD y dependencias de análisis estructural.
+
+### Opciones de entorno
+
+#### 1. Entorno conda (recomendado)
+
+Hay dos ficheros de entorno principales:
+
+- `vmd.yml` → entorno completo para **Linux** (incluye VMD, PyMOL, MDAnalysis, etc.).
+- `vmd_windows.yml` → entorno equivalente ajustado para **Windows**.
+
+Creación del entorno en Linux:
+
 ```bash
-git clone https://github.com/tuusuario/Proyecto-toxinas.git
-cd Proyecto-toxinas
+conda env create -f vmd.yml
+conda activate vmd
 ```
 
-2. **Crear entorno virtual**:
-```bash
-python -m venv toxinas
-# Windows
-toxinas\Scripts\activate
-# Linux/Mac
-source toxinas/bin/activate
-```
+En Windows, usar `vmd_windows.yml` (nombre del entorno análogo) desde Anaconda Prompt/PowerShell.
 
-3. **Instalar dependencias**:
+#### 2. Instalación vía `requirements.txt`
+
+Si ya tienes un entorno conda base configurado, puedes instalar las dependencias Python con:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configurar la base de datos**:
+Algunas características (como generación de PSF con VMD/psfgen) requieren que **VMD** esté instalado y accesible en el `PATH` del sistema.
+
+---
+
+## 🚀 Puesta en Marcha Rápida
+
+### 1. Clonado del repositorio
+
+```bash
+git clone https://github.com/Juaker1/Proyecto-toxinas.git
+cd Proyecto-toxinas
+```
+
+### 2. Crear y activar entorno (ejemplo Linux)
+
+```bash
+conda env create -f vmd.yml
+conda activate vmd
+```
+
+### 3. Inicializar la base de datos
+
 ```bash
 python database/create_db.py
-python database/pdb_data_insert.py
 ```
 
-5. **Ejecutar la aplicación**:
+Esto crea (o actualiza de forma idempotente) la base SQLite principal en `database/toxins.db`.
+
+### 4. Ejecutar la API / interfaz web v2
+
+La versión actual utiliza el entrypoint `run_v2.py`, que levanta la aplicación Flask con los endpoints `/v2/*` y la interfaz web actualizada:
+
 ```bash
-python run.py
+python run_v2.py
 ```
 
-La aplicación estará disponible en `http://localhost:5000`
+Por defecto se expone en `http://localhost:5001` (configurable vía variables de entorno `HOST` y `PORT`).
 
-## 📋 Dependencias Principales
+---
 
-```txt
-flask>=2.0.0
-numpy>=1.21.0
-pandas>=1.3.0
-networkx>=2.6
-biopython>=1.79
-matplotlib>=3.4.0
-seaborn>=0.11.0
-plotly>=5.0.0
-sqlite3
-requests>=2.26.0
-graphein>=1.7.0
+## 🔁 Pipeline Completo UniProt → DB → Artefactos (`run_full_pipeline.py`)
+
+El script `run_full_pipeline.py` ejecuta de forma orquestada todo el flujo de ingestión y preparación de datos:
+
+1. **Crear/verificar base de datos**:
+   - Llama a `database.create_db.create_database()` y garantiza que `toxins.db` exista.
+
+2. **Buscar accesiones en UniProt**:
+   - Usa `extractors.uniprot.UniProtPipeline.fetch_accessions(query)` para obtener accessions y un prefijo de nombre.
+
+3. **Descarga XML + inserción de proteínas**:
+   - `UniProtPipeline.fetch_all_async(...)` descarga datos UniProt (XML) y los inserta en la tabla `Proteins`.
+
+4. **Extracción y corte de péptidos**:
+   - `extractors.peptide_extractor.PeptideExtractor.process_xml_file(...)`:
+     - Identifica péptidos/motivos relevantes, descarga PDB/AlphaFold si es necesario.
+     - Recorta las estructuras a los rangos de residuos de interés.
+     - Inserta entradas en la tabla `Peptides`.
+
+5. **Insertar dataset Nav1.7 curado**:
+   - `loaders.instert_Nav1_7.insert_peptides()` añade un conjunto curado de péptidos inhibidores Nav1.7 a `Nav1_7_InhibitorPeptides` (y tablas asociadas).
+
+6. **Asociar blobs PDB/PSF a Nav1.7**:
+   - `loaders.instert_Nav1_7_pdb_psf.PDBAndPSFInserter.process_all_peptides()` lee PDB/PSF desde `pdbs/` y `psfs/` y los vincula en la BD.
+
+7. **Exportar PDBs de péptidos filtrados**:
+   - `extractors.export_filtered_pdbs.export_filtered_pdbs(...)` escribe PDB recortados en `pdbs/filtered/` usando un filtro de motivo NaSpTx:
+     - Parámetros principales: `gap_min`, `gap_max`, `require_pair`.
+
+8. **Generar PSF/PDB para filtrados** (para análisis de dipolos):
+   - `extractors.generate_filtered_psfs.FilteredPSFGenerator` recorre los péptidos filtrados y genera PSF/PDB en `pdbs/filtered_psfs/` mediante VMD/psfgen.
+   - Respeta `--no-psf` para omitir esta etapa.
+
+9. **Construir JSON de análisis IA** (opcional):
+   - `tools.export_filtered_accessions_nav1_7.process_filtered_hits(...)` produce un JSON (`exports/filtered_accessions_nav1_7_analysis.json`) con anotaciones IA sobre los accessions filtrados.
+   - Respeta `--no-ai` y `--overwrite`.
+
+10. **Resumen de tiempos y contadores**:
+    - Al final imprime un resumen con tiempos por etapa, número de accesiones recuperadas, péptidos insertados, PDB/PSF generados, etc.
+
+### Uso desde la línea de comandos
+
+Desde la raíz del proyecto:
+
+```bash
+conda activate vmd  # o tu entorno equivalente
+python run_full_pipeline.py \
+  --query "Nav1.7 toxin" \
+  --gap-min 3 \
+  --gap-max 6 \
+  --require-pair \
+  --overwrite
 ```
 
-## 🛠 Uso Detallado
+Parámetros soportados:
 
-### Interfaz Web Principal
+- `--query` (str): cadena de búsqueda para UniProt. Si se omite, se pedirá por consola.
+- `--gap-min` (int): separación mínima entre los residuos del motivo (por defecto 3).
+- `--gap-max` (int): separación máxima (por defecto 6).
+- `--require-pair` (flag): exige la presencia de un par hidrofóbico en el motivo.
+- `--no-psf` (flag): omite la generación de PSF/PDB para péptidos filtrados.
+- `--no-ai` (flag): omite la generación del JSON de análisis IA.
+- `--overwrite` (flag): fuerza la reescritura de artefactos ya existentes (PDB filtrados, PSF/PDB, JSON IA).
 
-1. **Acceder al Dashboard**: Navega a `http://localhost:5000`
-2. **Seleccionar Péptido**: Elige un péptido de la lista desplegable (fuente: toxinas/nav1_7)
-3. **Configurar Parámetros**:
-   - **Granularidad**: `CA` (residuos) o `Atom` (atómico)
-   - **Distancia Umbral**: 6.0-12.0 Å (recomendado: 8.0-10.0 Å)
-   - **Separación Secuencial**: 3-10 residuos (recomendado: 5)
-4. **Visualizar Estructura**: La estructura 3D se carga automáticamente con Molstar
-5. **Analizar Métricas**: Revisa las métricas de centralidad en el panel lateral
-6. **Exportar Datos**: Utiliza el botón "Exportar Datos CSV" para descargar todos los datos
+Este comando puede tardar varios minutos dependiendo de la conexión a UniProt, el número de péptidos y la disponibilidad de VMD/psfgen.
 
-### Análisis de Centralidad Implementado
+---
 
-El sistema calcula automáticamente las siguientes métricas:
+## 🌐 Interfaz Web y API
 
-- **Degree Centrality**: Número de conexiones directas de cada residuo
-- **Betweenness Centrality**: Identifica residuos que actúan como "puentes" en la estructura
-- **Closeness Centrality**: Mide qué tan "cerca" está un residuo de todos los demás
+La aplicación Flask v2 se define en `src/interfaces/http/flask/app.py` y se ejecuta con `run_v2.py`.
 
+### Inicio de la aplicación web
 
-
-
-
-
-
-## 📊 Estructura de Base de Datos
-
-### Tablas Principales
-
-#### `peptides`
-- **Función**: Almacena información estructural de péptidos
-- **Campos clave**: `id`, `name`, `source`, `pdb_content`, `sequence`
-
-#### `Nav1_7_InhibitorPeptides` 
-- **Función**: Datos de actividad biológica y clasificación
-- **Campos clave**: 
-  - `peptide_name`: Nombre del péptido/toxina
-  - `ic50_value`: Valor de concentración inhibitoria 50%
-  - `ic50_unit`: Unidad de medida (μM, nM, mM)
-  - `classification`: Familia de toxina (ej: μ-TRTX-Hd1a)
-
-#### Integración de Datos
-- **Normalización IC50**: Conversión automática a nM para análisis consistente
-- **Clasificación por familias**: Consultas SQL optimizadas para agrupar subfamilias
-- **Correlación estructural**: Join entre métricas topológicas y datos de actividad
-
-### Consultas Ejemplo
-
-#### Obtener familia μ-TRTX-H:
-```sql
-SELECT DISTINCT peptide_name FROM Nav1_7_InhibitorPeptides 
-WHERE peptide_name LIKE 'μ-TRTX-%2a' OR peptide_name LIKE 'mu-TRTX-%2a'
+```bash
+conda activate vmd
+python run_v2.py
 ```
 
-#### Normalización IC50:
+Accede en el navegador a:
+
+- `http://localhost:5001` → Página principal (selección de péptido, parámetros de grafo, visualización 3D, panel de métricas).
+
+### Controles principales en la UI
+
+- **Fuente / péptido**: selección de toxinas o péptidos Nav1.7.
+- **Granularidad**: `CA` (nivel residuo) o `Atom` (nivel atómico).
+- **Distancia umbral**: típica entre 6–12 Å (recomendado 8–10 Å).
+- **Separación de secuencia**: p.ej. 5 residuos (evita contactos triviales adyacentes).
+- **Modos de visualización**: vectores dipolares, puentes disulfuro, ambos (en la vista de dipolos/familias).
+
+La UI integra Mol* para el PDB y un visor de grafo 2D/3D basado en Plotly/JS.
+
+### Endpoints principales (v2)
+
+Los controladores Flask v2 exponen endpoints documentados en `src/interfaces/README.md`. Algunos ejemplos típicos:
+
+- `/v2/proteins/<source>/<peptide_id>/graph` → cálculo del grafo y métricas.
+- `/v2/export/residues/<source>/<peptide_id>` → exportación Excel/CSV de métricas de un péptido.
+- `/v2/export/family/<family_name>` → exportación masiva por familia con IC50 normalizado.
+- `/v2/dipole/<source>/<peptide_id>` → cálculo de dipolo y propiedades asociadas.
+- `/v2/peptides` → listado de péptidos.
+- `/v2/families` → listado de familias y péptidos por familia.
+- `/v2/health` → endpoint de salud (usado en despliegues Docker/Nginx).
+
+Consulta `tools/print_routes.py` para inspeccionar todas las rutas expuestas.
+
+---
+
+## 📊 Esquema de Base de Datos (Resumen)
+
+La base de datos SQLite (típicamente `database/toxins.db`) incluye, entre otras, las tablas:
+
+- `Proteins` – metadatos de proteínas UniProt.
+- `Peptides` – péptidos individuales, secuencias y PDB recortados.
+- `Nav1_7_InhibitorPeptides` – información de péptidos inhibidores Nav1.7:
+  - `peptide_name`, `ic50_value`, `ic50_unit`, `classification`, etc.
+- Tablas auxiliares para familias, alias, relaciones entre péptidos y estructuras, etc.
+
+La normalización de IC50 a nM se realiza en consultas y/o vistas, p.ej.:
+
 ```sql
 CASE 
     WHEN ic50_unit = 'μM' THEN ic50_value * 1000
     WHEN ic50_unit = 'mM' THEN ic50_value * 1000000
     ELSE ic50_value 
-END as normalized_ic50_nm
+END AS normalized_ic50_nm
 ```
 
-## 📁 Estructura del Proyecto
-
-```
-proyecto-toxinas/
-├── app/                          # Aplicación Flask principal
-│   ├── routes/                   # Rutas de la API
-│   │   └── viewer_routes.py      # Endpoints para visualización
-│   ├── static/                   # Archivos estáticos
-│   │   ├── css/                  # Estilos CSS
-│   │   └── js/                   # JavaScript frontend
-│   │       ├── molstar_analyzer.js    # Análisis con Mol*
-│   │       ├── graph_viewer.js         # Visualización de grafos
-│   │       └── viewer.js               # Control principal
-│   ├── templates/                # Templates HTML
-│   │   └── viewer.html           # Interface principal
-│   └── __init__.py              # Inicialización de Flask
-├── database/                     # Gestión de base de datos
-│   ├── create_db.py             # Creación de esquema
-│   ├── pdb_data_insert.py       # Inserción de datos
-│   └── toxins.db                # Base de datos SQLite
-├── extractors/                   # Herramientas de extracción
-│   ├── cortar_pdb.py            # Manipulación de archivos PDB
-│   ├── peptide_extractor.py     # Extracción de péptidos
-│   └── uniprot.py               # API de UniProt
-├── graphs/                       # Análisis de grafos
-│   ├── graph_analysis2D.py      # Análisis 2D de grafos
-│   ├── graph_analysis3D.py      # Análisis 3D de grafos
-│   └── graph2.py                # Herramientas adicionales
-├── loaders/                      # Cargadores de datos
-├── pdbs/                         # Archivos PDB almacenados
-├── data/                         # Datos de entrenamiento y procesados
-│   ├── pdb_raw/                 # Archivos PDB sin procesar
-│   └── processed/               # Datos procesados
-├── tests/                        # Tests y ejemplos
-├── requirements.txt              # Dependencias Python
-├── config.py                    # Configuración
-└── run.py                       # Punto de entrada
-```
-
-## 🎯 Uso de la Aplicación
-
-### 1. Cargar Datos de Proteínas
-
-#### Desde UniProt
-```python
-from extractors.uniprot import UniProtPipeline
-
-pipeline = UniProtPipeline()
-# Buscar toxinas relacionadas con Nav1.7
-accessions, prefix = pipeline.fetch_accessions("Nav1.7 toxin")
-```
-
-#### Desde archivos PDB locales
-```python
-from extractors.cortar_pdb import PDBHandler
-
-# Extraer secuencia de un PDB
-sequence = PDBHandler.extract_primary_sequence("archivo.pdb")
-
-# Recortar PDB por rango de residuos
-PDBHandler.cut_pdb_by_residue_range("input.pdb", "output.pdb", 1, 50)
-```
-
-### 2. Análisis de Grafos Moleculares
-
-#### Análisis básico
-```python
-from graphs.graph_analysis2D import Nav17ToxinGraphAnalyzer
-
-analyzer = Nav17ToxinGraphAnalyzer()
-result = analyzer.analyze_single_toxin("toxina.pdb", cutoff_distance=8.0)
-
-print(f"Nodos: {result['graph_properties']['num_nodes']}")
-print(f"Densidad: {result['graph_properties']['density']:.4f}")
-```
-
-#### Métricas de centralidad
-```python
-# Obtener residuos con mayor centralidad
-degree_top = result['centrality_measures']['degree_centrality_more']
-betweenness_top = result['centrality_measures']['betweenness_centrality_more']
-
-print(f"Residuos clave (grado): {degree_top}")
-print(f"Residuos clave (intermediación): {betweenness_top}")
-```
-
-### 3. Interface Web
-
-#### Navegación por pestañas
-- **Pestaña Principal**: Visualización 3D con Mol*
-- **Pestaña Grafos**: Análisis de redes moleculares con métricas
-
-#### Controles interactivos
-- **Granularidad**: Alternar entre vista atómica y de residuos
-- **Distancia umbral**: Ajustar conexiones del grafo (Å)
-- **Separación de secuencia**: Filtrar conexiones por distancia secuencial
-
-#### Exportación de datos
-- **CSV completo**: Descargar métricas de todos los residuos
-- **Análisis detallado**: Top 5 residuos por métrica de centralidad
-
-## 🔧 API Endpoints
-
-### Visualización de Proteínas
-```http
-GET /get_pdb/<source>/<id>
-```
-Obtiene datos PDB de una proteína específica.
-
-### Análisis de Grafos
-```http
-GET /get_protein_graph/<source>/<id>?long=5&threshold=10.0&granularity=CA
-```
-Genera y analiza el grafo molecular con parámetros personalizables.
-
-### Exportación de Datos
-```http
-GET /export_residues_csv/<source>/<id>?long=5&threshold=10.0&granularity=CA
-```
-Exporta métricas completas en formato CSV para un péptido individual.
-
-### Exportación por Familias
-```http
-GET /export_family_csv/<family_name>
-```
-Exporta datos completos de una familia específica de toxinas con integración IC50.
-- **Parámetros soportados**: 
-  - `family_name`: Nombre de la familia (ej: "μ-TRTX-H", "μ-TRTX-C", "κ-TRTX")
-- **Formato de respuesta**: Archivo CSV con datos combinados de estructura y actividad
-- **Características**: Normalización automática de IC50, diferenciación de subfamilias
-
-## 🧪 Análisis Científico
-
-### Métricas de Centralidad Implementadas
-
-1. **Centralidad de Grado**: Identifica residuos con mayor número de conexiones
-2. **Centralidad de Intermediación**: Detecta residuos que actúan como "puentes"
-3. **Centralidad de Cercanía**: Encuentra residuos centrales en la estructura
-4. **Coeficiente de Agrupamiento**: Mide la densidad local de conexiones
-
-### Aplicaciones Específicas para Nav1.7
-
-- **Identificación de farmacóforos**: Residuos clave para interacción
-- **Análisis de puentes disulfuro**: Estabilidad estructural
-- **Mapeo de superficies de interacción**: Regiones de unión al canal
-- **Clasificación de toxinas**: Por patrones estructurales
-
-### Análisis de Relación Estructura-Actividad (SAR)
-
-#### Integración de Datos IC50
-- **Base de datos integrada**: Tabla `Nav1_7_InhibitorPeptides` con datos de actividad
-- **Normalización automática**: Conversión de μM y mM a nM para análisis consistente
-- **Correlación estructural**: Análisis combinado de métricas de centralidad con actividad biológica
-
-#### Clasificación de Familias de Toxinas
-- **μ-TRTX Subfamilias**: 
-  - **μ-TRTX-H** (terminación 2a): Subfamilia con terminación específica
-  - **μ-TRTX-C** (terminación 2b): Subfamilia alternativa
-- **κ-TRTX**: Familia adicional de toxinas 
-- **Otros grupos**: Extensible para nuevas clasificaciones
-
-#### Metodología de Análisis
-1. **Extracción de características**: Métricas topológicas del grafo molecular
-2. **Integración de bioactividad**: Datos IC50 experimentales
-3. **Análisis comparativo**: Comparación entre familias y subfamilias
-4. **Identificación de patrones**: Correlaciones estructura-actividad
-
-## 🎮 Guía de Uso Rápido
-
-### Paso 1: Iniciar la aplicación
-```powershell
-python run.py
-```
-
-### Paso 2: Abrir el navegador
-Navegar a `http://localhost:5000`
-
-### Paso 3: Seleccionar una toxina
-- Usar los selectores en la interfaz para elegir una proteína
-- Las opciones incluyen datos de "toxinas" y "nav1_7"
-
-### Paso 4: Configurar parámetros
-- **Distancia umbral**: 6.0-12.0 Å (recomendado: 8.0 Å)
-- **Granularidad**: CA (residuos) o Atom (atómico)
-- **Separación**: 3-10 residuos (recomendado: 5)
-
-### Paso 5: Analizar resultados
-- Revisar métricas de centralidad en el panel derecho
-- Examinar el grafo 3D interactivo
-- Exportar datos completos en CSV si es necesario
-
-## 🔬 Análisis Avanzado por Familias
-
-### Funcionalidad de Exportación por Familias
-
-La aplicación ahora incluye un sistema avanzado para el análisis comparativo de familias de toxinas:
-
-#### Características Principales
-- **Selector de Familia**: Interfaz intuitiva para seleccionar familias específicas
-- **Exportación Masiva**: Descarga completa de datasets por familia
-- **Análisis SAR**: Correlación estructura-actividad con datos IC50 integrados
-
-#### Familias Soportadas
-1. **μ-TRTX-H (mu-TRTX-H)**: Subfamilia con terminación 2a
-2. **μ-TRTX-C (mu-TRTX-C)**: Subfamilia con terminación 2b  
-3. **κ-TRTX (kappa-TRTX)**: Familia kappa de toxinas
-4. **Otras familias**: Extensible para nuevas clasificaciones
-
-#### Uso del Sistema de Familias
-
-1. **Acceder a la sección**: Localizar el panel "Exportar por Familia" en la interfaz
-2. **Seleccionar familia**: Usar el menú desplegable para elegir la familia de interés
-3. **Exportar datos**: Hacer clic en "Exportar Familia" para descargar el CSV
-4. **Analizar resultados**: El archivo incluye todas las métricas estructurales + datos IC50
-
-#### Estructura del CSV Exportado
-```csv
-Residue_ID,Residue_Name,Chain,Position,Degree_Centrality,Betweenness_Centrality,Closeness_Centrality,Eigenvector_Centrality,Clustering_Coefficient,Peptide,IC50_Value,IC50_Unit
-μ-TRTX-Hd1a_1,MET,A,1,0.023,0.0045,0.1234,0.0891,0.456,μ-TRTX-Hd1a,150.0,nM
-μ-TRTX-Hd1a_2,CYS,A,2,0.045,0.0123,0.1567,0.1234,0.567,μ-TRTX-Hd1a,150.0,nM
-```
-
-#### Aplicaciones Científicas
-- **Análisis comparativo**: Comparar métricas entre diferentes familias
-- **Identificación de patrones**: Encontrar residuos conservados críticos
-- **Correlación SAR**: Relacionar propiedades estructurales con actividad biológica
-- **Clasificación filogenética**: Agrupar toxinas por características topológicas
-
-### Mejoras Técnicas Implementadas
-
-#### Correcciones de Formato
-- **Visualización de residuos**: Formato estandarizado "VAL21 (Cadena A): 0.1122"
-- **Función `populateTop5List`**: Corrección completa para mostrar nombres de aminoácidos correctos
-- **Manejo de valores undefined**: Eliminación de campos "undefined" en la interfaz
-
-#### Optimizaciones de Rendimiento
-- **Consultas SQL optimizadas**: Queries específicas por familia para mejor rendimiento
-- **Normalización de IC50**: Algoritmo eficiente para conversión de unidades
-- **Manejo de Unicode**: Mapeo de caracteres griegos para compatibilidad de archivos
-
-#### Sistema de Logging
-- **Debugging avanzado**: Logs detallados para el proceso de exportación de familias
-- **Tracking de errores**: Identificación específica de problemas en consultas de base de datos
-- **Monitoreo de rendimiento**: Seguimiento de tiempos de procesamiento
-
-#### Resolución de Conflictos
-### Paso 6: Análisis por familias (Nuevo)
-- **Seleccionar familia**: Usar el selector de familia para análisis comparativo
-
-Este proyecto incluye una configuración Docker lista para producción usando Gunicorn y un endpoint de salud en `/v2/health`. En un VPS, se publica solo en `127.0.0.1` para ser expuesto mediante Nginx Proxy Manager (NPM).
-
-### Producción (VPS)
-
-```powershell
-# Construir imagen y levantar el servicio de la API
-docker compose up -d app
-
-# Verificar salud desde el VPS (estándar NPM: usar IP pública del host)
-curl http://51.79.49.242:8087/v2/health
-```
-
-Configura NPM para apuntar el dominio (p. ej. `tesis.brosdev.duckdns.org`) a `http://51.79.49.242:8087` con SSL de Let's Encrypt. Guía detallada en `docs/deploy/npm_proxy_setup.md`.
-
-### Desarrollo local
-
-```powershell
-# Levantar con recarga y bind en localhost:5001
-docker compose up dev
-```
-
-El servicio de desarrollo monta el código fuente y ejecuta `python run_v2.py`.
-- **Exportar por familia**: Descargar datasets completos de familias específicas
-- **Análisis IC50**: Revisar correlaciones estructura-actividad en los datos exportados
-- **Comparación de subfamilias**: Evaluar diferencias entre μ-TRTX-H y μ-TRTX-C
-
-
-
-## 🐛 Solución de Problemas
-
-### Error: "No module named 'graphein'"
-```powershell
-pip install graphein
-```
-
-### Error: "SQLite database is locked"
-```powershell
-# Cerrar todas las conexiones a la base de datos
-python -c "import sqlite3; conn = sqlite3.connect('database/toxins.db'); conn.close()"
-```
-
-### Error de permisos en Windows
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### Interface no carga
-- Verificar que Flask esté ejecutándose en puerto 5000
-- Comprobar que no hay conflictos con otros servicios
-- Revisar logs en la consola del navegador
-
-### Problemas con Exportación de Familias
-
-#### CSV vacío o no se descarga
-```python
-# Verificar datos en la base
-import sqlite3
-conn = sqlite3.connect('database/toxins.db')
-cursor = conn.cursor()
-cursor.execute("SELECT COUNT(*) FROM Nav1_7_InhibitorPeptides WHERE peptide_name LIKE 'μ-TRTX-%'")
-print(f"Registros encontrados: {cursor.fetchone()[0]}")
-```
-
-#### Error en caracteres Unicode
-- **Problema**: Nombres de archivo con caracteres griegos causan errores
-- **Solución**: El sistema convierte automáticamente μ→mu, κ→kappa, etc.
-
-#### Valores IC50 incorrectos
-- **Verificar normalización**: Todos los valores deben estar en nM
-- **Unidades soportadas**: nM, μM, mM (conversión automática)
-
-### Problemas de Visualización
-
-#### Residuos muestran "undefined"
-- **Causa**: Error en función `populateTop5List` 
-- **Estado**: ✅ **RESUELTO** en v1.2.0
-- **Verificación**: Los residuos ahora muestran formato "VAL21 (Cadena A): 0.1122"
-
-#### Métricas no calculan correctamente
-```python
-# Verificar parámetros de entrada
-threshold = 8.0  # Distancia recomendada
-granularity = "CA"  # Nivel de residuo
-sequence_separation = 5  # Separación secuencial
-```
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 📚 Referencias Científicas
-
-- **Graphein**: "Graphein: a Python library for geometric deep learning and network analysis on biomolecular structures"
-- **Mol***: "Mol* Viewer: modern web app for 3D visualization and analysis of large biomolecular structures"
-- **NetworkX**: "Exploring network structure, dynamics, and function using NetworkX"
-- **Nav1.7**: "Voltage-gated sodium channel Nav1.7 and pain: from gene to pharmacology"
-- **Pharmacophore**: En el paper de Sharma FEBS Letters - 2025 - S… es: X1X2-S-WCKX3 → patrón basado en los residuos críticos para inhibición de Nav1.7.
-→ Deberías poner una frase corta cuando usas el campo "Pharmacophore" en la tabla:
-Patrón de residuos críticos que definen la actividad inhibidora sobre Nav1.7 (ver Sharma et al., 2025).
-
-
-
-## 👥 Autores
-
-- **Desarrolladores Principal**: 
-
-
-## 🆘 Soporte
-
-Para preguntas técnicas o científicas:
-- **Issues**: GitHub Issues del proyecto
-- **Email**: [tu-email@ejemplo.com]
-- **Documentación**: Wiki del proyecto
-
-## 🔄 Actualizaciones Recientes
-
-### v1.2.0 (Junio 2025) - **NUEVA VERSIÓN**
-- ✅ **Exportación por Familias**: Sistema completo de exportación CSV agrupado por familias de toxinas
-- ✅ **Integración IC50**: Correlación automática con datos de actividad biológica (nM)
-- ✅ **Diferenciación de Subfamilias**: Clasificación μ-TRTX-H (2a) vs μ-TRTX-C (2b)
-
-
-### v1.1.0 (Junio 2025)
-- ✅ Corrección de formato de visualización de residuos
-- ✅ Mejoras en la función `populateTop5List`
-- ✅ Optimización de consultas de base de datos
-- ✅ Resolución de conflictos de rutas duplicadas
-
-### v1.0.0 (Junio 2025)
-- ✅ Sistema completo de análisis de grafos moleculares
-- ✅ Interface web con Mol* viewer integrado
-- ✅ Exportación de métricas en CSV
-- ✅ Base de datos SQLite optimizada
-- ✅ Soporte para análisis de toxinas Nav1.7
+Los detalles del esquema y las relaciones se documentan en `database/README.md` y `docs/` (diagramas MER y de casos de uso).
 
 ---
+
+## 🧪 Tests
+
+El repositorio incluye tests unitarios y de integración bajo `tests/`.
+
+Para ejecutar el conjunto de tests (requiere entorno configurado):
+
+```bash
+pytest
+```
+
+Hay también scripts en `tools/` que actúan como pruebas manuales/semi-automatizadas de componentes específicos (nuevas métricas, exportaciones, etc.).
+
+---
+
+## 🐛 Solución de Problemas Comunes
+
+- **`ModuleNotFoundError: graphein`** → instalar dependencias:
+
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+- **`SQLite database is locked`** → cerrar procesos que usen `toxins.db` y, si es necesario:
+
+  ```bash
+  python -c "import sqlite3; conn = sqlite3.connect('database/toxins.db'); conn.close()"
+  ```
+
+- **Problemas con VMD/psfgen (generación de PSF)** → verificar que VMD esté instalado y accesible en el `PATH`, y revisar mensajes de error de `run_full_pipeline.py` en la sección PSF.
+
+- **La interfaz web no carga**:
+  - Confirmar que `python run_v2.py` está en ejecución.
+  - Verificar que no haya conflictos de puertos.
+  - Revisar la consola del navegador (F12) y los logs de Flask.
+
+- **Errores Unicode en nombres de archivo (μ, κ, etc.)**:
+  - El sistema convierte automáticamente estos caracteres a `mu`, `kappa`, etc., pero si ves errores, revisa rutas y nombres de familia utilizados.
+
+---
+
+## 📚 Referencias Científicas (Selección)
+
+- Graphein – *"Graphein: a Python library for geometric deep learning and network analysis on biomolecular structures"*.
+- Mol* Viewer – *"Mol* Viewer: modern web app for 3D visualization and analysis of large biomolecular structures"*.
+- NetworkX – *"Exploring network structure, dynamics, and function using NetworkX"*.
+- Nav1.7 – *"Voltage-gated sodium channel Nav1.7 and pain: from gene to pharmacology"*.
+- Farmacóforo NaSpTx – motivo **X1X2-S-WCKX3**, basado en Sharma et al., 2025 (FEBS Letters): patrón de residuos críticos que definen la actividad inhibidora sobre Nav1.7.
+
+---
+
 
